@@ -6,6 +6,7 @@ _University of Birmingham Dubai_
 
 <details>
 <summary><strong>Group 9 Final Design Project</strong></summary>
+<br/>
 
 | Members | 
 |--- |
@@ -16,4 +17,4 @@ _University of Birmingham Dubai_
 
 </details>
 
-<p>Deliverable 2: Functional Prototype</p>
+Deliverable 2: Functional Prototype
