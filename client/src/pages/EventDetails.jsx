@@ -27,6 +27,7 @@ import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import HandshakeIcon from '@mui/icons-material/Handshake';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import { softInviteTemplates } from '../data/mockData';
+import { alpha, useTheme } from '@mui/material/styles';
 
 const avatarColors = {
   R: '#2D6A4F',
@@ -41,16 +42,20 @@ const avatarColors = {
 };
 
 function AttendeeRow({ person, openToTalk }) {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const [sent, setSent] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
   const isOpen = person.openToTalk;
+  const successSurface = alpha(theme.palette.success.main, isDark ? 0.18 : 0.1);
+  const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
 
   return (
     <Box>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, py: 1.4 }}>
         <Box sx={{ position: 'relative' }}>
           <Avatar sx={{ bgcolor: avatarColors[person.avatar] || 'primary.main', width: 46, height: 46, fontWeight: 800 }}>{person.avatar}</Avatar>
-          {isOpen && <Box sx={{ position: 'absolute', bottom: 1, right: 1, width: 12, height: 12, bgcolor: '#52B788', borderRadius: '50%', border: '2px solid white' }} />}
+          {isOpen && <Box sx={{ position: 'absolute', bottom: 1, right: 1, width: 12, height: 12, bgcolor: 'success.main', borderRadius: '50%', border: '2px solid', borderColor: 'background.paper' }} />}
         </Box>
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Typography variant="subtitle2" fontWeight={800}>{person.name}</Typography>
@@ -58,15 +63,15 @@ function AttendeeRow({ person, openToTalk }) {
             <Typography variant="caption" color="text.secondary">{person.degree}</Typography>
             {isOpen && (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.4 }}>
-                <FiberManualRecordIcon sx={{ fontSize: 7, color: '#52B788' }} />
-                <Typography variant="caption" sx={{ color: '#2D6A4F', fontWeight: 700 }}>open to chat</Typography>
+                <FiberManualRecordIcon sx={{ fontSize: 7, color: 'success.main' }} />
+                <Typography variant="caption" sx={{ color: isDark ? 'success.light' : 'success.dark', fontWeight: 700 }}>open to chat</Typography>
               </Box>
             )}
           </Stack>
         </Box>
 
         {isOpen && !sent && openToTalk && <Button size="small" variant="outlined" onClick={() => setShowTemplates(true)} sx={{ px: 2, py: 1 }}>Say hi</Button>}
-        {sent && <Chip label="Sent" size="small" sx={{ bgcolor: '#F0FAF4', color: 'primary.dark' }} />}
+        {sent && <Chip label="Sent" size="small" sx={{ bgcolor: successSurface, color: isDark ? 'text.primary' : 'primary.dark' }} />}
         {!isOpen && <Typography variant="caption" color="text.secondary" sx={{ fontStyle: 'italic' }}>busy</Typography>}
       </Box>
 
@@ -90,11 +95,11 @@ function AttendeeRow({ person, openToTalk }) {
                   borderRadius: 3,
                   p: 2,
                   cursor: 'pointer',
-                  '&:hover': { borderColor: 'primary.main', bgcolor: '#F0FAF4' },
+                  '&:hover': { borderColor: 'primary.main', bgcolor: successSurface },
                 }}
               >
                 <Typography variant="body2" fontWeight={500}>“{template.text}”</Typography>
-                <Chip label={template.tone} size="small" sx={{ mt: 1, bgcolor: '#F3F4F6', color: 'text.secondary' }} />
+                <Chip label={template.tone} size="small" sx={{ mt: 1, bgcolor: subtleSurface, color: 'text.secondary' }} />
               </Box>
             ))}
           </Stack>
@@ -108,8 +113,13 @@ function AttendeeRow({ person, openToTalk }) {
 }
 
 export default function EventDetailPage({ event, onBack, openToTalk }) {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const [joined, setJoined] = useState(false);
   const [toastOpen, setToastOpen] = useState(false);
+  const successSurface = alpha(theme.palette.success.main, isDark ? 0.18 : 0.1);
+  const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
+  const vibeChipColor = event.vibe === 'quiet' ? theme.palette.secondary.main : theme.palette.warning.main;
 
   const handleJoin = () => {
     setJoined(true);
@@ -172,9 +182,9 @@ export default function EventDetailPage({ event, onBack, openToTalk }) {
                     </Box>
                   ))}
                   {event.mutualCount > 0 && (
-                    <Box sx={{ mt: 2, p: 1.6, bgcolor: '#F0FAF4', borderRadius: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <HandshakeIcon sx={{ color: 'primary.dark' }} />
-                      <Typography variant="body2" color="primary.dark" fontWeight={700}>
+                    <Box sx={{ mt: 2, p: 1.6, bgcolor: successSurface, borderRadius: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <HandshakeIcon sx={{ color: isDark ? 'text.primary' : 'primary.dark' }} />
+                      <Typography variant="body2" color={isDark ? 'text.primary' : 'primary.dark'} fontWeight={700}>
                         {event.mutualCount} mutual connection{event.mutualCount > 1 ? 's' : ''} here
                       </Typography>
                     </Box>
@@ -206,11 +216,11 @@ export default function EventDetailPage({ event, onBack, openToTalk }) {
                 <CardContent sx={{ p: 3.2 }}>
                   <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 1.2 }}>Vibe</Typography>
                   <Stack direction="row" spacing={0.8} flexWrap="wrap" useFlexGap>
-                    {event.tags.map((tag) => <Chip key={tag} label={tag} size="small" sx={{ bgcolor: '#F3F4F6', color: 'text.secondary' }} />)}
+                    {event.tags.map((tag) => <Chip key={tag} label={tag} size="small" sx={{ bgcolor: subtleSurface, color: 'text.secondary' }} />)}
                   </Stack>
                   <Chip
                     label={event.vibe === 'quiet' ? 'Quiet atmosphere' : 'Social atmosphere'}
-                    sx={{ mt: 1.5, bgcolor: event.vibe === 'quiet' ? '#EEF2FF' : '#FFF7ED', color: event.vibe === 'quiet' ? '#4F46E5' : '#C2410C', fontWeight: 700 }}
+                    sx={{ mt: 1.5, bgcolor: alpha(vibeChipColor, isDark ? 0.24 : 0.14), color: isDark ? 'text.primary' : vibeChipColor, fontWeight: 700 }}
                   />
                 </CardContent>
               </Card>
@@ -220,10 +230,10 @@ export default function EventDetailPage({ event, onBack, openToTalk }) {
                   I’m heading there
                 </Button>
               ) : (
-                <Box sx={{ bgcolor: '#F0FAF4', border: '2px solid', borderColor: 'primary.light', borderRadius: 4, p: 2.5, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, flexDirection: 'column' }}>
+                <Box sx={{ bgcolor: successSurface, border: '2px solid', borderColor: 'primary.light', borderRadius: 4, p: 2.5, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, flexDirection: 'column' }}>
                   <EmojiEventsIcon sx={{ fontSize: 32, color: 'primary.main' }} />
                   <Box>
-                    <Typography variant="body1" fontWeight={800} color="primary.dark" sx={{ mb: 0.6 }}>You're in</Typography>
+                    <Typography variant="body1" fontWeight={800} color={isDark ? 'text.primary' : 'primary.dark'} sx={{ mb: 0.6 }}>You're in</Typography>
                     <Typography variant="body2" color="text.secondary">Your presence helps signal shared context for others nearby.</Typography>
                   </Box>
                 </Box>

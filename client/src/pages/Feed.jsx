@@ -12,6 +12,7 @@ import {
   Divider,
   Button,
   Grid,
+  useTheme,
 } from '@mui/material';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -23,6 +24,7 @@ import Battery1BarIcon from '@mui/icons-material/Battery1Bar';
 import BoltIcon from '@mui/icons-material/Bolt';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { contextFeed, batteryLevels, vibeFilters } from '../data/mockData';
+import { alpha } from '@mui/material/styles';
 
 const vibeColor = {
   quiet: { bg: '#EEF2FF', text: '#4F46E5' },
@@ -39,13 +41,17 @@ const getBatteryIcon = (iconName) => {
 };
 
 function PageHero({ battery, userInterests }) {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+  const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
+
   return (
     <Box
       sx={{
         mb: 4,
         p: { xs: 2.5, md: 3.5 },
         borderRadius: 5,
-        background: 'linear-gradient(145deg, rgba(255,255,255,0.96), rgba(240,250,244,0.96))',
+        bgcolor: 'background.paper',
         border: '1px solid',
         borderColor: 'divider',
         display: 'grid',
@@ -55,7 +61,16 @@ function PageHero({ battery, userInterests }) {
       }}
     >
       <Box>
-        <Chip label="Live campus discovery" size="small" sx={{ mb: 1.5, fontWeight: 700, bgcolor: '#E9F7EE', color: 'primary.dark' }} />
+        <Chip
+          label="Live campus discovery"
+          size="small"
+          sx={{
+            mb: 1.5,
+            fontWeight: 700,
+            bgcolor: subtleSurface,
+            color: isDark ? 'primary.light' : 'primary.dark',
+          }}
+        />
         <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.5rem' }, lineHeight: 1.05, mb: 1.2 }}>
           Around you
         </Typography>
@@ -68,7 +83,16 @@ function PageHero({ battery, userInterests }) {
             { label: 'University of Birmingham Dubai' },
             { label: `${contextFeed.length} nearby contexts` },
           ].map((item) => (
-            <Chip key={item.label} label={item.label} variant="outlined" sx={{ bgcolor: 'rgba(255,255,255,0.9)' }} />
+            <Chip
+              key={item.label}
+              label={item.label}
+              variant="outlined"
+              sx={{
+                bgcolor: subtleSurface,
+                borderColor: 'divider',
+                color: 'text.primary',
+              }}
+            />
           ))}
         </Stack>
       </Box>
@@ -97,7 +121,13 @@ function PageHero({ battery, userInterests }) {
           {battery.description}
         </Typography>
         {userInterests.length > 0 && (
-          <Box sx={{ p: 1.6, borderRadius: 3, bgcolor: '#F8F5F0' }}>
+          <Box
+            sx={{
+              p: 1.6,
+              borderRadius: 3,
+              bgcolor: 'action.hover',
+            }}
+          >
             <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.35 }}>
               Your interests
             </Typography>
@@ -113,8 +143,12 @@ function PageHero({ battery, userInterests }) {
 }
 
 function ContextCard({ event, onSelect }) {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const vibe = vibeColor[event.vibe] || vibeColor.social;
   const openCount = event.attendees.filter((a) => a.openToTalk).length;
+  const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
+  const successSurface = alpha(theme.palette.success.main, isDark ? 0.18 : 0.1);
 
   return (
     <Card
@@ -125,8 +159,8 @@ function ContextCard({ event, onSelect }) {
         transition: 'transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease',
         '&:hover': {
           transform: 'translateY(-4px)',
-          boxShadow: '0 18px 34px rgba(45,106,79,0.12)',
-          borderColor: 'rgba(82,183,136,0.35)',
+          boxShadow: theme.shadows[4],
+          borderColor: alpha(theme.palette.primary.main, 0.35),
         },
       }}
     >
@@ -136,7 +170,15 @@ function ContextCard({ event, onSelect }) {
             <Stack direction="row" spacing={0.8} flexWrap="wrap" useFlexGap sx={{ mb: 1 }}>
               <Chip label={event.vibe === 'quiet' ? 'Quiet' : 'Social'} size="small" sx={{ bgcolor: vibe.bg, color: vibe.text, fontWeight: 700 }} />
               {event.mutualCount > 0 && (
-                <Chip label={`${event.mutualCount} mutual${event.mutualCount > 1 ? 's' : ''}`} size="small" sx={{ bgcolor: '#F0FAF4', color: 'primary.dark', fontWeight: 700 }} />
+                <Chip
+                  label={`${event.mutualCount} mutual${event.mutualCount > 1 ? 's' : ''}`}
+                  size="small"
+                  sx={{
+                    bgcolor: successSurface,
+                    color: isDark ? 'text.primary' : 'primary.dark',
+                    fontWeight: 700,
+                  }}
+                />
               )}
             </Stack>
             <Typography variant="h6" sx={{ fontWeight: 800, lineHeight: 1.25, mb: 0.4 }}>
@@ -172,10 +214,10 @@ function ContextCard({ event, onSelect }) {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, minWidth: 0 }}>
             <AvatarGroup
               max={4}
-              sx={{ '& .MuiAvatar-root': { width: 32, height: 32, fontSize: '0.78rem', border: '2px solid white' } }}
+              sx={{ '& .MuiAvatar-root': { width: 32, height: 32, fontSize: '0.78rem', border: '2px solid', borderColor: 'background.paper' } }}
             >
               {event.attendees.map((a) => (
-                <Avatar key={a.id} sx={{ bgcolor: a.openToTalk ? 'primary.main' : '#B7BBC5' }}>
+                <Avatar key={a.id} sx={{ bgcolor: a.openToTalk ? 'primary.main' : 'action.disabled' }}>
                   {a.avatar}
                 </Avatar>
               ))}
@@ -185,7 +227,7 @@ function ContextCard({ event, onSelect }) {
                 {openCount} open to chat
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <FiberManualRecordIcon sx={{ fontSize: 8, color: '#52B788' }} />
+                <FiberManualRecordIcon sx={{ fontSize: 8, color: 'success.main' }} />
                 <Typography variant="caption" color="text.secondary">active now</Typography>
               </Box>
             </Box>
@@ -194,7 +236,16 @@ function ContextCard({ event, onSelect }) {
 
         <Stack direction="row" spacing={0.8} flexWrap="wrap" useFlexGap sx={{ mt: 2 }}>
           {event.tags.map((tag) => (
-            <Chip key={tag} label={tag} size="small" variant="outlined" sx={{ color: 'text.secondary', bgcolor: 'rgba(255,255,255,0.85)' }} />
+            <Chip
+              key={tag}
+              label={tag}
+              size="small"
+              variant="outlined"
+              sx={{
+                color: 'text.secondary',
+                bgcolor: subtleSurface,
+              }}
+            />
           ))}
         </Stack>
       </CardContent>
@@ -203,6 +254,8 @@ function ContextCard({ event, onSelect }) {
 }
 
 function QuickStats() {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const stats = useMemo(
     () => [
       { value: contextFeed.length, label: 'Live contexts nearby' },
@@ -220,7 +273,14 @@ function QuickStats() {
         </Typography>
         <Stack spacing={1.2}>
           {stats.map((stat) => (
-            <Box key={stat.label} sx={{ p: 1.5, borderRadius: 3, bgcolor: '#F8F5F0' }}>
+            <Box
+              key={stat.label}
+              sx={{
+                p: 1.5,
+                borderRadius: 3,
+                bgcolor: 'action.hover',
+              }}
+            >
               <Typography variant="h6" fontWeight={800}>{stat.value}</Typography>
               <Typography variant="caption" color="text.secondary">{stat.label}</Typography>
             </Box>
@@ -233,7 +293,11 @@ function QuickStats() {
 
 export default function FeedPage({ socialBattery, userInterests, onSelectEvent }) {
   const [activeFilter, setActiveFilter] = useState('All');
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const battery = batteryLevels[socialBattery];
+  const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
+  const successSurface = alpha(theme.palette.success.main, isDark ? 0.18 : 0.1);
 
   // Filter events based on active filter and user interests
   let filtered = activeFilter === 'All'
@@ -278,7 +342,11 @@ export default function FeedPage({ socialBattery, userInterests, onSelectEvent }
                   onClick={() => setActiveFilter(f)}
                   color={activeFilter === f ? 'primary' : 'default'}
                   variant={activeFilter === f ? 'filled' : 'outlined'}
-                  sx={{ fontWeight: 700, bgcolor: activeFilter === f ? undefined : 'rgba(255,255,255,0.85)' }}
+                  sx={{
+                    fontWeight: 700,
+                    bgcolor: activeFilter === f ? undefined : subtleSurface,
+                    borderColor: 'divider',
+                  }}
                 />
               ))}
             </Stack>
@@ -302,15 +370,25 @@ export default function FeedPage({ socialBattery, userInterests, onSelectEvent }
               <CardContent sx={{ p: 2.5 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
                   <Typography variant="subtitle1" fontWeight={800}>Notifications</Typography>
-                  <IconButton size="small" sx={{ bgcolor: 'rgba(255,255,255,0.8)', border: '1px solid', borderColor: 'divider', p: 1.2 }} onClick={() => alert('Notification settings')} title="Notification settings">
+                  <IconButton
+                    size="small"
+                    sx={{
+                      bgcolor: subtleSurface,
+                      border: '1px solid',
+                      borderColor: 'divider',
+                      p: 1.2,
+                    }}
+                    onClick={() => alert('Notification settings')}
+                    title="Notification settings"
+                  >
                     <NotificationsNoneIcon fontSize="small" />
                   </IconButton>
                 </Box>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
                   You’ll only see activity that matches your current energy and shared context.
                 </Typography>
-                <Box sx={{ p: 1.5, borderRadius: 3, bgcolor: '#F0FAF4' }}>
-                  <Typography variant="caption" color="primary.dark" fontWeight={700}>
+                <Box sx={{ p: 1.5, borderRadius: 3, bgcolor: successSurface }}>
+                  <Typography variant="caption" color={isDark ? 'text.primary' : 'primary.dark'} fontWeight={700}>
                     Low-pressure by design
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>

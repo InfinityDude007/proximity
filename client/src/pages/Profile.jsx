@@ -10,10 +10,13 @@ import {
   Stack,
   Grid,
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import Battery1BarIcon from '@mui/icons-material/Battery1Bar';
 import BoltIcon from '@mui/icons-material/Bolt';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
+import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
 import { currentUser, batteryLevels } from '../data/mockData';
 
 const batteryOptions = [
@@ -33,8 +36,21 @@ const interestOptions = [
   'Startups',
 ];
 
-export default function ProfilePage({ socialBattery, setSocialBattery, openToTalk, setOpenToTalk, userInterests = [], setUserInterests }) {
+export default function ProfilePage({
+  socialBattery,
+  setSocialBattery,
+  openToTalk,
+  setOpenToTalk,
+  userInterests = [],
+  setUserInterests,
+  themeMode = 'light',
+  setThemeMode,
+}) {
   const battery = batteryLevels[socialBattery];
+  const isDark = themeMode === 'dark';
+  const handleThemeToggle = (event) => {
+    setThemeMode(event.target.checked ? 'dark' : 'light');
+  };
 
   const toggleInterest = (interest) => {
     if (userInterests.includes(interest)) {
@@ -47,9 +63,11 @@ export default function ProfilePage({ socialBattery, setSocialBattery, openToTal
   return (
     <Box>
       <Box sx={{ mb: 3.2 }}>
-        <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.5rem' }, mb: 0.8 }}>Profile</Typography>
+        <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.5rem' }, mb: 0.8 }}>
+          Profile
+        </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 740 }}>
-          Your preferences, visibility, and social energy — now spaced for larger screens and grouped into clearer sections.
+          Your preferences, visibility, social energy, and appearance settings.
         </Typography>
       </Box>
 
@@ -71,27 +89,33 @@ export default function ProfilePage({ socialBattery, setSocialBattery, openToTal
 
                 <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
                   {interestOptions.map((interest) => (
-                    <Chip 
-                      key={interest} 
-                      label={interest} 
-                      size="small" 
+                    <Chip
+                      key={interest}
+                      label={interest}
+                      size="small"
                       onClick={() => toggleInterest(interest)}
-                      sx={{ 
-                        bgcolor: userInterests.includes(interest) ? 'primary.main' : '#F0FAF4', 
-                        color: userInterests.includes(interest) ? 'white' : 'primary.dark', 
+                      sx={{
+                        bgcolor: userInterests.includes(interest) ? 'primary.main' : 'action.hover',
+                        color: userInterests.includes(interest) ? 'white' : 'text.primary',
                         fontWeight: 600,
                         cursor: 'pointer',
                         transition: 'all 0.2s ease',
-                      }} 
+                      }}
                     />
                   ))}
                 </Stack>
               </CardContent>
             </Card>
 
-            <Card sx={{ border: '1px dashed', borderColor: 'primary.light', bgcolor: '#FAFFF9' }}>
+            <Card
+              sx={{
+                border: '1px dashed',
+                borderColor: 'primary.light',
+                bgcolor: isDark ? alpha('#8B7CF6', 0.08) : '#FAFFF9',
+              }}
+            >
               <CardContent sx={{ p: 2.4 }}>
-                <Typography variant="caption" color="primary.dark" fontWeight={800} display="block" sx={{ mb: 0.5 }}>
+                <Typography variant="caption" color="primary.main" fontWeight={800} display="block" sx={{ mb: 0.5 }}>
                   Your data & privacy
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
@@ -120,9 +144,21 @@ export default function ProfilePage({ socialBattery, setSocialBattery, openToTal
                 </Box>
 
                 {openToTalk && (
-                  <Box sx={{ mt: 1.8, p: 1.8, bgcolor: '#F0FAF4', borderRadius: 3, border: '1px solid #C8E6C9', display: 'flex', alignItems: 'flex-start', gap: 1 }}>
+                  <Box
+                    sx={{
+                      mt: 1.8,
+                      p: 1.8,
+                      bgcolor: isDark ? alpha('#52B788', 0.12) : '#F0FAF4',
+                      borderRadius: 3,
+                      border: '1px solid',
+                      borderColor: isDark ? alpha('#52B788', 0.26) : '#C8E6C9',
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: 1,
+                    }}
+                  >
                     <FiberManualRecordIcon sx={{ color: 'primary.main', mt: 0.3, fontSize: 18, flexShrink: 0 }} />
-                    <Typography variant="body2" color="primary.dark">
+                    <Typography variant="body2" color={isDark ? 'text.primary' : 'primary.dark'}>
                       You're visible to people at the same places as you. They can only send soft openers — no cold messages.
                     </Typography>
                   </Box>
@@ -149,7 +185,7 @@ export default function ProfilePage({ socialBattery, setSocialBattery, openToTal
                           borderRadius: 3,
                           p: 2,
                           cursor: 'pointer',
-                          bgcolor: socialBattery === option.value ? '#F0FAF4' : 'white',
+                          bgcolor: socialBattery === option.value ? 'action.hover' : 'background.paper',
                           transition: 'all 0.15s ease',
                           display: 'flex',
                           flexDirection: 'column',
@@ -166,7 +202,7 @@ export default function ProfilePage({ socialBattery, setSocialBattery, openToTal
                   ))}
                 </Grid>
 
-                <Box sx={{ mt: 2, p: 1.8, bgcolor: '#F8F5F0', borderRadius: 3 }}>
+                <Box sx={{ mt: 2, p: 1.8, bgcolor: 'action.hover', borderRadius: 3 }}>
                   <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.4 }}>
                     Current feed focus
                   </Typography>
@@ -194,6 +230,40 @@ export default function ProfilePage({ socialBattery, setSocialBattery, openToTal
                     </Box>
                   </Box>
                 ))}
+                <Divider sx={{ my: 1.6 }} />
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 2 }}>
+                  <Box sx={{ flex: 1 }}>
+                    <Typography variant="body1" fontWeight={700}>Appearance</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Switch between light and dark mode.
+                    </Typography>
+                    <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap sx={{ mt: 1.25 }}>
+                      <Chip
+                        icon={<LightModeRoundedIcon />}
+                        label="Light"
+                        size="small"
+                        variant={isDark ? 'outlined' : 'filled'}
+                        color={isDark ? 'default' : 'primary'}
+                        onClick={() => setThemeMode('light')}
+                      />
+                      <Chip
+                        icon={<DarkModeRoundedIcon />}
+                        label="Dark"
+                        size="small"
+                        variant={isDark ? 'filled' : 'outlined'}
+                        color={isDark ? 'primary' : 'default'}
+                        onClick={() => setThemeMode('dark')}
+                      />
+                    </Stack>
+                  </Box>
+                  <Switch
+                    checked={isDark}
+                    onChange={handleThemeToggle}
+                    color="primary"
+                    size="small"
+                    inputProps={{ 'aria-label': 'Toggle dark mode' }}
+                  />
+                </Box>
               </CardContent>
             </Card>
           </Stack>

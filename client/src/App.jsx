@@ -11,12 +11,12 @@ import {
   ListItemText,
   Typography,
   Divider,
-  Avatar,
   Chip,
   useMediaQuery,
   AppBar,
   Toolbar,
   Tooltip,
+  Stack,
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -28,10 +28,18 @@ import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutline
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import BoltRoundedIcon from '@mui/icons-material/BoltRounded';
 
-import theme from './theme';
+import { createAppTheme } from './theme';
 import proximityLogo from './assets/proximity-logo.png';
+import proximityLogoDark from './assets/proximity-logo-dark.png'
 import favicon from '/favicon.png';
-import { loadUserPreferences, saveSocialBattery, saveUserInterests, saveOpenToTalk, saveOnboarded } from './utils/storage';
+import faviconDark from '/favicon-dark.png'
+import {
+  loadUserPreferences,
+  saveSocialBattery,
+  saveUserInterests,
+  saveOpenToTalk,
+  saveOnboarded,
+} from './utils/storage';
 import FeedPage from './pages/Feed';
 import ConnectionsPage from './pages/Connections';
 import MessagesPage from './pages/Messages';
@@ -41,6 +49,7 @@ import EventDetailPage from './pages/EventDetails';
 
 const expandedDrawerWidth = 272;
 const collapsedDrawerWidth = 92;
+const THEME_MODE_KEY = 'proximity-theme-mode';
 
 const navItems = [
   { label: 'Discover', icon: <ExploreIcon />, description: 'Nearby spaces', short: 'Go', tab: 0 },
@@ -49,7 +58,16 @@ const navItems = [
   { label: 'Profile', icon: <AccountCircleOutlinedIcon />, description: 'Preferences', short: 'Me', tab: 3 },
 ];
 
-function SidebarContent({ tab, setTab, collapsed, setCollapsed, showCollapseControl = true }) {
+function SidebarContent({
+  tab,
+  setTab,
+  collapsed,
+  setCollapsed,
+  showCollapseControl = true,
+  mode,
+}) {
+  const isDark = mode === 'dark';
+
   return (
     <Box
       sx={{
@@ -65,21 +83,22 @@ function SidebarContent({ tab, setTab, collapsed, setCollapsed, showCollapseCont
           display: 'flex',
           alignItems: 'center',
           justifyContent: collapsed ? 'center' : 'flex-start',
-          px: collapsed ? 1 : 1,
           py: 1,
           mb: 1.5,
+          position: 'relative',
         }}
       >
         <Tooltip title="Proximity" placement="right" disableHoverListener={!collapsed}>
           <Box
             component="img"
-            src={collapsed ? favicon : proximityLogo}
+            src={collapsed ? (isDark ? faviconDark : favicon) : (isDark ? proximityLogoDark : proximityLogo)}
             alt="Proximity"
             sx={{
               width: collapsed ? 36 : 180,
               height: 'auto',
               flexShrink: 0,
               transition: 'width 0.3s ease',
+              filter: isDark ? 'brightness(1.05)' : 'none',
             }}
           />
         </Tooltip>
@@ -92,7 +111,11 @@ function SidebarContent({ tab, setTab, collapsed, setCollapsed, showCollapseCont
 
         {showCollapseControl && collapsed && (
           <Tooltip title="Expand sidebar" placement="right">
-            <IconButton size="small" onClick={() => setCollapsed(false)} sx={{ p: 1, position: 'absolute', right: 4, top: 8 }}>
+            <IconButton
+              size="small"
+              onClick={() => setCollapsed(false)}
+              sx={{ p: 1, position: 'absolute', right: 4, top: 8 }}
+            >
               <ChevronRightRoundedIcon fontSize="small" />
             </IconButton>
           </Tooltip>
@@ -105,9 +128,11 @@ function SidebarContent({ tab, setTab, collapsed, setCollapsed, showCollapseCont
           py: 1.25,
           mb: 2,
           borderRadius: 4,
-          background: 'linear-gradient(160deg, rgba(45,106,79,0.12), rgba(82,183,136,0.18))',
+          background: isDark
+            ? 'linear-gradient(160deg, rgba(104,76,211,0.18), rgba(45,106,79,0.22))'
+            : 'linear-gradient(160deg, rgba(45,106,79,0.12), rgba(82,183,136,0.18))',
           border: '1px solid',
-          borderColor: alpha('#2D6A4F', 0.12),
+          borderColor: isDark ? alpha('#8B7CF6', 0.22) : alpha('#2D6A4F', 0.12),
           display: 'flex',
           alignItems: collapsed ? 'center' : 'flex-start',
           flexDirection: collapsed ? 'column' : 'row',
@@ -115,10 +140,10 @@ function SidebarContent({ tab, setTab, collapsed, setCollapsed, showCollapseCont
           justifyContent: 'center',
         }}
       >
-        <BoltRoundedIcon sx={{ color: 'primary.dark', flexShrink: 0 }} />
+        <BoltRoundedIcon sx={{ color: isDark ? 'secondary.light' : 'primary.dark', flexShrink: 0 }} />
         {!collapsed && (
           <Box>
-            <Typography variant="caption" fontWeight={800} color="primary.dark" display="block">
+            <Typography variant="caption" fontWeight={800} color={isDark ? 'secondary.light' : 'primary.dark'} display="block">
               Campus mode
             </Typography>
             <Typography variant="caption" color="text.secondary">
@@ -128,7 +153,15 @@ function SidebarContent({ tab, setTab, collapsed, setCollapsed, showCollapseCont
         )}
         {collapsed && (
           <Tooltip title="Campus mode: Live shared spaces across UBD" placement="right" arrow>
-            <Typography variant="caption" sx={{ fontWeight: 700, color: 'primary.dark', fontSize: '0.65rem', textAlign: 'center' }}>
+            <Typography
+              variant="caption"
+              sx={{
+                fontWeight: 700,
+                color: isDark ? 'secondary.light' : 'primary.dark',
+                fontSize: '0.65rem',
+                textAlign: 'center',
+              }}
+            >
               Live
             </Typography>
           </Tooltip>
@@ -148,12 +181,18 @@ function SidebarContent({ tab, setTab, collapsed, setCollapsed, showCollapseCont
                 minHeight: 58,
                 px: collapsed ? 1.2 : 1.4,
                 justifyContent: collapsed ? 'center' : 'flex-start',
-                bgcolor: selected ? alpha('#2D6A4F', 0.1) : 'transparent',
+                bgcolor: selected
+                  ? alpha(isDark ? '#8B7CF6' : '#2D6A4F', isDark ? 0.16 : 0.1)
+                  : 'transparent',
                 border: '1px solid',
-                borderColor: selected ? alpha('#2D6A4F', 0.18) : 'transparent',
+                borderColor: selected
+                  ? alpha(isDark ? '#8B7CF6' : '#2D6A4F', isDark ? 0.26 : 0.18)
+                  : 'transparent',
                 position: 'relative',
                 '&:hover': {
-                  bgcolor: selected ? alpha('#2D6A4F', 0.13) : alpha('#2D6A4F', 0.04),
+                  bgcolor: selected
+                    ? alpha(isDark ? '#8B7CF6' : '#2D6A4F', isDark ? 0.22 : 0.13)
+                    : alpha(isDark ? '#8B7CF6' : '#2D6A4F', isDark ? 0.08 : 0.04),
                 },
               }}
             >
@@ -177,7 +216,10 @@ function SidebarContent({ tab, setTab, collapsed, setCollapsed, showCollapseCont
               )}
               {collapsed && (
                 <Tooltip title={`${item.label} - ${item.description}`} placement="right" arrow>
-                  <Typography variant="caption" sx={{ position: 'absolute', bottom: 4, fontSize: '0.65rem', opacity: 0.7, fontWeight: 600 }}>
+                  <Typography
+                    variant="caption"
+                    sx={{ position: 'absolute', bottom: 4, fontSize: '0.65rem', opacity: 0.7, fontWeight: 600 }}
+                  >
                     {item.short}
                   </Typography>
                 </Tooltip>
@@ -189,11 +231,12 @@ function SidebarContent({ tab, setTab, collapsed, setCollapsed, showCollapseCont
 
       <Box sx={{ flexGrow: 1 }} />
       <Divider sx={{ my: 1.5 }} />
+
       <Box
         sx={{
           p: collapsed ? 1.2 : 1.5,
           borderRadius: 3.5,
-          bgcolor: '#F8F5F0',
+          bgcolor: 'action.hover',
           border: '1px solid',
           borderColor: 'divider',
           textAlign: collapsed ? 'center' : 'left',
@@ -219,11 +262,12 @@ function SidebarContent({ tab, setTab, collapsed, setCollapsed, showCollapseCont
   );
 }
 
-function AppShell({ children, tab, setTab }) {
-  const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
-  const isTabletUp = useMediaQuery(theme.breakpoints.up('md'));
+function AppShell({ children, tab, setTab, mode, muiTheme }) {
+  const isDesktop = useMediaQuery(muiTheme.breakpoints.up('lg'));
+  const isTabletUp = useMediaQuery(muiTheme.breakpoints.up('md'));
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const isDark = mode === 'dark';
 
   const drawerWidth = isDesktop ? (collapsed ? collapsedDrawerWidth : expandedDrawerWidth) : expandedDrawerWidth;
 
@@ -237,6 +281,7 @@ function AppShell({ children, tab, setTab }) {
       collapsed={isDesktop ? collapsed : false}
       setCollapsed={setCollapsed}
       showCollapseControl={isDesktop}
+      mode={mode}
     />
   );
 
@@ -249,7 +294,7 @@ function AppShell({ children, tab, setTab }) {
           elevation={0}
           sx={{
             backdropFilter: 'blur(16px)',
-            backgroundColor: 'rgba(248,245,240,0.84)',
+            backgroundColor: isDark ? alpha('#130f24', 0.86) : alpha('#F8F5F0', 0.84),
             borderBottom: '1px solid',
             borderColor: 'divider',
           }}
@@ -270,13 +315,7 @@ function AppShell({ children, tab, setTab }) {
         </AppBar>
       )}
 
-      <Box
-        component="nav"
-        sx={{
-          width: { lg: drawerWidth },
-          flexShrink: { lg: 0 },
-        }}
-      >
+      <Box component="nav" sx={{ width: { lg: drawerWidth }, flexShrink: { lg: 0 } }}>
         <Drawer
           variant="temporary"
           open={mobileOpen}
@@ -289,6 +328,7 @@ function AppShell({ children, tab, setTab }) {
               width: expandedDrawerWidth,
               borderRight: '1px solid',
               borderColor: 'divider',
+              bgcolor: 'background.paper',
             },
           }}
         >
@@ -306,9 +346,10 @@ function AppShell({ children, tab, setTab }) {
               overflowX: 'hidden',
               borderRight: '1px solid',
               borderColor: 'divider',
-              transition: theme.transitions.create('width', {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.standard,
+              bgcolor: 'background.paper',
+              transition: muiTheme.transitions.create('width', {
+                easing: muiTheme.transitions.easing.sharp,
+                duration: muiTheme.transitions.duration.standard,
               }),
             },
           }}
@@ -348,29 +389,37 @@ function App() {
   const [socialBattery, setSocialBattery] = useState('medium');
   const [userInterests, setUserInterests] = useState([]);
   const [openToTalk, setOpenToTalk] = useState(true);
+  const [themeMode, setThemeMode] = useState('light');
 
-  // Load preferences from localStorage on mount
   useEffect(() => {
     const preferences = loadUserPreferences();
     setOnboarded(preferences.onboarded);
     setSocialBattery(preferences.socialBattery);
     setUserInterests(preferences.userInterests);
     setOpenToTalk(preferences.openToTalk);
+    const savedMode = window.localStorage.getItem(THEME_MODE_KEY);
+    if (savedMode === 'dark' || savedMode === 'light') {
+      setThemeMode(savedMode);
+    }
   }, []);
 
-  // Save social battery to localStorage
+  const muiTheme = useMemo(() => createAppTheme(themeMode), [themeMode]);
+
   const handleSetSocialBattery = (value) => {
     setSocialBattery(value);
     saveSocialBattery(value);
   };
 
-  // Save open to talk to localStorage
   const handleSetOpenToTalk = (value) => {
     setOpenToTalk(value);
     saveOpenToTalk(value);
   };
 
-  // Handle onboarding completion
+  const handleSetThemeMode = (value) => {
+    setThemeMode(value);
+    window.localStorage.setItem(THEME_MODE_KEY, value);
+  };
+
   const handleOnboardingComplete = (batteryValue, interestsArray) => {
     setSocialBattery(batteryValue);
     setUserInterests(interestsArray);
@@ -396,20 +445,22 @@ function App() {
           setUserInterests(interests);
           saveUserInterests(interests);
         }}
+        themeMode={themeMode}
+        setThemeMode={handleSetThemeMode}
       />,
     ],
-    [openToTalk, socialBattery, userInterests],
+    [openToTalk, socialBattery, userInterests, themeMode],
   );
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={muiTheme}>
       <CssBaseline />
       {!onboarded ? (
         <OnboardingPage onComplete={handleOnboardingComplete} />
       ) : selectedEvent ? (
         <EventDetailPage event={selectedEvent} onBack={() => setSelectedEvent(null)} openToTalk={openToTalk} />
       ) : (
-        <AppShell tab={tab} setTab={setTab}>
+        <AppShell tab={tab} setTab={setTab} mode={themeMode} muiTheme={muiTheme}>
           {pages[tab]}
         </AppShell>
       )}

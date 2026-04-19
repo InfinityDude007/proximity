@@ -22,6 +22,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import { messages } from '../data/mockData';
+import { alpha, useTheme } from '@mui/material/styles';
 
 const avatarColors = {
   R: '#2D6A4F',
@@ -36,6 +37,9 @@ const mockConversation = [
 ];
 
 function ChatDialog({ msg, open, onClose }) {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+  const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
   const [text, setText] = useState('');
   const [chat, setChat] = useState(mockConversation);
 
@@ -63,7 +67,7 @@ function ChatDialog({ msg, open, onClose }) {
       </DialogTitle>
 
       <DialogContent sx={{ display: 'flex', flexDirection: 'column', p: 0 }}>
-        <Box sx={{ px: 2.5, py: 1.25, bgcolor: '#F8F5F0', borderBottom: '1px solid', borderColor: 'divider', display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box sx={{ px: 2.5, py: 1.25, bgcolor: 'action.hover', borderBottom: '1px solid', borderColor: 'divider', display: 'flex', alignItems: 'center', gap: 1 }}>
           <LightbulbIcon sx={{ fontSize: 18, color: 'primary.main' }} />
           <Typography variant="caption" color="text.secondary">You connected through <strong>{msg.context}</strong></Typography>
         </Box>
@@ -74,8 +78,8 @@ function ChatDialog({ msg, open, onClose }) {
               <Box
                 sx={{
                   maxWidth: { xs: '84%', md: '68%' },
-                  bgcolor: c.from === 'me' ? 'primary.main' : 'white',
-                  color: c.from === 'me' ? 'white' : 'text.primary',
+                  bgcolor: c.from === 'me' ? 'primary.main' : 'background.paper',
+                  color: c.from === 'me' ? 'primary.contrastText' : 'text.primary',
                   border: c.from === 'other' ? '1px solid' : 'none',
                   borderColor: 'divider',
                   borderRadius: c.from === 'me' ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
@@ -100,9 +104,9 @@ function ChatDialog({ msg, open, onClose }) {
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && send()}
-            sx={{ '& .MuiOutlinedInput-root': { borderRadius: 999, bgcolor: '#F8F5F0' }, '& fieldset': { borderColor: '#E8E4DE' } }}
+            sx={{ '& .MuiOutlinedInput-root': { borderRadius: 999, bgcolor: subtleSurface } }}
           />
-          <IconButton color="primary" onClick={send} disabled={!text.trim()} sx={{ bgcolor: 'primary.main', color: 'white', '&:hover': { bgcolor: 'primary.dark' }, '&.Mui-disabled': { bgcolor: '#E8E4DE' } }}>
+          <IconButton color="primary" onClick={send} disabled={!text.trim()} sx={{ bgcolor: 'primary.main', color: 'primary.contrastText', '&:hover': { bgcolor: 'primary.dark' }, '&.Mui-disabled': { bgcolor: 'action.disabledBackground', color: 'action.disabled' } }}>
             <SendIcon fontSize="small" />
           </IconButton>
         </Box>
@@ -112,6 +116,11 @@ function ChatDialog({ msg, open, onClose }) {
 }
 
 function MessageCard({ msg, onOpen }) {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+  const unreadSurface = alpha(theme.palette.success.main, isDark ? 0.16 : 0.08);
+  const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
+
   return (
     <Card
       onClick={() => onOpen(msg.id)}
@@ -119,7 +128,7 @@ function MessageCard({ msg, onOpen }) {
         cursor: 'pointer',
         border: msg.unread ? '1.5px solid' : '1px solid',
         borderColor: msg.unread ? 'primary.light' : 'divider',
-        bgcolor: msg.unread ? '#F8FFF9' : 'white',
+        bgcolor: msg.unread ? unreadSurface : 'background.paper',
         '&:hover': { boxShadow: 4, transform: 'translateY(-2px)' },
         transition: 'all 0.15s ease',
       }}
@@ -129,7 +138,7 @@ function MessageCard({ msg, onOpen }) {
           <Badge
             overlap="circular"
             variant={msg.unread ? 'dot' : 'standard'}
-            sx={{ '& .MuiBadge-badge': { bgcolor: '#52B788' } }}
+            sx={{ '& .MuiBadge-badge': { bgcolor: 'success.main' } }}
           >
             <Avatar sx={{ bgcolor: avatarColors[msg.avatar] || 'primary.main', width: 48, height: 48, fontWeight: 800 }}>{msg.avatar}</Avatar>
           </Badge>
@@ -142,7 +151,7 @@ function MessageCard({ msg, onOpen }) {
             <Typography variant="body2" color={msg.unread ? 'text.primary' : 'text.secondary'} fontWeight={msg.unread ? 500 : 400} noWrap>
               {msg.preview}
             </Typography>
-            <Chip label={`📍 ${msg.context}`} size="small" sx={{ mt: 0.9, bgcolor: '#F3F4F6', color: 'text.secondary' }} />
+            <Chip label={`📍 ${msg.context}`} size="small" sx={{ mt: 0.9, bgcolor: subtleSurface, color: 'text.secondary' }} />
           </Box>
         </Box>
       </CardContent>
@@ -151,6 +160,9 @@ function MessageCard({ msg, onOpen }) {
 }
 
 export default function MessagesPage() {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+  const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
   const [selected, setSelected] = useState(null);
   const [query, setQuery] = useState('');
 
@@ -220,8 +232,8 @@ export default function MessagesPage() {
                         <Box
                           sx={{
                             maxWidth: '75%',
-                            bgcolor: c.from === 'me' ? 'primary.main' : '#F8F5F0',
-                            color: c.from === 'me' ? 'white' : 'text.primary',
+                            bgcolor: c.from === 'me' ? 'primary.main' : 'action.hover',
+                            color: c.from === 'me' ? 'primary.contrastText' : 'text.primary',
                             borderRadius: c.from === 'me' ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
                             px: 2,
                             py: 1.35,
@@ -234,8 +246,8 @@ export default function MessagesPage() {
                   </Stack>
 
                   <Box sx={{ mt: 2.5, display: 'flex', gap: 1 }}>
-                    <TextField fullWidth size="small" placeholder="Type a message..." sx={{ '& .MuiOutlinedInput-root': { borderRadius: 999, bgcolor: '#F8F5F0' } }} />
-                    <IconButton sx={{ bgcolor: 'primary.main', color: 'white', '&:hover': { bgcolor: 'primary.dark' } }}>
+                    <TextField fullWidth size="small" placeholder="Type a message..." sx={{ '& .MuiOutlinedInput-root': { borderRadius: 999, bgcolor: subtleSurface } }} />
+                    <IconButton sx={{ bgcolor: 'primary.main', color: 'primary.contrastText', '&:hover': { bgcolor: 'primary.dark' } }}>
                       <SendIcon fontSize="small" />
                     </IconButton>
                   </Box>

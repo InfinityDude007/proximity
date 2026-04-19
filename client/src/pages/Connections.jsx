@@ -23,6 +23,7 @@ import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import MapIcon from '@mui/icons-material/Map';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { connections, softInviteTemplates } from '../data/mockData';
+import { alpha, useTheme } from '@mui/material/styles';
 
 const statusColor = {
   acquaintance: { bg: '#FFF7ED', text: '#C2410C', label: 'Acquaintance' },
@@ -36,7 +37,11 @@ const avatarColors = {
 };
 
 function ConnectionCard({ person, onViewProfile }) {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const status = statusColor[person.status];
+  const softSurface = alpha(theme.palette.primary.main, isDark ? 0.18 : 0.08);
+  const tintedSurface = alpha(theme.palette.primary.main, isDark ? 0.16 : 0.1);
 
   return (
     <Card sx={{ height: '100%' }}>
@@ -62,9 +67,10 @@ function ConnectionCard({ person, onViewProfile }) {
                   right: 2,
                   width: 13,
                   height: 13,
-                  bgcolor: '#52B788',
+                  bgcolor: 'success.main',
                   borderRadius: '50%',
-                  border: '2px solid white',
+                  border: '2px solid',
+                  borderColor: 'background.paper',
                 }}
               />
             )}
@@ -73,13 +79,21 @@ function ConnectionCard({ person, onViewProfile }) {
           <Box sx={{ minWidth: 0, flex: 1 }}>
             <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mb: 0.5 }}>
               <Typography variant="subtitle1" fontWeight={800}>{person.name}</Typography>
-              <Chip label={status.label} size="small" sx={{ bgcolor: status.bg, color: status.text, fontWeight: 700 }} />
+              <Chip
+                label={status.label}
+                size="small"
+                sx={{
+                  bgcolor: isDark ? 'action.selected' : status.bg,
+                  color: isDark ? 'text.primary' : status.text,
+                  fontWeight: 700,
+                }}
+              />
             </Stack>
             <Typography variant="body2" color="text.secondary">
               {person.degree} · {person.year}
             </Typography>
 
-            <Box sx={{ mt: 1.5, p: 1.4, bgcolor: '#F8F5F0', borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+            <Box sx={{ mt: 1.5, p: 1.4, bgcolor: 'action.hover', borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
               <Typography variant="caption" fontWeight={800} color="text.secondary" display="block" sx={{ mb: 0.45 }}>
                 How you met
               </Typography>
@@ -96,7 +110,12 @@ function ConnectionCard({ person, onViewProfile }) {
         {person.sharedInterests.length > 0 && (
           <Stack direction="row" spacing={0.8} flexWrap="wrap" useFlexGap sx={{ mt: 1.8 }}>
             {person.sharedInterests.map((interest) => (
-              <Chip key={interest} label={`✦ ${interest}`} size="small" sx={{ bgcolor: '#EEF2FF', color: '#4F46E5' }} />
+              <Chip
+                key={interest}
+                label={`✦ ${interest}`}
+                size="small"
+                sx={{ bgcolor: tintedSurface, color: isDark ? 'primary.light' : 'primary.dark' }}
+              />
             ))}
           </Stack>
         )}
@@ -117,11 +136,14 @@ function ConnectionCard({ person, onViewProfile }) {
 }
 
 function ProfileDialog({ person, open, onClose }) {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const [sent, setSent] = useState(false);
   const [toastOpen, setToastOpen] = useState(false);
 
   if (!person) return null;
   const status = statusColor[person.status];
+  const softSurface = alpha(theme.palette.primary.main, isDark ? 0.18 : 0.08);
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm" PaperProps={{ sx: { borderRadius: 5 } }}>
@@ -149,19 +171,31 @@ function ProfileDialog({ person, open, onClose }) {
           <Typography variant="h5" fontWeight={800}>{person.name}</Typography>
           <Typography variant="body2" color="text.secondary">{person.degree} · {person.year}</Typography>
           <Stack direction="row" spacing={1} justifyContent="center" flexWrap="wrap" useFlexGap sx={{ mt: 1.5 }}>
-            <Chip label={status.label} size="small" sx={{ bgcolor: status.bg, color: status.text, fontWeight: 700 }} />
+            <Chip
+              label={status.label}
+              size="small"
+              sx={{
+                bgcolor: alpha(status.text, isDark ? 0.22 : 0.12),
+                color: isDark ? 'text.primary' : status.text,
+                fontWeight: 700,
+              }}
+            />
             {person.openToTalk && (
               <Chip
-                icon={<FiberManualRecordIcon sx={{ fontSize: '10px !important', color: '#52B788 !important' }} />}
+                icon={<FiberManualRecordIcon sx={{ fontSize: '10px !important', color: `${theme.palette.success.main} !important` }} />}
                 label="Open to chat"
                 size="small"
-                sx={{ bgcolor: '#F0FAF4', color: '#166534', fontWeight: 700 }}
+                sx={{
+                  bgcolor: alpha(theme.palette.success.main, isDark ? 0.18 : 0.1),
+                  color: isDark ? 'text.primary' : 'success.dark',
+                  fontWeight: 700,
+                }}
               />
             )}
           </Stack>
         </Box>
 
-        <Box sx={{ bgcolor: '#F8F5F0', borderRadius: 4, p: 2, mb: 2.2 }}>
+        <Box sx={{ bgcolor: 'action.hover', borderRadius: 4, p: 2, mb: 2.2 }}>
           <Typography variant="caption" fontWeight={800} color="text.secondary" display="block" sx={{ mb: 0.5 }}>
             Shared context
           </Typography>
@@ -188,7 +222,7 @@ function ProfileDialog({ person, open, onClose }) {
                   p: 1.7,
                   cursor: 'pointer',
                   transition: 'all 0.15s ease',
-                  '&:hover': { borderColor: 'primary.main', bgcolor: '#F0FAF4' },
+                  '&:hover': { borderColor: 'primary.main', bgcolor: softSurface },
                 }}
               >
                 <Typography variant="body2">“{template.text}”</Typography>
@@ -196,10 +230,10 @@ function ProfileDialog({ person, open, onClose }) {
             ))}
           </Stack>
         ) : (
-          <Box sx={{ bgcolor: '#F0FAF4', borderRadius: 4, p: 2, textAlign: 'center', mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, flexDirection: 'column' }}>
+          <Box sx={{ bgcolor: alpha(theme.palette.success.main, isDark ? 0.16 : 0.1), borderRadius: 4, p: 2, textAlign: 'center', mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, flexDirection: 'column' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
               <CheckCircleIcon sx={{ color: 'primary.main', fontSize: 20 }} />
-              <Typography variant="body2" fontWeight={700} color="primary.dark">Soft invite sent to {person.name}</Typography>
+              <Typography variant="body2" fontWeight={700} color={isDark ? 'text.primary' : 'primary.dark'}>Soft invite sent to {person.name}</Typography>
             </Box>
             <Typography variant="caption" color="text.secondary">No pressure — they can respond in their own time.</Typography>
           </Box>
