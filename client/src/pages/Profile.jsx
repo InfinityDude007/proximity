@@ -19,8 +19,27 @@ const batteryOptions = [
   { value: 'high', emoji: '✨', label: 'High' },
 ];
 
-export default function ProfilePage({ socialBattery, setSocialBattery, openToTalk, setOpenToTalk }) {
+const interestOptions = [
+  'Coffee',
+  'Study Groups',
+  'Music',
+  'Gaming',
+  'Fitness',
+  'Outdoors',
+  'Socials',
+  'Startups',
+];
+
+export default function ProfilePage({ socialBattery, setSocialBattery, openToTalk, setOpenToTalk, userInterests = [], setUserInterests }) {
   const battery = batteryLevels[socialBattery];
+
+  const toggleInterest = (interest) => {
+    if (userInterests.includes(interest)) {
+      setUserInterests(userInterests.filter((i) => i !== interest));
+    } else {
+      setUserInterests([...userInterests, interest]);
+    }
+  };
 
   return (
     <Box>
@@ -48,8 +67,20 @@ export default function ProfilePage({ socialBattery, setSocialBattery, openToTal
                 </Box>
 
                 <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                  {currentUser.interests.map((interest) => (
-                    <Chip key={interest} label={interest} size="small" sx={{ bgcolor: '#F0FAF4', color: 'primary.dark', fontWeight: 600 }} />
+                  {interestOptions.map((interest) => (
+                    <Chip 
+                      key={interest} 
+                      label={interest} 
+                      size="small" 
+                      onClick={() => toggleInterest(interest)}
+                      sx={{ 
+                        bgcolor: userInterests.includes(interest) ? 'primary.main' : '#F0FAF4', 
+                        color: userInterests.includes(interest) ? 'white' : 'primary.dark', 
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                      }} 
+                    />
                   ))}
                 </Stack>
               </CardContent>

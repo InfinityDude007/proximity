@@ -38,7 +38,7 @@ function ConnectionCard({ person, onViewProfile }) {
 
   return (
     <Card sx={{ height: '100%' }}>
-      <CardContent sx={{ p: 2.5, height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <CardContent sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column', gap: 1.2 }}>
         <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
           <Box sx={{ position: 'relative', flexShrink: 0 }}>
             <Avatar
@@ -102,10 +102,10 @@ function ConnectionCard({ person, onViewProfile }) {
         <Divider sx={{ my: 2 }} />
 
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.1} sx={{ mt: 'auto' }}>
-          <Button variant="outlined" fullWidth onClick={() => onViewProfile(person)}>
+          <Button variant="outlined" fullWidth onClick={() => onViewProfile(person)} sx={{ px: 2, py: 1.2 }}>
             View profile
           </Button>
-          <Button variant="contained" fullWidth onClick={() => onViewProfile(person)}>
+          <Button variant="contained" fullWidth onClick={() => onViewProfile(person)} sx={{ px: 2, py: 1.2 }}>
             Send invite 👋
           </Button>
         </Stack>

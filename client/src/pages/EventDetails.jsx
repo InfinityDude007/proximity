@@ -63,7 +63,7 @@ function AttendeeRow({ person, openToTalk }) {
           </Stack>
         </Box>
 
-        {isOpen && !sent && openToTalk && <Button size="small" variant="outlined" onClick={() => setShowTemplates(true)}>Say hi 👋</Button>}
+        {isOpen && !sent && openToTalk && <Button size="small" variant="outlined" onClick={() => setShowTemplates(true)} sx={{ px: 2, py: 1 }}>Say hi 👋</Button>}
         {sent && <Chip label="Sent ✓" size="small" sx={{ bgcolor: '#F0FAF4', color: 'primary.dark' }} />}
         {!isOpen && <Typography variant="caption" color="text.secondary" sx={{ fontStyle: 'italic' }}>busy</Typography>}
       </Box>
@@ -157,7 +157,7 @@ export default function EventDetailPage({ event, onBack, openToTalk }) {
           <Grid item xs={12} xl={8}>
             <Stack spacing={3}>
               <Card>
-                <CardContent sx={{ p: 2.7 }}>
+                <CardContent sx={{ p: 3.2 }}>
                   <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 1.2 }}>Who’s here</Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                     Green dot = open to chat. Tap “Say hi” for a soft, no-pressure opener.
@@ -184,7 +184,7 @@ export default function EventDetailPage({ event, onBack, openToTalk }) {
           <Grid item xs={12} xl={4}>
             <Stack spacing={3}>
               <Card>
-                <CardContent sx={{ p: 2.7 }}>
+                <CardContent sx={{ p: 3.2 }}>
                   <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 1.2 }}>Details</Typography>
                   <Stack spacing={1.2}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -200,7 +200,7 @@ export default function EventDetailPage({ event, onBack, openToTalk }) {
               </Card>
 
               <Card>
-                <CardContent sx={{ p: 2.7 }}>
+                <CardContent sx={{ p: 3.2 }}>
                   <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 1.2 }}>Vibe</Typography>
                   <Stack direction="row" spacing={0.8} flexWrap="wrap" useFlexGap>
                     {event.tags.map((tag) => <Chip key={tag} label={tag} size="small" sx={{ bgcolor: '#F3F4F6', color: 'text.secondary' }} />)}
@@ -213,7 +213,7 @@ export default function EventDetailPage({ event, onBack, openToTalk }) {
               </Card>
 
               {!joined ? (
-                <Button variant="contained" size="large" onClick={handleJoin} sx={{ py: 1.8, fontSize: '1rem' }}>
+                <Button variant="contained" size="large" onClick={handleJoin} sx={{ py: 2, px: 3, fontSize: '1.05rem', fontWeight: 700 }}>
                   I’m heading there
                 </Button>
               ) : (

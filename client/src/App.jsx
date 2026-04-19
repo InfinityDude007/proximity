@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import {
   ThemeProvider,
   CssBaseline,
@@ -29,6 +29,9 @@ import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined
 import BoltRoundedIcon from '@mui/icons-material/BoltRounded';
 
 import theme from './theme';
+import proximityLogo from './assets/proximity-logo.png';
+import favicon from '/favicon.png';
+import { loadUserPreferences, saveSocialBattery, saveUserInterests, saveOpenToTalk, saveOnboarded } from './utils/storage';
 import FeedPage from './pages/Feed';
 import ConnectionsPage from './pages/Connections';
 import MessagesPage from './pages/Messages';
@@ -61,55 +64,35 @@ function SidebarContent({ tab, setTab, collapsed, setCollapsed, showCollapseCont
         sx={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: collapsed ? 'center' : 'space-between',
-          px: collapsed ? 0 : 1,
+          justifyContent: collapsed ? 'center' : 'flex-start',
+          px: collapsed ? 1 : 1,
           py: 1,
           mb: 1.5,
         }}
       >
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1.25,
-            minWidth: 0,
-          }}
-        >
-          <Avatar
-            variant="rounded"
+        <Tooltip title="Proximity" placement="right" disableHoverListener={!collapsed}>
+          <Box
+            component="img"
+            src={collapsed ? favicon : proximityLogo}
+            alt="Proximity"
             sx={{
-              bgcolor: 'primary.main',
-              color: 'primary.contrastText',
-              width: 42,
-              height: 42,
-              fontWeight: 800,
-              borderRadius: 3,
-              boxShadow: '0 10px 28px rgba(45,106,79,0.18)',
+              width: collapsed ? 36 : 180,
+              height: 'auto',
+              flexShrink: 0,
+              transition: 'width 0.3s ease',
             }}
-          >
-            P
-          </Avatar>
-          {!collapsed && (
-            <Box sx={{ minWidth: 0 }}>
-              <Typography variant="subtitle1" fontWeight={800} noWrap>
-                Proximity
-              </Typography>
-              <Typography variant="caption" color="text.secondary" noWrap>
-                Find your people naturally
-              </Typography>
-            </Box>
-          )}
-        </Box>
+          />
+        </Tooltip>
 
         {showCollapseControl && !collapsed && (
-          <IconButton size="small" onClick={() => setCollapsed(true)}>
+          <IconButton size="small" onClick={() => setCollapsed(true)} sx={{ p: 1, ml: 'auto' }}>
             <ChevronLeftRoundedIcon fontSize="small" />
           </IconButton>
         )}
 
         {showCollapseControl && collapsed && (
           <Tooltip title="Expand sidebar" placement="right">
-            <IconButton size="small" onClick={() => setCollapsed(false)}>
+            <IconButton size="small" onClick={() => setCollapsed(false)} sx={{ p: 1, position: 'absolute', right: 4, top: 8 }}>
               <ChevronRightRoundedIcon fontSize="small" />
             </IconButton>
           </Tooltip>
@@ -118,7 +101,7 @@ function SidebarContent({ tab, setTab, collapsed, setCollapsed, showCollapseCont
 
       <Box
         sx={{
-          px: collapsed ? 0.5 : 1,
+          px: collapsed ? 0.75 : 1,
           py: 1.25,
           mb: 2,
           borderRadius: 4,
@@ -129,9 +112,10 @@ function SidebarContent({ tab, setTab, collapsed, setCollapsed, showCollapseCont
           alignItems: collapsed ? 'center' : 'flex-start',
           flexDirection: collapsed ? 'column' : 'row',
           gap: 1,
+          justifyContent: 'center',
         }}
       >
-        <BoltRoundedIcon sx={{ color: 'primary.dark' }} />
+        <BoltRoundedIcon sx={{ color: 'primary.dark', flexShrink: 0 }} />
         {!collapsed && (
           <Box>
             <Typography variant="caption" fontWeight={800} color="primary.dark" display="block">
@@ -141,6 +125,13 @@ function SidebarContent({ tab, setTab, collapsed, setCollapsed, showCollapseCont
               Live shared spaces across UBD
             </Typography>
           </Box>
+        )}
+        {collapsed && (
+          <Tooltip title="Campus mode: Live shared spaces across UBD" placement="right" arrow>
+            <Typography variant="caption" sx={{ fontWeight: 700, color: 'primary.dark', fontSize: '0.65rem', textAlign: 'center' }}>
+              Live
+            </Typography>
+          </Tooltip>
         )}
       </Box>
 
@@ -160,6 +151,7 @@ function SidebarContent({ tab, setTab, collapsed, setCollapsed, showCollapseCont
                 bgcolor: selected ? alpha('#2D6A4F', 0.1) : 'transparent',
                 border: '1px solid',
                 borderColor: selected ? alpha('#2D6A4F', 0.18) : 'transparent',
+                position: 'relative',
                 '&:hover': {
                   bgcolor: selected ? alpha('#2D6A4F', 0.13) : alpha('#2D6A4F', 0.04),
                 },
@@ -170,6 +162,7 @@ function SidebarContent({ tab, setTab, collapsed, setCollapsed, showCollapseCont
                   minWidth: collapsed ? 'unset' : 40,
                   color: selected ? 'primary.main' : 'text.secondary',
                   justifyContent: 'center',
+                  display: 'flex',
                 }}
               >
                 {item.icon}
@@ -183,9 +176,11 @@ function SidebarContent({ tab, setTab, collapsed, setCollapsed, showCollapseCont
                 />
               )}
               {collapsed && (
-                <Typography variant="caption" sx={{ position: 'absolute', bottom: 6, opacity: 0.65 }}>
-                  {item.short}
-                </Typography>
+                <Tooltip title={`${item.label} - ${item.description}`} placement="right" arrow>
+                  <Typography variant="caption" sx={{ position: 'absolute', bottom: 4, fontSize: '0.65rem', opacity: 0.7, fontWeight: 600 }}>
+                    {item.short}
+                  </Typography>
+                </Tooltip>
               )}
             </ListItemButton>
           );
@@ -196,12 +191,15 @@ function SidebarContent({ tab, setTab, collapsed, setCollapsed, showCollapseCont
       <Divider sx={{ my: 1.5 }} />
       <Box
         sx={{
-          p: collapsed ? 1 : 1.5,
+          p: collapsed ? 1.2 : 1.5,
           borderRadius: 3.5,
           bgcolor: '#F8F5F0',
           border: '1px solid',
           borderColor: 'divider',
           textAlign: collapsed ? 'center' : 'left',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: collapsed ? 'center' : 'flex-start',
         }}
       >
         {!collapsed ? (
@@ -212,7 +210,9 @@ function SidebarContent({ tab, setTab, collapsed, setCollapsed, showCollapseCont
             <Chip size="small" label="Open to connect" color="success" sx={{ fontWeight: 700 }} />
           </>
         ) : (
-          <Chip size="small" label="On" color="success" sx={{ fontWeight: 700 }} />
+          <Tooltip title="Open to connect" placement="right">
+            <Chip size="small" label="On" color="success" sx={{ fontWeight: 700 }} />
+          </Tooltip>
         )}
       </Box>
     </Box>
@@ -346,29 +346,66 @@ function App() {
   const [onboarded, setOnboarded] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [socialBattery, setSocialBattery] = useState('medium');
+  const [userInterests, setUserInterests] = useState([]);
   const [openToTalk, setOpenToTalk] = useState(true);
+
+  // Load preferences from localStorage on mount
+  useEffect(() => {
+    const preferences = loadUserPreferences();
+    setOnboarded(preferences.onboarded);
+    setSocialBattery(preferences.socialBattery);
+    setUserInterests(preferences.userInterests);
+    setOpenToTalk(preferences.openToTalk);
+  }, []);
+
+  // Save social battery to localStorage
+  const handleSetSocialBattery = (value) => {
+    setSocialBattery(value);
+    saveSocialBattery(value);
+  };
+
+  // Save open to talk to localStorage
+  const handleSetOpenToTalk = (value) => {
+    setOpenToTalk(value);
+    saveOpenToTalk(value);
+  };
+
+  // Handle onboarding completion
+  const handleOnboardingComplete = (batteryValue, interestsArray) => {
+    setSocialBattery(batteryValue);
+    setUserInterests(interestsArray);
+    setOnboarded(true);
+    saveSocialBattery(batteryValue);
+    saveUserInterests(interestsArray);
+    saveOnboarded(true);
+  };
 
   const pages = useMemo(
     () => [
-      <FeedPage key="feed" socialBattery={socialBattery} onSelectEvent={setSelectedEvent} />,
-      <ConnectionsPage key="connections" />,
+      <FeedPage key="feed" socialBattery={socialBattery} userInterests={userInterests} onSelectEvent={setSelectedEvent} />,
+      <ConnectionsPage key="connections" userInterests={userInterests} />,
       <MessagesPage key="messages" />,
       <ProfilePage
         key="profile"
         socialBattery={socialBattery}
-        setSocialBattery={setSocialBattery}
+        setSocialBattery={handleSetSocialBattery}
         openToTalk={openToTalk}
-        setOpenToTalk={setOpenToTalk}
+        setOpenToTalk={handleSetOpenToTalk}
+        userInterests={userInterests}
+        setUserInterests={(interests) => {
+          setUserInterests(interests);
+          saveUserInterests(interests);
+        }}
       />,
     ],
-    [openToTalk, socialBattery],
+    [openToTalk, socialBattery, userInterests],
   );
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       {!onboarded ? (
-        <OnboardingPage onComplete={() => setOnboarded(true)} />
+        <OnboardingPage onComplete={handleOnboardingComplete} />
       ) : selectedEvent ? (
         <EventDetailPage event={selectedEvent} onBack={() => setSelectedEvent(null)} openToTalk={openToTalk} />
       ) : (

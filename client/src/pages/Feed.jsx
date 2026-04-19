@@ -26,7 +26,7 @@ const vibeColor = {
   social: { bg: '#FFF7ED', text: '#C2410C' },
 };
 
-function PageHero({ battery }) {
+function PageHero({ battery, userInterests }) {
   return (
     <Box
       sx={{
@@ -54,7 +54,6 @@ function PageHero({ battery }) {
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.2}>
           {[
             { label: 'University of Birmingham Dubai' },
-            { label: `${battery.label}` },
             { label: `${contextFeed.length} nearby contexts` },
           ].map((item) => (
             <Chip key={item.label} label={item.label} variant="outlined" sx={{ bgcolor: 'rgba(255,255,255,0.9)' }} />
@@ -76,21 +75,24 @@ function PageHero({ battery }) {
       >
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.25 }}>
           <Typography variant="subtitle2" fontWeight={800}>
-            Your social battery
+            Your vibe
           </Typography>
           <Typography sx={{ fontSize: '1.4rem' }}>{battery.emoji}</Typography>
         </Box>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 1.6 }}>
           {battery.description}
         </Typography>
-        <Box sx={{ p: 1.6, borderRadius: 3, bgcolor: '#F8F5F0' }}>
-          <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.35 }}>
-            Feed is prioritising
-          </Typography>
-          <Typography variant="body2" fontWeight={700}>
-            {battery.recommendations.join(' • ')}
-          </Typography>
-        </Box>
+        {userInterests.length > 0 && (
+          <Box sx={{ p: 1.6, borderRadius: 3, bgcolor: '#F8F5F0' }}>
+            <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.35 }}>
+              Your interests
+            </Typography>
+            <Typography variant="body2" fontWeight={700} sx={{ fontSize: '0.9rem' }}>
+              {userInterests.slice(0, 3).join(' • ')}
+              {userInterests.length > 3 && ` +${userInterests.length - 3}`}
+            </Typography>
+          </Box>
+        )}
       </Box>
     </Box>
   );
@@ -114,7 +116,7 @@ function ContextCard({ event, onSelect }) {
         },
       }}
     >
-      <CardContent sx={{ p: { xs: 2.2, md: 2.5 }, height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <CardContent sx={{ p: { xs: 2.5, md: 3 }, height: '100%', display: 'flex', flexDirection: 'column', gap: 1.2 }}>
         <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1.2, mb: 1.5 }}>
           <Box>
             <Stack direction="row" spacing={0.8} flexWrap="wrap" useFlexGap sx={{ mb: 1 }}>
@@ -130,7 +132,7 @@ function ContextCard({ event, onSelect }) {
               {event.description}
             </Typography>
           </Box>
-          <Button variant="outlined" size="small" sx={{ minWidth: 94, flexShrink: 0 }}>
+          <Button variant="outlined" size="small" sx={{ minWidth: 94, flexShrink: 0, px: 2, py: 1.1 }} onClick={() => onSelect(event)}>
             View
           </Button>
         </Box>
@@ -215,20 +217,30 @@ function QuickStats() {
   );
 }
 
-export default function FeedPage({ socialBattery, onSelectEvent }) {
+export default function FeedPage({ socialBattery, userInterests, onSelectEvent }) {
   const [activeFilter, setActiveFilter] = useState('All');
   const battery = batteryLevels[socialBattery];
 
-  const filtered = activeFilter === 'All'
+  // Filter events based on active filter and user interests
+  let filtered = activeFilter === 'All'
     ? contextFeed
     : contextFeed.filter(
         (e) => e.vibe === activeFilter.toLowerCase() || e.tags.some((t) => t.toLowerCase() === activeFilter.toLowerCase()),
       );
 
+  // If user has interests, prioritize events with matching tags
+  if (userInterests.length > 0) {
+    filtered = filtered.sort((a, b) => {
+      const aHasInterest = a.tags.some((tag) => userInterests.some((interest) => tag.toLowerCase().includes(interest.toLowerCase())));
+      const bHasInterest = b.tags.some((tag) => userInterests.some((interest) => tag.toLowerCase().includes(interest.toLowerCase())));
+      return aHasInterest === bHasInterest ? 0 : aHasInterest ? -1 : 1;
+    });
+  }
+
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2, mb: 2.5 }}>
-        <PageHero battery={battery} />
+        <PageHero battery={battery} userInterests={userInterests} />
       </Box>
 
       <Grid container spacing={3} sx={{ mb: 3.5 }}>
@@ -256,7 +268,7 @@ export default function FeedPage({ socialBattery, onSelectEvent }) {
                 />
               ))}
             </Stack>
-            <Button startIcon={<TuneIcon />} variant="outlined" sx={{ alignSelf: { xs: 'flex-start', md: 'center' } }}>
+            <Button startIcon={<TuneIcon />} variant="outlined" sx={{ alignSelf: { xs: 'flex-start', md: 'center' }, px: 2.5, py: 1.2 }} onClick={() => alert('Open advanced filter settings')}>
               Refine feed
             </Button>
           </Box>
@@ -276,7 +288,7 @@ export default function FeedPage({ socialBattery, onSelectEvent }) {
               <CardContent sx={{ p: 2.5 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
                   <Typography variant="subtitle1" fontWeight={800}>Notifications</Typography>
-                  <IconButton size="small" sx={{ bgcolor: 'rgba(255,255,255,0.8)', border: '1px solid', borderColor: 'divider' }}>
+                  <IconButton size="small" sx={{ bgcolor: 'rgba(255,255,255,0.8)', border: '1px solid', borderColor: 'divider', p: 1.2 }} onClick={() => alert('Notification settings')} title="Notification settings">
                     <NotificationsNoneIcon fontSize="small" />
                   </IconButton>
                 </Box>

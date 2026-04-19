@@ -107,7 +107,7 @@ export default function OnboardingPage({ onComplete }) {
             <Box>
               {current.type === 'splash' && (
                 <Box sx={{ minHeight: { lg: 560 }, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                  <Box component="img" src={proximityLogo} alt="Proximity logo" sx={{ width: { xs: 220, md: 300 }, height: 'auto', mb: 4 }} />
+                  <Box component="img" src={proximityLogo} alt="Proximity logo" sx={{ width: { xs: 220, md: 400 }, height: 'auto', mb: 4 }} />
                   <Typography variant="h2" sx={{ fontSize: { xs: '2.35rem', md: '3.6rem' }, lineHeight: 1.02, mb: 2.2, whiteSpace: 'pre-line', maxWidth: 520 }}>
                     {current.title}
                   </Typography>
@@ -206,7 +206,7 @@ export default function OnboardingPage({ onComplete }) {
             <Button disabled={step === 0} variant="text" color="inherit" onClick={() => setStep((s) => Math.max(0, s - 1))}>
               Back
             </Button>
-            <Button variant="contained" onClick={() => (step === steps.length - 1 ? onComplete() : setStep((s) => Math.min(steps.length - 1, s + 1)))}>
+            <Button variant="contained" onClick={() => (step === steps.length - 1 ? onComplete(battery, interests) : setStep((s) => Math.min(steps.length - 1, s + 1)))}>
               {step === steps.length - 1 ? 'Enter Proximity' : 'Continue'}
             </Button>
           </Box>
