@@ -1,114 +1,172 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
-  Box, Typography, Chip, Stack, Card, CardContent,
-  Avatar, AvatarGroup, IconButton, Divider, Badge,
-  Button, Fade, Collapse,
+  Box,
+  Typography,
+  Chip,
+  Stack,
+  Card,
+  CardContent,
+  Avatar,
+  AvatarGroup,
+  IconButton,
+  Divider,
+  Button,
+  Grid,
 } from '@mui/material';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
-import TuneIcon from '@mui/icons-material/Tune';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
-import { contextFeed, batteryLevels, vibeFilters, currentUser } from '../data/mockData';
+import TuneIcon from '@mui/icons-material/Tune';
+import { contextFeed, batteryLevels, vibeFilters } from '../data/mockData';
 
 const vibeColor = {
   quiet: { bg: '#EEF2FF', text: '#4F46E5' },
   social: { bg: '#FFF7ED', text: '#C2410C' },
 };
 
+function PageHero({ battery }) {
+  return (
+    <Box
+      sx={{
+        mb: 4,
+        p: { xs: 2.5, md: 3.5 },
+        borderRadius: 5,
+        background: 'linear-gradient(145deg, rgba(255,255,255,0.96), rgba(240,250,244,0.96))',
+        border: '1px solid',
+        borderColor: 'divider',
+        display: 'grid',
+        gridTemplateColumns: { xs: '1fr', xl: '1.3fr 0.7fr' },
+        gap: 2.5,
+        alignItems: 'stretch',
+      }}
+    >
+      <Box>
+        <Chip label="Live campus discovery" size="small" sx={{ mb: 1.5, fontWeight: 700, bgcolor: '#E9F7EE', color: 'primary.dark' }} />
+        <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.5rem' }, lineHeight: 1.05, mb: 1.2 }}>
+          Around you
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 720, mb: 2.2 }}>
+          Shared places, active people, and low-pressure ways to connect across the University of Birmingham Dubai.
+        </Typography>
+
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.2}>
+          {[
+            { label: 'University of Birmingham Dubai' },
+            { label: `${battery.label}` },
+            { label: `${contextFeed.length} nearby contexts` },
+          ].map((item) => (
+            <Chip key={item.label} label={item.label} variant="outlined" sx={{ bgcolor: 'rgba(255,255,255,0.9)' }} />
+          ))}
+        </Stack>
+      </Box>
+
+      <Box
+        sx={{
+          p: 2.2,
+          borderRadius: 4,
+          bgcolor: 'background.paper',
+          border: '1px solid',
+          borderColor: 'divider',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.25 }}>
+          <Typography variant="subtitle2" fontWeight={800}>
+            Your social battery
+          </Typography>
+          <Typography sx={{ fontSize: '1.4rem' }}>{battery.emoji}</Typography>
+        </Box>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 1.6 }}>
+          {battery.description}
+        </Typography>
+        <Box sx={{ p: 1.6, borderRadius: 3, bgcolor: '#F8F5F0' }}>
+          <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.35 }}>
+            Feed is prioritising
+          </Typography>
+          <Typography variant="body2" fontWeight={700}>
+            {battery.recommendations.join(' • ')}
+          </Typography>
+        </Box>
+      </Box>
+    </Box>
+  );
+}
+
 function ContextCard({ event, onSelect }) {
   const vibe = vibeColor[event.vibe] || vibeColor.social;
+  const openCount = event.attendees.filter((a) => a.openToTalk).length;
 
   return (
     <Card
       onClick={() => onSelect(event)}
       sx={{
+        height: '100%',
         cursor: 'pointer',
-        mb: 2,
-        transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+        transition: 'transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease',
         '&:hover': {
-          transform: 'translateY(-2px)',
-          boxShadow: '0px 8px 24px rgba(45,106,79,0.12)',
+          transform: 'translateY(-4px)',
+          boxShadow: '0 18px 34px rgba(45,106,79,0.12)',
+          borderColor: 'rgba(82,183,136,0.35)',
         },
       }}
     >
-      <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
-        {/* Header row */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
-          <Box sx={{ flex: 1 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-              <Chip
-                label={event.vibe === 'quiet' ? '🤫 Quiet' : '🎉 Social'}
-                size="small"
-                sx={{
-                  bgcolor: vibe.bg,
-                  color: vibe.text,
-                  fontWeight: 600,
-                  fontSize: '0.72rem',
-                  height: 22,
-                }}
-              />
+      <CardContent sx={{ p: { xs: 2.2, md: 2.5 }, height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1.2, mb: 1.5 }}>
+          <Box>
+            <Stack direction="row" spacing={0.8} flexWrap="wrap" useFlexGap sx={{ mb: 1 }}>
+              <Chip label={event.vibe === 'quiet' ? 'Quiet' : 'Social'} size="small" sx={{ bgcolor: vibe.bg, color: vibe.text, fontWeight: 700 }} />
               {event.mutualCount > 0 && (
-                <Chip
-                  label={`${event.mutualCount} mutual${event.mutualCount > 1 ? 's' : ''}`}
-                  size="small"
-                  sx={{ bgcolor: '#F0FAF4', color: 'primary.dark', fontWeight: 600, fontSize: '0.72rem', height: 22 }}
-                />
+                <Chip label={`${event.mutualCount} mutual${event.mutualCount > 1 ? 's' : ''}`} size="small" sx={{ bgcolor: '#F0FAF4', color: 'primary.dark', fontWeight: 700 }} />
               )}
-            </Box>
-            <Typography variant="h6" sx={{ fontSize: '1.05rem', fontWeight: 700, lineHeight: 1.3 }}>
+            </Stack>
+            <Typography variant="h6" sx={{ fontWeight: 800, lineHeight: 1.25, mb: 0.4 }}>
               {event.title}
             </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {event.description}
+            </Typography>
           </Box>
+          <Button variant="outlined" size="small" sx={{ minWidth: 94, flexShrink: 0 }}>
+            View
+          </Button>
         </Box>
 
-        {/* Meta */}
-        <Stack spacing={0.6} sx={{ mb: 2 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
-            <LocationOnIcon sx={{ fontSize: 15, color: 'text.secondary' }} />
-            <Typography variant="caption" color="text.secondary">{event.location}</Typography>
+        <Stack spacing={0.85} sx={{ mb: 2.2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <LocationOnIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+            <Typography variant="body2" color="text.secondary">{event.location}</Typography>
           </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
-            <AccessTimeIcon sx={{ fontSize: 15, color: 'text.secondary' }} />
-            <Typography variant="caption" color="text.secondary">{event.time}</Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <AccessTimeIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+            <Typography variant="body2" color="text.secondary">{event.time}</Typography>
           </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
-            <DirectionsWalkIcon sx={{ fontSize: 15, color: 'text.secondary' }} />
-            <Typography variant="caption" color="text.secondary">{event.distance}</Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <DirectionsWalkIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+            <Typography variant="body2" color="text.secondary">{event.distance}</Typography>
           </Box>
         </Stack>
 
         <Divider sx={{ mb: 2 }} />
 
-        {/* Who's there */}
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        <Box sx={{ mt: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1.5 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, minWidth: 0 }}>
             <AvatarGroup
-              max={3}
-              sx={{
-                '& .MuiAvatar-root': {
-                  width: 30,
-                  height: 30,
-                  fontSize: '0.75rem',
-                  border: '2px solid white',
-                },
-              }}
+              max={4}
+              sx={{ '& .MuiAvatar-root': { width: 32, height: 32, fontSize: '0.78rem', border: '2px solid white' } }}
             >
-              {event.attendees.map(a => (
-                <Avatar
-                  key={a.id}
-                  sx={{
-                    bgcolor: a.openToTalk ? 'primary.main' : '#9CA3AF',
-                  }}
-                >
+              {event.attendees.map((a) => (
+                <Avatar key={a.id} sx={{ bgcolor: a.openToTalk ? 'primary.main' : '#B7BBC5' }}>
                   {a.avatar}
                 </Avatar>
               ))}
             </AvatarGroup>
             <Box>
-              <Typography variant="caption" fontWeight={600} display="block">
-                {event.attendees.filter(a => a.openToTalk).length} open to chat
+              <Typography variant="body2" fontWeight={700}>
+                {openCount} open to chat
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                 <FiberManualRecordIcon sx={{ fontSize: 8, color: '#52B788' }} />
@@ -116,39 +174,42 @@ function ContextCard({ event, onSelect }) {
               </Box>
             </Box>
           </Box>
-          <Button
-            variant="outlined"
-            size="small"
-            color="primary"
-            sx={{
-              borderRadius: 50,
-              px: 2,
-              py: 0.6,
-              fontSize: '0.78rem',
-              borderWidth: 1.5,
-            }}
-          >
-            View →
-          </Button>
         </Box>
 
-        {/* Tags */}
-        <Box sx={{ mt: 2, display: 'flex', gap: 0.8, flexWrap: 'wrap' }}>
-          {event.tags.map(tag => (
-            <Chip
-              key={tag}
-              label={tag}
-              size="small"
-              variant="outlined"
-              sx={{
-                height: 20,
-                fontSize: '0.7rem',
-                borderColor: '#E8E4DE',
-                color: 'text.secondary',
-              }}
-            />
+        <Stack direction="row" spacing={0.8} flexWrap="wrap" useFlexGap sx={{ mt: 2 }}>
+          {event.tags.map((tag) => (
+            <Chip key={tag} label={tag} size="small" variant="outlined" sx={{ color: 'text.secondary', bgcolor: 'rgba(255,255,255,0.85)' }} />
           ))}
-        </Box>
+        </Stack>
+      </CardContent>
+    </Card>
+  );
+}
+
+function QuickStats() {
+  const stats = useMemo(
+    () => [
+      { value: contextFeed.length, label: 'Live contexts nearby' },
+      { value: contextFeed.reduce((sum, event) => sum + event.attendees.length, 0), label: 'People visible now' },
+      { value: contextFeed.filter((event) => event.vibe === 'quiet').length, label: 'Quiet options' },
+    ],
+    [],
+  );
+
+  return (
+    <Card sx={{ height: '100%' }}>
+      <CardContent sx={{ p: 2.5 }}>
+        <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 2 }}>
+          Snapshot
+        </Typography>
+        <Stack spacing={1.2}>
+          {stats.map((stat) => (
+            <Box key={stat.label} sx={{ p: 1.5, borderRadius: 3, bgcolor: '#F8F5F0' }}>
+              <Typography variant="h6" fontWeight={800}>{stat.value}</Typography>
+              <Typography variant="caption" color="text.secondary">{stat.label}</Typography>
+            </Box>
+          ))}
+        </Stack>
       </CardContent>
     </Card>
   );
@@ -160,100 +221,82 @@ export default function FeedPage({ socialBattery, onSelectEvent }) {
 
   const filtered = activeFilter === 'All'
     ? contextFeed
-    : contextFeed.filter(e =>
-        e.vibe === activeFilter.toLowerCase() ||
-        e.tags.some(t => t.toLowerCase() === activeFilter.toLowerCase())
+    : contextFeed.filter(
+        (e) => e.vibe === activeFilter.toLowerCase() || e.tags.some((t) => t.toLowerCase() === activeFilter.toLowerCase()),
       );
 
   return (
-    <Box sx={{ px: 2.5, pt: 4, pb: 2 }}>
-      {/* Top bar */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
-        <Box>
-          <Typography variant="h4" sx={{ fontSize: '1.5rem', fontWeight: 700 }}>
-            Around you
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            University of Birmingham Dubai
-          </Typography>
-        </Box>
-        <IconButton size="small" sx={{ bgcolor: 'white', border: '1px solid', borderColor: 'divider' }}>
-          <NotificationsNoneIcon fontSize="small" />
-        </IconButton>
+    <Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2, mb: 2.5 }}>
+        <PageHero battery={battery} />
       </Box>
 
-      {/* Battery status bar */}
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1.5,
-          bgcolor: 'white',
-          border: '1px solid',
-          borderColor: 'divider',
-          borderRadius: 3,
-          p: 1.5,
-          mb: 3,
-        }}
-      >
-        <Typography sx={{ fontSize: '1.3rem' }}>{battery.emoji}</Typography>
-        <Box sx={{ flex: 1 }}>
-          <Typography variant="caption" fontWeight={600} display="block" sx={{ lineHeight: 1.3 }}>
-            {battery.label}
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            {battery.description}
-          </Typography>
-        </Box>
-        <Chip
-          label="Change"
-          size="small"
-          variant="outlined"
-          sx={{ fontSize: '0.7rem', height: 22 }}
-        />
-      </Box>
-
-      {/* Filters */}
-      <Box sx={{ display: 'flex', gap: 1, overflowX: 'auto', pb: 1, mb: 3, '&::-webkit-scrollbar': { display: 'none' } }}>
-        {vibeFilters.map(f => (
-          <Chip
-            key={f}
-            label={f}
-            onClick={() => setActiveFilter(f)}
+      <Grid container spacing={3} sx={{ mb: 3.5 }}>
+        <Grid item xs={12} lg={8.3}>
+          <Box
             sx={{
-              whiteSpace: 'nowrap',
-              flexShrink: 0,
-              bgcolor: activeFilter === f ? 'primary.main' : 'white',
-              color: activeFilter === f ? 'white' : 'text.secondary',
-              border: '1px solid',
-              borderColor: activeFilter === f ? 'primary.main' : 'divider',
-              fontWeight: activeFilter === f ? 600 : 400,
-              cursor: 'pointer',
-              '&:hover': { bgcolor: activeFilter === f ? 'primary.dark' : '#F0FAF4' },
+              display: 'flex',
+              alignItems: { xs: 'stretch', md: 'center' },
+              justifyContent: 'space-between',
+              gap: 1.5,
+              flexDirection: { xs: 'column', md: 'row' },
+              mb: 2,
             }}
-          />
-        ))}
-      </Box>
-
-      {/* Feed */}
-      <Typography variant="overline" color="text.secondary" sx={{ mb: 1.5, display: 'block', letterSpacing: '0.08em' }}>
-        {filtered.length} places right now
-      </Typography>
-
-      {filtered.map(event => (
-        <Fade in key={event.id} timeout={300}>
-          <Box>
-            <ContextCard event={event} onSelect={onSelectEvent} />
+          >
+            <Stack direction="row" spacing={1} sx={{ overflowX: 'auto', pb: 0.5, '&::-webkit-scrollbar': { display: 'none' } }}>
+              {vibeFilters.map((f) => (
+                <Chip
+                  key={f}
+                  label={f}
+                  clickable
+                  onClick={() => setActiveFilter(f)}
+                  color={activeFilter === f ? 'primary' : 'default'}
+                  variant={activeFilter === f ? 'filled' : 'outlined'}
+                  sx={{ fontWeight: 700, bgcolor: activeFilter === f ? undefined : 'rgba(255,255,255,0.85)' }}
+                />
+              ))}
+            </Stack>
+            <Button startIcon={<TuneIcon />} variant="outlined" sx={{ alignSelf: { xs: 'flex-start', md: 'center' } }}>
+              Refine feed
+            </Button>
           </Box>
-        </Fade>
-      ))}
 
-      {filtered.length === 0 && (
-        <Box sx={{ textAlign: 'center', py: 6 }}>
-          <Typography sx={{ fontSize: '2.5rem', mb: 1 }}>🍃</Typography>
-          <Typography color="text.secondary">Nothing matching that filter right now</Typography>
-        </Box>
-      )}
+          <Grid container spacing={2.25}>
+            {filtered.map((event) => (
+              <Grid key={event.id} item xs={12} md={6}>
+                <ContextCard event={event} onSelect={onSelectEvent} />
+              </Grid>
+            ))}
+          </Grid>
+        </Grid>
+
+        <Grid item xs={12} lg={3.7}>
+          <Stack spacing={2.5}>
+            <Card>
+              <CardContent sx={{ p: 2.5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
+                  <Typography variant="subtitle1" fontWeight={800}>Notifications</Typography>
+                  <IconButton size="small" sx={{ bgcolor: 'rgba(255,255,255,0.8)', border: '1px solid', borderColor: 'divider' }}>
+                    <NotificationsNoneIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+                  You’ll only see activity that matches your current energy and shared context.
+                </Typography>
+                <Box sx={{ p: 1.5, borderRadius: 3, bgcolor: '#F0FAF4' }}>
+                  <Typography variant="caption" color="primary.dark" fontWeight={700}>
+                    Low-pressure by design
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                    No cold messaging. Every interaction starts from a real shared moment.
+                  </Typography>
+                </Box>
+              </CardContent>
+            </Card>
+            <QuickStats />
+          </Stack>
+        </Grid>
+      </Grid>
     </Box>
   );
 }

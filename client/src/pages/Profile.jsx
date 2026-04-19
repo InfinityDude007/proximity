@@ -1,7 +1,14 @@
-import { useState } from 'react';
 import {
-  Box, Typography, Avatar, Chip, Switch, Card, CardContent,
-  Divider, Stack, Button, Slider, FormControlLabel,
+  Box,
+  Typography,
+  Avatar,
+  Chip,
+  Switch,
+  Card,
+  CardContent,
+  Divider,
+  Stack,
+  Grid,
 } from '@mui/material';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import { currentUser, batteryLevels } from '../data/mockData';
@@ -12,206 +19,148 @@ const batteryOptions = [
   { value: 'high', emoji: '✨', label: 'High' },
 ];
 
-const interestsList = ['Coffee', 'Gaming', 'Music', 'Study Groups', 'Outdoors', 'Socials'];
-
 export default function ProfilePage({ socialBattery, setSocialBattery, openToTalk, setOpenToTalk }) {
   const battery = batteryLevels[socialBattery];
 
   return (
-    <Box sx={{ px: 2.5, pt: 4, pb: 2 }}>
-      <Typography variant="h4" sx={{ fontSize: '1.5rem', fontWeight: 700, mb: 3 }}>
-        Profile
-      </Typography>
+    <Box>
+      <Box sx={{ mb: 3.2 }}>
+        <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.5rem' }, mb: 0.8 }}>Profile</Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 740 }}>
+          Your preferences, visibility, and social energy — now spaced for larger screens and grouped into clearer sections.
+        </Typography>
+      </Box>
 
-      {/* User card */}
-      <Card sx={{ mb: 3 }}>
-        <CardContent sx={{ p: 3, '&:last-child': { pb: 3 } }}>
-          <Box sx={{ display: 'flex', gap: 2.5, alignItems: 'center', mb: 2.5 }}>
-            <Avatar
-              sx={{
-                bgcolor: 'primary.main',
-                width: 64,
-                height: 64,
-                fontSize: '1.5rem',
-                fontWeight: 700,
-              }}
-            >
-              {currentUser.avatar}
-            </Avatar>
-            <Box>
-              <Typography variant="h5" fontWeight={700}>{currentUser.name}</Typography>
-              <Typography variant="body2" color="text.secondary">
-                {currentUser.degree}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                {currentUser.year} · University of Birmingham Dubai
-              </Typography>
-            </Box>
-          </Box>
-
-          {/* Interests */}
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-            {currentUser.interests.map(i => (
-              <Chip
-                key={i}
-                label={i}
-                size="small"
-                sx={{ bgcolor: '#F0FAF4', color: 'primary.dark', fontWeight: 500 }}
-              />
-            ))}
-          </Box>
-        </CardContent>
-      </Card>
-
-      {/* Open to talk toggle */}
-      <Card sx={{ mb: 2 }}>
-        <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
-          <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-            <Box sx={{ flex: 1, pr: 2 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                {openToTalk && <FiberManualRecordIcon sx={{ fontSize: 10, color: '#52B788' }} />}
-                <Typography variant="subtitle1" fontWeight={700}>
-                  Open to chat
-                </Typography>
-              </Box>
-              <Typography variant="body2" color="text.secondary">
-                {openToTalk
-                  ? 'Others at the same location can send you a soft invite'
-                  : 'You\'re in private mode — no one can reach out'}
-              </Typography>
-            </Box>
-            <Switch
-              checked={openToTalk}
-              onChange={e => setOpenToTalk(e.target.checked)}
-              color="primary"
-            />
-          </Box>
-
-          {openToTalk && (
-            <Box
-              sx={{
-                mt: 1.5,
-                p: 1.5,
-                bgcolor: '#F0FAF4',
-                borderRadius: 2,
-                border: '1px solid #C8E6C9',
-              }}
-            >
-              <Typography variant="caption" color="primary.dark">
-                🟢 You're visible to people at the same places as you. They can only send soft openers — no cold messages.
-              </Typography>
-            </Box>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Social Battery */}
-      <Card sx={{ mb: 2 }}>
-        <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
-          <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 0.5 }}>
-            Social battery
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5 }}>
-            Adjust to change what your feed shows you
-          </Typography>
-
-          <Stack spacing={1.5}>
-            {batteryOptions.map(opt => (
-              <Box
-                key={opt.value}
-                onClick={() => setSocialBattery(opt.value)}
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 2,
-                  border: '2px solid',
-                  borderColor: socialBattery === opt.value ? 'primary.main' : 'divider',
-                  borderRadius: 2.5,
-                  p: 1.8,
-                  cursor: 'pointer',
-                  bgcolor: socialBattery === opt.value ? '#F0FAF4' : 'white',
-                  transition: 'all 0.15s ease',
-                }}
-              >
-                <Typography sx={{ fontSize: '1.4rem' }}>{opt.emoji}</Typography>
-                <Box sx={{ flex: 1 }}>
-                  <Typography variant="subtitle2" fontWeight={600}>{opt.label}</Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {batteryLevels[opt.value].description}
-                  </Typography>
+      <Grid container spacing={3}>
+        <Grid item xs={12} xl={4.2}>
+          <Stack spacing={2.5}>
+            <Card>
+              <CardContent sx={{ p: 3 }}>
+                <Box sx={{ display: 'flex', gap: 2.4, alignItems: 'center', mb: 2.4 }}>
+                  <Avatar sx={{ bgcolor: 'primary.main', width: 78, height: 78, fontSize: '1.8rem', fontWeight: 800 }}>
+                    {currentUser.avatar}
+                  </Avatar>
+                  <Box>
+                    <Typography variant="h5" fontWeight={800}>{currentUser.name}</Typography>
+                    <Typography variant="body2" color="text.secondary">{currentUser.degree}</Typography>
+                    <Typography variant="caption" color="text.secondary">{currentUser.year} · University of Birmingham Dubai</Typography>
+                  </Box>
                 </Box>
-                {socialBattery === opt.value && (
-                  <Box
-                    sx={{
-                      width: 18,
-                      height: 18,
-                      borderRadius: '50%',
-                      bgcolor: 'primary.main',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <Typography sx={{ color: 'white', fontSize: '0.65rem', fontWeight: 700 }}>✓</Typography>
+
+                <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                  {currentUser.interests.map((interest) => (
+                    <Chip key={interest} label={interest} size="small" sx={{ bgcolor: '#F0FAF4', color: 'primary.dark', fontWeight: 600 }} />
+                  ))}
+                </Stack>
+              </CardContent>
+            </Card>
+
+            <Card sx={{ border: '1px dashed', borderColor: 'primary.light', bgcolor: '#FAFFF9' }}>
+              <CardContent sx={{ p: 2.4 }}>
+                <Typography variant="caption" color="primary.dark" fontWeight={800} display="block" sx={{ mb: 0.5 }}>
+                  Your data & privacy
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Proximity only shares your location within campus. Your profile is only visible when you are in a shared space, and you can go invisible any time.
+                </Typography>
+              </CardContent>
+            </Card>
+          </Stack>
+        </Grid>
+
+        <Grid item xs={12} xl={7.8}>
+          <Stack spacing={2.5}>
+            <Card>
+              <CardContent sx={{ p: 2.8 }}>
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 2 }}>
+                  <Box sx={{ flex: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.6 }}>
+                      {openToTalk && <FiberManualRecordIcon sx={{ fontSize: 10, color: '#52B788' }} />}
+                      <Typography variant="h6" fontWeight={800}>Open to chat</Typography>
+                    </Box>
+                    <Typography variant="body2" color="text.secondary">
+                      {openToTalk ? 'Others in the same location can send you a soft invite.' : 'You’re in private mode — no one can reach out.'}
+                    </Typography>
+                  </Box>
+                  <Switch checked={openToTalk} onChange={(e) => setOpenToTalk(e.target.checked)} color="primary" />
+                </Box>
+
+                {openToTalk && (
+                  <Box sx={{ mt: 1.8, p: 1.8, bgcolor: '#F0FAF4', borderRadius: 3, border: '1px solid #C8E6C9' }}>
+                    <Typography variant="body2" color="primary.dark">
+                      🟢 You’re visible to people at the same places as you. They can only send soft openers — no cold messages.
+                    </Typography>
                   </Box>
                 )}
-              </Box>
-            ))}
-          </Stack>
+              </CardContent>
+            </Card>
 
-          <Box sx={{ mt: 2, p: 1.5, bgcolor: '#F8F5F0', borderRadius: 2 }}>
-            <Typography variant="caption" color="text.secondary">
-              Current filter: <strong>{battery.recommendations.join(', ')}</strong>
-            </Typography>
-          </Box>
-        </CardContent>
-      </Card>
+            <Card>
+              <CardContent sx={{ p: 2.8 }}>
+                <Typography variant="h6" fontWeight={800} sx={{ mb: 0.5 }}>Social battery</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2.4 }}>
+                  Adjust this to change what your feed prioritises.
+                </Typography>
 
-      {/* HCI-aware note */}
-      <Card sx={{ mb: 2, border: '1px dashed', borderColor: 'primary.light', bgcolor: '#FAFFF9' }}>
-        <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-          <Typography variant="caption" color="primary.dark" fontWeight={600} display="block" sx={{ mb: 0.5 }}>
-            Your data & privacy
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            Proximity only shares your location within campus. Your profile is only visible when you're at a shared space. You can go invisible any time.
-          </Typography>
-        </CardContent>
-      </Card>
+                <Grid container spacing={1.5}>
+                  {batteryOptions.map((option) => (
+                    <Grid item xs={12} md={4} key={option.value}>
+                      <Box
+                        onClick={() => setSocialBattery(option.value)}
+                        sx={{
+                          height: '100%',
+                          border: '2px solid',
+                          borderColor: socialBattery === option.value ? 'primary.main' : 'divider',
+                          borderRadius: 3,
+                          p: 2,
+                          cursor: 'pointer',
+                          bgcolor: socialBattery === option.value ? '#F0FAF4' : 'white',
+                          transition: 'all 0.15s ease',
+                        }}
+                      >
+                        <Typography sx={{ fontSize: '1.6rem', mb: 0.8 }}>{option.emoji}</Typography>
+                        <Typography variant="subtitle1" fontWeight={800}>{option.label}</Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.4 }}>
+                          {batteryLevels[option.value].description}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  ))}
+                </Grid>
 
-      {/* Preferences section */}
-      <Card sx={{ mb: 2 }}>
-        <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
-          <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 2 }}>
-            Preferences
-          </Typography>
-          {[
-            { label: 'Event reminders', desc: 'Notify me when something nearby starts', defaultOn: true },
-            { label: 'Follow-up prompts', desc: 'Suggest reconnecting after shared events', defaultOn: true },
-            { label: 'Group suggestions only', desc: 'Prefer group over one-on-one', defaultOn: false },
-          ].map((pref, i) => (
-            <Box key={pref.label}>
-              {i > 0 && <Divider sx={{ my: 1.5 }} />}
-              <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-                <Box sx={{ flex: 1, pr: 2 }}>
-                  <Typography variant="body2" fontWeight={600}>{pref.label}</Typography>
-                  <Typography variant="caption" color="text.secondary">{pref.desc}</Typography>
+                <Box sx={{ mt: 2, p: 1.8, bgcolor: '#F8F5F0', borderRadius: 3 }}>
+                  <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.4 }}>
+                    Current feed focus
+                  </Typography>
+                  <Typography variant="body2" fontWeight={700}>{battery.recommendations.join(', ')}</Typography>
                 </Box>
-                <Switch defaultChecked={pref.defaultOn} color="primary" size="small" />
-              </Box>
-            </Box>
-          ))}
-        </CardContent>
-      </Card>
+              </CardContent>
+            </Card>
 
-      <Button
-        variant="outlined"
-        color="error"
-        fullWidth
-        sx={{ mt: 1, borderRadius: 50, color: '#E76F51', borderColor: '#E76F51' }}
-      >
-        Sign out
-      </Button>
+            <Card>
+              <CardContent sx={{ p: 2.8 }}>
+                <Typography variant="h6" fontWeight={800} sx={{ mb: 2 }}>Preferences</Typography>
+                {[
+                  { label: 'Event reminders', desc: 'Notify me when something nearby starts', defaultOn: true },
+                  { label: 'Follow-up prompts', desc: 'Suggest reconnecting after shared events', defaultOn: true },
+                  { label: 'Group suggestions only', desc: 'Prefer group over one-on-one', defaultOn: false },
+                ].map((pref, index) => (
+                  <Box key={pref.label}>
+                    {index > 0 && <Divider sx={{ my: 1.6 }} />}
+                    <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 2 }}>
+                      <Box sx={{ flex: 1 }}>
+                        <Typography variant="body1" fontWeight={700}>{pref.label}</Typography>
+                        <Typography variant="body2" color="text.secondary">{pref.desc}</Typography>
+                      </Box>
+                      <Switch defaultChecked={pref.defaultOn} color="primary" size="small" />
+                    </Box>
+                  </Box>
+                ))}
+              </CardContent>
+            </Card>
+          </Stack>
+        </Grid>
+      </Grid>
     </Box>
   );
 }
