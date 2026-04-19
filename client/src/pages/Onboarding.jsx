@@ -11,6 +11,7 @@ import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import NaturePeopleIcon from '@mui/icons-material/NaturePeople';
+import proximityLogo from '../assets/proximity-logo.png';
 
 const steps = [
   {
@@ -106,29 +107,18 @@ export default function OnboardingPage({ onComplete }) {
           {current.type === 'splash' && (
             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
               {/* Logo area */}
-              <Box sx={{ mb: 6, textAlign: 'center' }}>
+              <Box sx={{ mb: 4, textAlign: 'center' }}>
                 <Box
+                  component="img"
+                  src={proximityLogo}
+                  alt="Proximity logo"
                   sx={{
-                    width: 80,
-                    height: 80,
-                    borderRadius: '24px',
-                    background: 'linear-gradient(135deg, #2D6A4F 0%, #52B788 100%)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    mx: 'auto',
-                    mb: 3,
-                    boxShadow: '0 12px 32px rgba(45,106,79,0.25)',
+                    width: 500,
+                    height: 'auto',
+                    display: 'block',
+                    mx: 'auto'
                   }}
-                >
-                  <NaturePeopleIcon sx={{ color: '#fff', fontSize: 40 }} />
-                </Box>
-                <Typography
-                  variant="h6"
-                  sx={{ color: 'primary.main', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', fontSize: '0.8rem' }}
-                >
-                  Proximity
-                </Typography>
+                />
               </Box>
               <Typography
                 variant="h2"

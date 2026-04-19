@@ -5,7 +5,7 @@ import ExploreIcon from '@mui/icons-material/Explore';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
-import theme from './theme/theme';
+import theme from './theme';
 
 import FeedPage from './pages/Feed';
 import ConnectionsPage from './pages/Connections';
