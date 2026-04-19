@@ -19,11 +19,23 @@ import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import TuneIcon from '@mui/icons-material/Tune';
+import Battery1BarIcon from '@mui/icons-material/Battery1Bar';
+import BoltIcon from '@mui/icons-material/Bolt';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { contextFeed, batteryLevels, vibeFilters } from '../data/mockData';
 
 const vibeColor = {
   quiet: { bg: '#EEF2FF', text: '#4F46E5' },
   social: { bg: '#FFF7ED', text: '#C2410C' },
+};
+
+const getBatteryIcon = (iconName) => {
+  const icons = {
+    battery: <Battery1BarIcon fontSize="large" />,
+    bolt: <BoltIcon fontSize="large" />,
+    auto_awesome: <AutoAwesomeIcon fontSize="large" />,
+  };
+  return icons[iconName] || icons.bolt;
 };
 
 function PageHero({ battery, userInterests }) {
@@ -77,7 +89,9 @@ function PageHero({ battery, userInterests }) {
           <Typography variant="subtitle2" fontWeight={800}>
             Your vibe
           </Typography>
-          <Typography sx={{ fontSize: '1.4rem' }}>{battery.emoji}</Typography>
+          <Box sx={{ color: 'primary.main', display: 'flex', alignItems: 'center' }}>
+            {getBatteryIcon(battery.icon)}
+          </Box>
         </Box>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 1.6 }}>
           {battery.description}

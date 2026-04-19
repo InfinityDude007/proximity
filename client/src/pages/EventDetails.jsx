@@ -24,6 +24,8 @@ import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import AccessibilityNewIcon from '@mui/icons-material/AccessibilityNew';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+import HandshakeIcon from '@mui/icons-material/Handshake';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import { softInviteTemplates } from '../data/mockData';
 
 const avatarColors = {
@@ -63,8 +65,8 @@ function AttendeeRow({ person, openToTalk }) {
           </Stack>
         </Box>
 
-        {isOpen && !sent && openToTalk && <Button size="small" variant="outlined" onClick={() => setShowTemplates(true)} sx={{ px: 2, py: 1 }}>Say hi 👋</Button>}
-        {sent && <Chip label="Sent ✓" size="small" sx={{ bgcolor: '#F0FAF4', color: 'primary.dark' }} />}
+        {isOpen && !sent && openToTalk && <Button size="small" variant="outlined" onClick={() => setShowTemplates(true)} sx={{ px: 2, py: 1 }}>Say hi</Button>}
+        {sent && <Chip label="Sent" size="small" sx={{ bgcolor: '#F0FAF4', color: 'primary.dark' }} />}
         {!isOpen && <Typography variant="caption" color="text.secondary" sx={{ fontStyle: 'italic' }}>busy</Typography>}
       </Box>
 
@@ -170,9 +172,10 @@ export default function EventDetailPage({ event, onBack, openToTalk }) {
                     </Box>
                   ))}
                   {event.mutualCount > 0 && (
-                    <Box sx={{ mt: 2, p: 1.6, bgcolor: '#F0FAF4', borderRadius: 3 }}>
+                    <Box sx={{ mt: 2, p: 1.6, bgcolor: '#F0FAF4', borderRadius: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <HandshakeIcon sx={{ color: 'primary.dark' }} />
                       <Typography variant="body2" color="primary.dark" fontWeight={700}>
-                        🤝 {event.mutualCount} mutual connection{event.mutualCount > 1 ? 's' : ''} here
+                        {event.mutualCount} mutual connection{event.mutualCount > 1 ? 's' : ''} here
                       </Typography>
                     </Box>
                   )}
@@ -217,9 +220,12 @@ export default function EventDetailPage({ event, onBack, openToTalk }) {
                   I’m heading there
                 </Button>
               ) : (
-                <Box sx={{ bgcolor: '#F0FAF4', border: '2px solid', borderColor: 'primary.light', borderRadius: 4, p: 2.5, textAlign: 'center' }}>
-                  <Typography variant="body1" fontWeight={800} color="primary.dark" sx={{ mb: 0.6 }}>You’re in 🎉</Typography>
-                  <Typography variant="body2" color="text.secondary">Your presence helps signal shared context for others nearby.</Typography>
+                <Box sx={{ bgcolor: '#F0FAF4', border: '2px solid', borderColor: 'primary.light', borderRadius: 4, p: 2.5, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, flexDirection: 'column' }}>
+                  <EmojiEventsIcon sx={{ fontSize: 32, color: 'primary.main' }} />
+                  <Box>
+                    <Typography variant="body1" fontWeight={800} color="primary.dark" sx={{ mb: 0.6 }}>You're in</Typography>
+                    <Typography variant="body2" color="text.secondary">Your presence helps signal shared context for others nearby.</Typography>
+                  </Box>
                 </Box>
               )}
             </Stack>

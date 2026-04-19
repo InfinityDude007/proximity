@@ -11,12 +11,15 @@ import {
   Grid,
 } from '@mui/material';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+import Battery1BarIcon from '@mui/icons-material/Battery1Bar';
+import BoltIcon from '@mui/icons-material/Bolt';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { currentUser, batteryLevels } from '../data/mockData';
 
 const batteryOptions = [
-  { value: 'low', emoji: '🔋', label: 'Low' },
-  { value: 'medium', emoji: '⚡', label: 'Moderate' },
-  { value: 'high', emoji: '✨', label: 'High' },
+  { value: 'low', icon: <Battery1BarIcon />, label: 'Low' },
+  { value: 'medium', icon: <BoltIcon />, label: 'Moderate' },
+  { value: 'high', icon: <AutoAwesomeIcon />, label: 'High' },
 ];
 
 const interestOptions = [
@@ -117,9 +120,10 @@ export default function ProfilePage({ socialBattery, setSocialBattery, openToTal
                 </Box>
 
                 {openToTalk && (
-                  <Box sx={{ mt: 1.8, p: 1.8, bgcolor: '#F0FAF4', borderRadius: 3, border: '1px solid #C8E6C9' }}>
+                  <Box sx={{ mt: 1.8, p: 1.8, bgcolor: '#F0FAF4', borderRadius: 3, border: '1px solid #C8E6C9', display: 'flex', alignItems: 'flex-start', gap: 1 }}>
+                    <FiberManualRecordIcon sx={{ color: 'primary.main', mt: 0.3, fontSize: 18, flexShrink: 0 }} />
                     <Typography variant="body2" color="primary.dark">
-                      🟢 You’re visible to people at the same places as you. They can only send soft openers — no cold messages.
+                      You're visible to people at the same places as you. They can only send soft openers — no cold messages.
                     </Typography>
                   </Box>
                 )}
@@ -147,11 +151,14 @@ export default function ProfilePage({ socialBattery, setSocialBattery, openToTal
                           cursor: 'pointer',
                           bgcolor: socialBattery === option.value ? '#F0FAF4' : 'white',
                           transition: 'all 0.15s ease',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
                         }}
                       >
-                        <Typography sx={{ fontSize: '1.6rem', mb: 0.8 }}>{option.emoji}</Typography>
+                        <Box sx={{ fontSize: '2rem', mb: 0.8, color: 'primary.main' }}>{option.icon}</Box>
                         <Typography variant="subtitle1" fontWeight={800}>{option.label}</Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.4 }}>
+                        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.4, textAlign: 'center' }}>
                           {batteryLevels[option.value].description}
                         </Typography>
                       </Box>

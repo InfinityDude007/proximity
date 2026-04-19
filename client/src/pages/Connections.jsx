@@ -20,6 +20,8 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+import MapIcon from '@mui/icons-material/Map';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { connections, softInviteTemplates } from '../data/mockData';
 
 const statusColor = {
@@ -106,7 +108,7 @@ function ConnectionCard({ person, onViewProfile }) {
             View profile
           </Button>
           <Button variant="contained" fullWidth onClick={() => onViewProfile(person)} sx={{ px: 2, py: 1.2 }}>
-            Send invite 👋
+            Send invite
           </Button>
         </Stack>
       </CardContent>
@@ -194,8 +196,11 @@ function ProfileDialog({ person, open, onClose }) {
             ))}
           </Stack>
         ) : (
-          <Box sx={{ bgcolor: '#F0FAF4', borderRadius: 4, p: 2, textAlign: 'center', mb: 2 }}>
-            <Typography variant="body2" fontWeight={700} color="primary.dark">✓ Soft invite sent to {person.name}</Typography>
+          <Box sx={{ bgcolor: '#F0FAF4', borderRadius: 4, p: 2, textAlign: 'center', mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, flexDirection: 'column' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
+              <CheckCircleIcon sx={{ color: 'primary.main', fontSize: 20 }} />
+              <Typography variant="body2" fontWeight={700} color="primary.dark">Soft invite sent to {person.name}</Typography>
+            </Box>
             <Typography variant="caption" color="text.secondary">No pressure — they can respond in their own time.</Typography>
           </Box>
         )}
@@ -247,7 +252,7 @@ export default function ConnectionsPage() {
               alignItems: 'flex-start',
             }}
           >
-            <Typography sx={{ fontSize: '1.4rem' }}>🗺️</Typography>
+            <MapIcon sx={{ fontSize: 32, color: 'primary.main', flexShrink: 0 }} />
             <Box>
               <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 0.4 }}>Acquaintance → Friend</Typography>
               <Typography variant="body2" color="text.secondary">

@@ -160,7 +160,7 @@ export const messages = [
 ];
 
 export const softInviteTemplates = [
-  { id: 't1', text: 'Heading there now if you want to join 👋', tone: 'casual' },
+  { id: 't1', text: 'Heading there now if you want to join', tone: 'casual' },
   { id: 't2', text: 'Saved you a spot if you\'re coming!', tone: 'warm' },
   { id: 't3', text: 'Just found a good table, come by if you\'re free', tone: 'low-pressure' },
   { id: 't4', text: 'I\'ll be there around {time} if you want to meet', tone: 'flexible' },
@@ -171,21 +171,21 @@ export const batteryLevels = {
     label: 'Low Battery',
     description: 'You\'ll see fewer suggestions and quieter spaces',
     color: '#E76F51',
-    emoji: '🔋',
+    icon: 'battery', // BatteryLowIcon
     recommendations: ['Quiet spots', 'One-on-one only'],
   },
   medium: {
     label: 'Moderate Energy',
     description: 'A balanced mix of events and quiet spots',
     color: '#F4A261',
-    emoji: '⚡',
+    icon: 'bolt', // BoltIcon
     recommendations: ['Small groups', 'Drop-in events'],
   },
   high: {
     label: 'Fully Charged',
     description: 'You\'re open to anything — social events included',
     color: '#52B788',
-    emoji: '✨',
+    icon: 'auto_awesome', // AutoAwesomeIcon
     recommendations: ['All events', 'Group socials', 'New connections'],
   },
 };

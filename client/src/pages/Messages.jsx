@@ -20,6 +20,7 @@ import {
 import SendIcon from '@mui/icons-material/Send';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import { messages } from '../data/mockData';
 
 const avatarColors = {
@@ -31,7 +32,7 @@ const avatarColors = {
 const mockConversation = [
   { from: 'other', text: 'Hey! Are you heading to the study session later?', time: '14:30' },
   { from: 'me', text: 'Yeah I was thinking about it! When are you going?', time: '14:31' },
-  { from: 'other', text: 'Probably around 3pm — good table near the window 😊', time: '14:32' },
+  { from: 'other', text: 'Probably around 3pm — good table near the window', time: '14:32' },
 ];
 
 function ChatDialog({ msg, open, onClose }) {
@@ -62,8 +63,9 @@ function ChatDialog({ msg, open, onClose }) {
       </DialogTitle>
 
       <DialogContent sx={{ display: 'flex', flexDirection: 'column', p: 0 }}>
-        <Box sx={{ px: 2.5, py: 1.25, bgcolor: '#F8F5F0', borderBottom: '1px solid', borderColor: 'divider' }}>
-          <Typography variant="caption" color="text.secondary">💡 You connected through <strong>{msg.context}</strong></Typography>
+        <Box sx={{ px: 2.5, py: 1.25, bgcolor: '#F8F5F0', borderBottom: '1px solid', borderColor: 'divider', display: 'flex', alignItems: 'center', gap: 1 }}>
+          <LightbulbIcon sx={{ fontSize: 18, color: 'primary.main' }} />
+          <Typography variant="caption" color="text.secondary">You connected through <strong>{msg.context}</strong></Typography>
         </Box>
 
         <Box sx={{ flex: 1, overflowY: 'auto', px: { xs: 2, md: 3 }, py: 2.5 }}>

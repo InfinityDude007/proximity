@@ -17,6 +17,9 @@ import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import NaturePeopleIcon from '@mui/icons-material/NaturePeople';
+import Battery1BarIcon from '@mui/icons-material/Battery1Bar';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import proximityLogo from '../assets/proximity-logo.png';
 
 const steps = [
@@ -40,7 +43,7 @@ const steps = [
   },
   {
     key: 'ready',
-    title: 'You’re all set 🌱',
+    title: "You're all set",
     subtitle: 'No pressure to connect with anyone. Just explore what is happening around you.',
     type: 'ready',
   },
@@ -58,9 +61,9 @@ const interestOptions = [
 ];
 
 const batteryOptions = [
-  { value: 'low', emoji: '🔋', label: 'Running low', desc: 'Show me quiet spaces and one-on-one options' },
-  { value: 'medium', emoji: '⚡', label: 'Moderate', desc: 'A balanced mix of social and quiet' },
-  { value: 'high', emoji: '✨', label: 'Fully charged', desc: 'Show me everything — I’m ready to meet people' },
+  { value: 'low', icon: <Battery1BarIcon fontSize="large" />, label: 'Running low', desc: 'Show me quiet spaces and one-on-one options' },
+  { value: 'medium', icon: <BoltIcon fontSize="large" />, label: 'Moderate', desc: 'A balanced mix of social and quiet' },
+  { value: 'high', icon: <AutoAwesomeIcon fontSize="large" />, label: 'Fully charged', desc: "Show me everything — I'm ready to meet people" },
 ];
 
 export default function OnboardingPage({ onComplete }) {
@@ -142,7 +145,7 @@ export default function OnboardingPage({ onComplete }) {
                         }}
                       >
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                          <Typography sx={{ fontSize: '1.9rem' }}>{option.emoji}</Typography>
+                          <Box sx={{ color: 'primary.main' }}>{option.icon}</Box>
                           <Box>
                             <Typography variant="subtitle1" fontWeight={800}>{option.label}</Typography>
                             <Typography variant="body2" color="text.secondary">{option.desc}</Typography>
@@ -189,7 +192,7 @@ export default function OnboardingPage({ onComplete }) {
 
               {current.type === 'ready' && (
                 <Box sx={{ minHeight: { lg: 560 }, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                  <Typography sx={{ fontSize: '4rem', mb: 1.5 }}>🌱</Typography>
+                  <CheckCircleIcon sx={{ fontSize: '5rem', mb: 1.5, color: 'primary.main' }} />
                   <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.8rem' }, mb: 1.4 }}>{current.title}</Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ mb: 3.5, maxWidth: 560 }}>{current.subtitle}</Typography>
                   <Box sx={{ bgcolor: '#F8F5F0', borderRadius: 4, p: 2.2, maxWidth: 580 }}>
