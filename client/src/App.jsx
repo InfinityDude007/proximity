@@ -20,8 +20,8 @@ import {
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
-import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
+import ArrowForwardIosRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
+import ArrowBackIosRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 import ExploreIcon from '@mui/icons-material/Explore';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
@@ -52,10 +52,10 @@ const collapsedDrawerWidth = 92;
 const THEME_MODE_KEY = 'proximity-theme-mode';
 
 const navItems = [
-  { label: 'Discover', icon: <ExploreIcon />, description: 'Nearby spaces', short: 'Go', tab: 0 },
-  { label: 'People', icon: <PeopleAltIcon />, description: 'Connections', short: 'Ppl', tab: 1 },
-  { label: 'Messages', icon: <ChatBubbleOutlineOutlinedIcon />, description: 'Shared moments', short: 'Msg', tab: 2 },
-  { label: 'Profile', icon: <AccountCircleOutlinedIcon />, description: 'Preferences', short: 'Me', tab: 3 },
+  { label: 'Discover', icon: <ExploreIcon />, tab: 0 },
+  { label: 'People', icon: <PeopleAltIcon />, tab: 1 },
+  { label: 'Messages', icon: <ChatBubbleOutlineOutlinedIcon />, tab: 2 },
+  { label: 'Profile', icon: <AccountCircleOutlinedIcon />, tab: 3 },
 ];
 
 function SidebarContent({
@@ -78,153 +78,92 @@ function SidebarContent({
         bgcolor: 'background.paper',
       }}
     >
+      {showCollapseControl && collapsed && (
+        <Tooltip title="Expand sidebar" placement='right'>
+          <IconButton onClick={() => setCollapsed(false)} sx={{ p: 1, mx: "auto" }}>
+            <ArrowBackIosRoundedIcon sx={{ fontSize: 28 }} />
+          </IconButton>
+        </Tooltip>
+      )}
+
       <Box
         sx={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: collapsed ? 'center' : 'flex-start',
           py: 1,
-          mb: 1.5,
+          mb: 2,
           position: 'relative',
         }}
       >
-        <Tooltip title="Proximity" placement="right" disableHoverListener={!collapsed}>
-          <Box
-            component="img"
-            src={collapsed ? (isDark ? faviconDark : favicon) : (isDark ? proximityLogoDark : proximityLogo)}
-            alt="Proximity"
-            sx={{
-              width: collapsed ? 36 : 180,
-              height: 'auto',
-              flexShrink: 0,
-              transition: 'width 0.3s ease',
-              filter: isDark ? 'brightness(1.05)' : 'none',
-            }}
-          />
-        </Tooltip>
+        <Box
+          component="img"
+          src={collapsed ? (isDark ? faviconDark : favicon) : (isDark ? proximityLogoDark : proximityLogo)}
+          alt="Proximity"
+          sx={{
+            width: collapsed ? 60 : 180,
+            height: 'auto',
+            flexShrink: 0,
+            transition: 'width 0.3s ease',
+            filter: isDark ? 'brightness(1.05)' : 'none',
+          }}
+        />
 
-        {showCollapseControl && !collapsed && (
-          <IconButton size="small" onClick={() => setCollapsed(true)} sx={{ p: 1, ml: 'auto' }}>
-            <ChevronLeftRoundedIcon fontSize="small" />
-          </IconButton>
-        )}
-
-        {showCollapseControl && collapsed && (
-          <Tooltip title="Expand sidebar" placement="right">
-            <IconButton
-              size="small"
-              onClick={() => setCollapsed(false)}
-              sx={{ p: 1, position: 'absolute', right: 4, top: 8 }}
-            >
-              <ChevronRightRoundedIcon fontSize="small" />
+        <Tooltip title="Collapse sidebar" placement="right">
+          {showCollapseControl && !collapsed && (
+            <IconButton onClick={() => setCollapsed(true)} sx={{ ml: 'auto' }}>
+              <ArrowForwardIosRoundedIcon sx={{ fontSize: 28 }} />
             </IconButton>
-          </Tooltip>
-        )}
+          )}
+        </Tooltip>
       </Box>
 
-      <Box
-        sx={{
-          px: collapsed ? 0.75 : 1,
-          py: 1.25,
-          mb: 2,
-          borderRadius: 4,
-          background: isDark
-            ? 'linear-gradient(160deg, rgba(104,76,211,0.18), rgba(45,106,79,0.22))'
-            : 'linear-gradient(160deg, rgba(45,106,79,0.12), rgba(82,183,136,0.18))',
-          border: '1px solid',
-          borderColor: isDark ? alpha('#8B7CF6', 0.22) : alpha('#2D6A4F', 0.12),
-          display: 'flex',
-          alignItems: collapsed ? 'center' : 'flex-start',
-          flexDirection: collapsed ? 'column' : 'row',
-          gap: 1,
-          justifyContent: 'center',
-        }}
-      >
-        <BoltRoundedIcon sx={{ color: isDark ? 'secondary.light' : 'primary.dark', flexShrink: 0 }} />
-        {!collapsed && (
-          <Box>
-            <Typography variant="caption" fontWeight={800} color={isDark ? 'secondary.light' : 'primary.dark'} display="block">
-              Campus mode
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              Live shared spaces across UBD
-            </Typography>
-          </Box>
-        )}
-        {collapsed && (
-          <Tooltip title="Campus mode: Live shared spaces across UBD" placement="right" arrow>
-            <Typography
-              variant="caption"
-              sx={{
-                fontWeight: 700,
-                color: isDark ? 'secondary.light' : 'primary.dark',
-                fontSize: '0.65rem',
-                textAlign: 'center',
-              }}
-            >
-              Live
-            </Typography>
-          </Tooltip>
-        )}
-      </Box>
-
-      <List sx={{ p: 0, display: 'grid', gap: 0.75 }}>
+      <List sx={{ p: 0, display: 'grid', gap: 1 }}>
         {navItems.map((item) => {
           const selected = tab === item.tab;
           return (
-            <ListItemButton
-              key={item.label}
-              selected={selected}
-              onClick={() => setTab(item.tab)}
-              sx={{
-                borderRadius: 3.5,
-                minHeight: 58,
-                px: collapsed ? 1.2 : 1.4,
-                justifyContent: collapsed ? 'center' : 'flex-start',
-                bgcolor: selected
-                  ? alpha(isDark ? '#8B7CF6' : '#2D6A4F', isDark ? 0.16 : 0.1)
-                  : 'transparent',
-                border: '1px solid',
-                borderColor: selected
-                  ? alpha(isDark ? '#8B7CF6' : '#2D6A4F', isDark ? 0.26 : 0.18)
-                  : 'transparent',
-                position: 'relative',
-                '&:hover': {
-                  bgcolor: selected
-                    ? alpha(isDark ? '#8B7CF6' : '#2D6A4F', isDark ? 0.22 : 0.13)
-                    : alpha(isDark ? '#8B7CF6' : '#2D6A4F', isDark ? 0.08 : 0.04),
-                },
-              }}
-            >
-              <ListItemIcon
+            <Tooltip title={`${collapsed ? item.label : ''}`} placement="right">
+              <ListItemButton
+                key={item.label}
+                selected={selected}
+                onClick={() => setTab(item.tab)}
                 sx={{
-                  minWidth: collapsed ? 'unset' : 40,
-                  color: selected ? 'primary.main' : 'text.secondary',
-                  justifyContent: 'center',
-                  display: 'flex',
+                  px: collapsed ? 0 : 'auto',
+                  borderRadius: collapsed ? 5 : 3.5,
+                  justifyContent: collapsed ? 'center' : 'flex-start',
+                  bgcolor: selected
+                    ? alpha(isDark ? '#8B7CF6' : '#2D6A4F', isDark ? 0.16 : 0.1)
+                    : 'transparent',
+                  border: '1px solid',
+                  borderColor: selected
+                    ? alpha(isDark ? '#8B7CF6' : '#2D6A4F', isDark ? 0.26 : 0.18)
+                    : 'transparent',
+                  position: 'relative',
+                  '&:hover': {
+                    bgcolor: selected
+                      ? alpha(isDark ? '#8B7CF6' : '#2D6A4F', isDark ? 0.22 : 0.13)
+                      : alpha(isDark ? '#8B7CF6' : '#2D6A4F', isDark ? 0.08 : 0.04),
+                  },
                 }}
               >
-                {item.icon}
-              </ListItemIcon>
-              {!collapsed && (
-                <ListItemText
-                  primary={item.label}
-                  secondary={item.description}
-                  primaryTypographyProps={{ fontWeight: 700, fontSize: '0.95rem' }}
-                  secondaryTypographyProps={{ fontSize: '0.77rem' }}
-                />
-              )}
-              {collapsed && (
-                <Tooltip title={`${item.label} - ${item.description}`} placement="right" arrow>
-                  <Typography
-                    variant="caption"
-                    sx={{ position: 'absolute', bottom: 4, fontSize: '0.65rem', opacity: 0.7, fontWeight: 600 }}
-                  >
-                    {item.short}
-                  </Typography>
-                </Tooltip>
-              )}
-            </ListItemButton>
+                <ListItemIcon
+                  sx={{
+                    color: selected ? 'primary.main' : 'text.secondary',
+                    justifyContent: 'center',
+                    display: 'flex',
+                    mr: collapsed ? 0 : 1
+                  }}
+                >
+                  {item.icon}
+                </ListItemIcon>
+                {!collapsed && (
+                  <ListItemText
+                    primary={item.label}
+                    primaryTypographyProps={{ fontWeight: 700, fontSize: '0.95rem' }}
+                  />
+                )}
+              </ListItemButton>
+            </Tooltip>
           );
         })}
       </List>

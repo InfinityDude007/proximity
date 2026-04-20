@@ -183,7 +183,7 @@ export const batteryLevels = {
   },
   high: {
     label: 'Fully Charged',
-    description: 'You\'re open to anything — social events included',
+    description: 'You\'re open to anything - social events included',
     color: '#52B788',
     icon: 'auto_awesome', // AutoAwesomeIcon
     recommendations: ['All events', 'Group socials', 'New connections'],

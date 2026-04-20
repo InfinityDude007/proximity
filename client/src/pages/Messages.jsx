@@ -33,7 +33,7 @@ const avatarColors = {
 const mockConversation = [
   { from: 'other', text: 'Hey! Are you heading to the study session later?', time: '14:30' },
   { from: 'me', text: 'Yeah I was thinking about it! When are you going?', time: '14:31' },
-  { from: 'other', text: 'Probably around 3pm — good table near the window', time: '14:32' },
+  { from: 'other', text: 'Probably around 3pm - good table near the window', time: '14:32' },
 ];
 
 function ChatDialog({ msg, open, onClose }) {

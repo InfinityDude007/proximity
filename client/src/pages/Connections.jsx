@@ -235,7 +235,7 @@ function ProfileDialog({ person, open, onClose }) {
               <CheckCircleIcon sx={{ color: 'primary.main', fontSize: 20 }} />
               <Typography variant="body2" fontWeight={700} color={isDark ? 'text.primary' : 'primary.dark'}>Soft invite sent to {person.name}</Typography>
             </Box>
-            <Typography variant="caption" color="text.secondary">No pressure — they can respond in their own time.</Typography>
+            <Typography variant="caption" color="text.secondary">No pressure - they can respond in their own time.</Typography>
           </Box>
         )}
       </DialogContent>
@@ -268,7 +268,7 @@ export default function ConnectionsPage() {
           Your people
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 760 }}>
-          Connections built from real shared moments — designed to feel warmer, clearer, and easier to revisit.
+          Connections built from real shared moments - designed to feel warmer, clearer, and easier to revisit.
         </Typography>
       </Box>
 

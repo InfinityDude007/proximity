@@ -1,3 +1,4 @@
+import { useMemo, useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -9,6 +10,8 @@ import {
   Divider,
   Stack,
   Grid,
+  Button,
+  IconButton,
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
@@ -17,7 +20,12 @@ import BoltIcon from '@mui/icons-material/Bolt';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
 import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import { currentUser, batteryLevels } from '../data/mockData';
+import {
+  loadUserPreferences,
+  saveOnboarded,
+} from '../utils/storage';
 
 const batteryOptions = [
   { value: 'low', icon: <Battery1BarIcon />, label: 'Low' },
@@ -46,6 +54,7 @@ export default function ProfilePage({
   themeMode = 'light',
   setThemeMode,
 }) {
+  const [onboarded, setOnboarded] = useState(false);
   const battery = batteryLevels[socialBattery];
   const isDark = themeMode === 'dark';
   const handleThemeToggle = (event) => {
@@ -59,6 +68,11 @@ export default function ProfilePage({
       setUserInterests([...userInterests, interest]);
     }
   };
+
+  const handleRedoOnboarding = (batteryValue, interestsArray) => {
+      setOnboarded(false);
+      saveOnboarded(false);
+    };
 
   return (
     <Box>
@@ -106,22 +120,41 @@ export default function ProfilePage({
                 </Stack>
               </CardContent>
             </Card>
-
-            <Card
-              sx={{
-                border: '1px dashed',
-                borderColor: 'primary.light',
-                bgcolor: isDark ? alpha('#8B7CF6', 0.08) : '#FAFFF9',
-              }}
-            >
-              <CardContent sx={{ p: 2.4 }}>
-                <Typography variant="caption" color="primary.main" fontWeight={800} display="block" sx={{ mb: 0.5 }}>
-                  Your data & privacy
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Proximity only shares your location within campus. Your profile is only visible when you are in a shared space, and you can go invisible any time.
-                </Typography>
-              </CardContent>
+            
+            <Card sx={{ display: 'flex', flexDirection: 'row', gap: 2, background: 'transparent' }}>
+              <Card
+                sx={{
+                  border: '1px dashed',
+                  borderColor: 'primary.light',
+                  bgcolor: isDark ? alpha('#8B7CF6', 0.08) : '#FAFFF9',
+                }}
+              >
+                <CardContent sx={{ p: 2.4 }}>
+                  <Typography variant="caption" color="primary.main" fontWeight={800} display="block" sx={{ mb: 0.5 }}>
+                    Your data & privacy
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Proximity only shares your location within campus. Your profile is only visible when you are in a shared space, and you can go invisible any time.
+                  </Typography>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent sx={{ p: 2.8 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 2 }}>
+                    <Box sx={{ flex: 1 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.6 }}>
+                        <Typography variant="h6" fontWeight={800}>Redo Onboarding</Typography>
+                      </Box>
+                      <Typography variant="body2" color="text.secondary">
+                        Need a refresher on how everything works? No problem!
+                      </Typography>
+                    </Box>
+                    <IconButton onClick={() => setCollapsed(false)} sx={{ p: 1, mx: "auto" }}>
+                      <RestartAltIcon sx={{ fontSize: 28 }} />
+                    </IconButton>
+                  </Box>
+                </CardContent>
+              </Card>
             </Card>
           </Stack>
         </Grid>
@@ -133,11 +166,14 @@ export default function ProfilePage({
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 2 }}>
                   <Box sx={{ flex: 1 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.6 }}>
-                      {openToTalk && <FiberManualRecordIcon sx={{ fontSize: 10, color: '#52B788' }} />}
+                      {openToTalk ?
+                        <FiberManualRecordIcon sx={{ fontSize: 10, color: '#52B788' }} />
+                        : <FiberManualRecordIcon sx={{ fontSize: 10, color: '#E76F51' }} />
+                      }
                       <Typography variant="h6" fontWeight={800}>Open to chat</Typography>
                     </Box>
                     <Typography variant="body2" color="text.secondary">
-                      {openToTalk ? 'Others in the same location can send you a soft invite.' : 'You’re in private mode — no one can reach out.'}
+                      {openToTalk ? 'Others in the same location can send you a soft invite.' : 'You’re in private mode - no one can reach out.'}
                     </Typography>
                   </Box>
                   <Switch checked={openToTalk} onChange={(e) => setOpenToTalk(e.target.checked)} color="primary" />
@@ -159,7 +195,7 @@ export default function ProfilePage({
                   >
                     <FiberManualRecordIcon sx={{ color: 'primary.main', mt: 0.3, fontSize: 18, flexShrink: 0 }} />
                     <Typography variant="body2" color={isDark ? 'text.primary' : 'primary.dark'}>
-                      You're visible to people at the same places as you. They can only send soft openers — no cold messages.
+                      You're visible to people at the same places as you. They can only send soft openers - no cold messages.
                     </Typography>
                   </Box>
                 )}

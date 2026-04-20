@@ -65,7 +65,7 @@ const interestOptions = [
 const batteryOptions = [
   { value: 'low', icon: <Battery1BarIcon fontSize="large" />, label: 'Running low', desc: 'Show me quiet spaces and one-on-one options' },
   { value: 'medium', icon: <BoltIcon fontSize="large" />, label: 'Moderate', desc: 'A balanced mix of social and quiet' },
-  { value: 'high', icon: <AutoAwesomeIcon fontSize="large" />, label: 'Fully charged', desc: "Show me everything — I'm ready to meet people" },
+  { value: 'high', icon: <AutoAwesomeIcon fontSize="large" />, label: 'Fully charged', desc: "Show me everything - I'm ready to meet people" },
 ];
 
 export default function OnboardingPage({ onComplete }) {
@@ -190,7 +190,7 @@ export default function OnboardingPage({ onComplete }) {
                     ))}
                   </Grid>
                   <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block' }}>
-                    {interests.length} selected — you can update this anytime.
+                    {interests.length} selected - you can update this anytime.
                   </Typography>
                 </Box>
               )}

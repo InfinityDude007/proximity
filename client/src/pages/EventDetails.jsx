@@ -78,7 +78,7 @@ function AttendeeRow({ person, openToTalk }) {
       <Dialog open={showTemplates} onClose={() => setShowTemplates(false)} fullWidth maxWidth="sm" PaperProps={{ sx: { borderRadius: 5 } }}>
         <DialogTitle sx={{ pb: 1 }}>
           <Typography variant="h6" fontWeight={800}>Say hi to {person.name}</Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>Pick a soft opener — no pressure on either side.</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>Pick a soft opener - no pressure on either side.</Typography>
         </DialogTitle>
         <DialogContent>
           <Stack spacing={1.5} sx={{ mb: 2 }}>
