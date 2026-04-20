@@ -26,7 +26,11 @@ import ExploreIcon from '@mui/icons-material/Explore';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import Battery1BarIcon from '@mui/icons-material/Battery1Bar';
 import Battery4BarIcon from '@mui/icons-material/Battery4Bar';
+import BatteryFullIcon from '@mui/icons-material/BatteryFull';
+import DoneRoundedIcon from '@mui/icons-material/DoneRounded';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 import { createAppTheme } from './theme';
 import proximityLogo from './assets/proximity-logo.png';
@@ -65,8 +69,29 @@ function SidebarContent({
   setCollapsed,
   showCollapseControl = true,
   mode,
+  socialBattery,
+  setSocialBattery,
+  openToTalk,
+  setOpenToTalk,
 }) {
   const isDark = mode === 'dark';
+  const batteryLevels = ['low', 'medium', 'high'];
+  const batteryLabels = { low: 'Low', medium: 'Moderate', high: 'High' };
+  const batteryIcons = {
+    low: <Battery1BarIcon />,
+    medium: <Battery4BarIcon />,
+    high: <BatteryFullIcon />,
+  };
+
+  const handleBatteryToggle = () => {
+    const currentIndex = batteryLevels.indexOf(socialBattery);
+    const nextIndex = (currentIndex + 1) % batteryLevels.length;
+    setSocialBattery(batteryLevels[nextIndex]);
+  };
+
+  const handleOpenToTalkToggle = () => {
+    setOpenToTalk(!openToTalk);
+  };
 
   return (
     <Box
@@ -174,34 +199,75 @@ function SidebarContent({
       <Box
         sx={{
           p: collapsed ? 1.2 : 1.5,
-          borderRadius: 3.5,
-          bgcolor: 'action.hover',
-          border: '1px solid',
-          borderColor: 'divider',
-          textAlign: collapsed ? 'center' : 'left',
+          textAlign: 'center',
           display: 'flex',
           flexDirection: 'column',
           alignItems: collapsed ? 'center' : 'flex-start',
+          gap: collapsed ? 1 : 0.75,
         }}
       >
         {!collapsed ? (
           <>
-            <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.5 }}>
-              Status
+            <Typography variant="caption" color="text.secondary" display="block">
+              Your Vibe
             </Typography>
-            <Chip size="small" label="Open to connect" color="success" sx={{ fontWeight: 700 }} />
+            <Stack direction="column" gap={0.75} width="100%">
+              <Chip
+                size="small"
+                label={openToTalk ? 'Open to connect' : 'Not available'}
+                color={openToTalk ? 'success' : 'default'}
+                onClick={handleOpenToTalkToggle}
+                sx={{ fontWeight: 700, cursor: 'pointer' }}
+              />
+              <Chip
+                size="small"
+                icon={batteryIcons[socialBattery]}
+                label={batteryLabels[socialBattery]}
+                color="default"
+                onClick={handleBatteryToggle}
+                sx={{ fontWeight: 700, cursor: 'pointer' }}
+              />
+            </Stack>
           </>
         ) : (
-          <Tooltip title="Open to connect" placement="right">
-            <Chip size="small" label="On" color="success" sx={{ fontWeight: 700 }} />
-          </Tooltip>
+          <Stack direction="column" gap={0.5} alignItems="center">
+            <Tooltip title={openToTalk ? 'Open to connect' : 'Not available'} placement="right">
+              <Chip
+                size="small"
+                label={openToTalk ? <DoneRoundedIcon sx={{ fontSize: "18px" }} /> : <CloseRoundedIcon sx={{ fontSize: "18px" }} />}
+                color={openToTalk ? 'success' : 'default'}
+                onClick={handleOpenToTalkToggle}
+                sx={{ fontWeight: 700, cursor: 'pointer' }}
+              />
+            </Tooltip>
+            <Tooltip title={batteryLabels[socialBattery]} placement="right">
+              <Chip
+                size="small"
+                icon={batteryIcons[socialBattery]}
+                label=""
+                color="default"
+                onClick={handleBatteryToggle}
+                sx={{ fontWeight: 700, cursor: 'pointer' }}
+              />
+            </Tooltip>
+          </Stack>
         )}
       </Box>
     </Box>
   );
 }
 
-function AppShell({ children, tab, setTab, mode, muiTheme }) {
+function AppShell({
+  children,
+  tab,
+  setTab,
+  mode,
+  muiTheme,
+  socialBattery,
+  setSocialBattery,
+  openToTalk,
+  setOpenToTalk,
+}) {
   const isDesktop = useMediaQuery(muiTheme.breakpoints.up('lg'));
   const isTabletUp = useMediaQuery(muiTheme.breakpoints.up('md'));
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -221,6 +287,10 @@ function AppShell({ children, tab, setTab, mode, muiTheme }) {
       setCollapsed={setCollapsed}
       showCollapseControl={isDesktop}
       mode={mode}
+      socialBattery={socialBattery}
+      setSocialBattery={setSocialBattery}
+      openToTalk={openToTalk}
+      setOpenToTalk={setOpenToTalk}
     />
   );
 
@@ -399,7 +469,16 @@ function App() {
       ) : selectedEvent ? (
         <EventDetailPage event={selectedEvent} onBack={() => setSelectedEvent(null)} openToTalk={openToTalk} />
       ) : (
-        <AppShell tab={tab} setTab={setTab} mode={themeMode} muiTheme={muiTheme}>
+        <AppShell
+          tab={tab}
+          setTab={setTab}
+          mode={themeMode}
+          muiTheme={muiTheme}
+          socialBattery={socialBattery}
+          setSocialBattery={handleSetSocialBattery}
+          openToTalk={openToTalk}
+          setOpenToTalk={handleSetOpenToTalk}
+        >
           {pages[tab]}
         </AppShell>
       )}
