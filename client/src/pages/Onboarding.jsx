@@ -8,6 +8,7 @@ import {
   LinearProgress,
   Fade,
   Grid,
+  TextField,
   useTheme,
 } from '@mui/material';
 import BoltIcon from '@mui/icons-material/Bolt';
@@ -18,8 +19,17 @@ import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import NaturePeopleIcon from '@mui/icons-material/NaturePeople';
+import PaletteIcon from '@mui/icons-material/Palette';
+import CameraAltIcon from '@mui/icons-material/CameraAlt';
+import RestaurantIcon from '@mui/icons-material/Restaurant';
+import FlightIcon from '@mui/icons-material/Flight';
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import MovieIcon from '@mui/icons-material/Movie';
+import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
+import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import Battery1BarIcon from '@mui/icons-material/Battery1Bar';
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import Battery4BarIcon from '@mui/icons-material/Battery4Bar';
+import BatteryFullIcon from '@mui/icons-material/BatteryFull';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import proximityLogo from '../assets/proximity-logo.png';
 import proximityLogoDark from '../assets/proximity-logo-dark.png';
@@ -60,18 +70,27 @@ const interestOptions = [
   { label: 'Outdoors', icon: <NaturePeopleIcon fontSize="small" /> },
   { label: 'Socials', icon: <PeopleIcon fontSize="small" /> },
   { label: 'Startups', icon: <BoltIcon fontSize="small" /> },
+  { label: 'Art', icon: <PaletteIcon fontSize="small" /> },
+  { label: 'Photography', icon: <CameraAltIcon fontSize="small" /> },
+  { label: 'Cooking', icon: <RestaurantIcon fontSize="small" /> },
+  { label: 'Travel', icon: <FlightIcon fontSize="small" /> },
+  { label: 'Books', icon: <LibraryBooksIcon fontSize="small" /> },
+  { label: 'Movies', icon: <MovieIcon fontSize="small" /> },
+  { label: 'Sports', icon: <SportsSoccerIcon fontSize="small" /> },
+  { label: 'Volunteering', icon: <VolunteerActivismIcon fontSize="small" /> },
 ];
 
 const batteryOptions = [
   { value: 'low', icon: <Battery1BarIcon fontSize="large" />, label: 'Running low', desc: 'Show me quiet spaces and one-on-one options' },
-  { value: 'medium', icon: <BoltIcon fontSize="large" />, label: 'Moderate', desc: 'A balanced mix of social and quiet' },
-  { value: 'high', icon: <AutoAwesomeIcon fontSize="large" />, label: 'Fully charged', desc: "Show me everything - I'm ready to meet people" },
+  { value: 'medium', icon: <Battery4BarIcon fontSize="large" />, label: 'Moderate', desc: 'A balanced mix of social and quiet' },
+  { value: 'high', icon: <BatteryFullIcon fontSize="large" />, label: 'Fully charged', desc: "Show me everything - I'm ready to meet people" },
 ];
 
 export default function OnboardingPage({ onComplete }) {
   const [step, setStep] = useState(0);
   const [battery, setBattery] = useState('medium');
   const [interests, setInterests] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
@@ -166,8 +185,17 @@ export default function OnboardingPage({ onComplete }) {
                 <Box>
                   <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.7rem' }, lineHeight: 1.08, mb: 1.2 }}>{current.title}</Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ mb: 3.5, maxWidth: 640 }}>{current.subtitle}</Typography>
+                  <TextField
+                    fullWidth
+                    placeholder="Search interests..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    sx={{ mb: 2 }}
+                  />
                   <Grid container spacing={1.4}>
-                    {interestOptions.map(({ label, icon }) => (
+                    {interestOptions
+                      .filter(({ label }) => label.toLowerCase().includes(searchTerm.toLowerCase()))
+                      .map(({ label, icon }) => (
                       <Grid item xs={12} sm={6} key={label}>
                         <Chip
                           icon={icon}

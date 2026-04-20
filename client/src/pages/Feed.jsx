@@ -21,8 +21,8 @@ import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import TuneIcon from '@mui/icons-material/Tune';
 import Battery1BarIcon from '@mui/icons-material/Battery1Bar';
-import BoltIcon from '@mui/icons-material/Bolt';
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import Battery4BarIcon from '@mui/icons-material/Battery4Bar';
+import BatteryFullIcon from '@mui/icons-material/BatteryFull';
 import { contextFeed, batteryLevels, vibeFilters } from '../data/mockData';
 import { alpha } from '@mui/material/styles';
 
@@ -34,8 +34,8 @@ const vibeColor = {
 const getBatteryIcon = (iconName) => {
   const icons = {
     battery: <Battery1BarIcon fontSize="large" />,
-    bolt: <BoltIcon fontSize="large" />,
-    auto_awesome: <AutoAwesomeIcon fontSize="large" />,
+    medium: <Battery4BarIcon fontSize="large" />,
+    full: <BatteryFullIcon fontSize="large" />,
   };
   return icons[iconName] || icons.bolt;
 };

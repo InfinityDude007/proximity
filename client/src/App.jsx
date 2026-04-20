@@ -26,7 +26,7 @@ import ExploreIcon from '@mui/icons-material/Explore';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
-import BoltRoundedIcon from '@mui/icons-material/BoltRounded';
+import Battery4BarIcon from '@mui/icons-material/Battery4Bar';
 
 import { createAppTheme } from './theme';
 import proximityLogo from './assets/proximity-logo.png';

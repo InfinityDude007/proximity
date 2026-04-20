@@ -6,7 +6,7 @@ export const currentUser = {
   avatar: 'A',
   year: '2nd Year',
   degree: 'Computer Science',
-  interests: ['Coffee', 'Gaming', 'Music', 'Study Groups'],
+  interests: ['Coffee', 'Gaming', 'Music', 'Study Groups', 'Art', 'Photography'],
   socialBattery: 'medium', // low | medium | high
   openToTalk: true,
 };
@@ -22,9 +22,9 @@ export const contextFeed = [
     vibe: 'quiet',
     tags: ['Study', 'CS', 'Group'],
     attendees: [
-      { id: 'u1', name: 'Riya', avatar: 'R', degree: 'Computer Science', openToTalk: true },
-      { id: 'u2', name: 'Tom', avatar: 'T', degree: 'Computer Science', openToTalk: false },
-      { id: 'u3', name: 'Leila', avatar: 'L', degree: 'Computer Science', openToTalk: true },
+      { id: 'u1', name: 'Riya', avatar: 'R', degree: 'Computer Science', openToTalk: true, interests: ['Study Groups', 'Coffee', 'Books'] },
+      { id: 'u2', name: 'Tom', avatar: 'T', degree: 'Computer Science', openToTalk: false, interests: ['Gaming', 'Sports'] },
+      { id: 'u3', name: 'Leila', avatar: 'L', degree: 'Computer Science', openToTalk: true, interests: ['Music', 'Art', 'Outdoors'] },
     ],
     mutualCount: 3,
     description: 'Informal study group for CS students. Drop in anytime, no RSVP needed.',
@@ -41,8 +41,8 @@ export const contextFeed = [
     vibe: 'social',
     tags: ['Coffee', 'Casual', 'Drop-in'],
     attendees: [
-      { id: 'u4', name: 'James', avatar: 'J', degree: 'Business', openToTalk: true },
-      { id: 'u5', name: 'Priya', avatar: 'P', degree: 'Engineering', openToTalk: true },
+      { id: 'u4', name: 'James', avatar: 'J', degree: 'Business', openToTalk: true, interests: ['Coffee', 'Startups', 'Travel'] },
+      { id: 'u5', name: 'Priya', avatar: 'P', degree: 'Engineering', openToTalk: true, interests: ['Fitness', 'Cooking', 'Movies'] },
     ],
     mutualCount: 1,
     description: 'Popular hangout spot. Grab a coffee and see who\'s around.',
@@ -171,21 +171,21 @@ export const batteryLevels = {
     label: 'Low Battery',
     description: 'You\'ll see fewer suggestions and quieter spaces',
     color: '#E76F51',
-    icon: 'battery', // BatteryLowIcon
+    icon: 'low',
     recommendations: ['Quiet spots', 'One-on-one only'],
   },
   medium: {
     label: 'Moderate Energy',
     description: 'A balanced mix of events and quiet spots',
     color: '#F4A261',
-    icon: 'bolt', // BoltIcon
+    icon: 'medium',
     recommendations: ['Small groups', 'Drop-in events'],
   },
   high: {
     label: 'Fully Charged',
     description: 'You\'re open to anything - social events included',
     color: '#52B788',
-    icon: 'auto_awesome', // AutoAwesomeIcon
+    icon: 'full',
     recommendations: ['All events', 'Group socials', 'New connections'],
   },
 };
