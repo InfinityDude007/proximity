@@ -246,9 +246,13 @@ export default function EventDetailPage({ event, onBack, openToTalk }) {
           sx={{
             p: { xs: 2.5, md: 4 },
             mb: 3,
-            borderRadius: 6,
-            background: 'linear-gradient(160deg, #1B4332 0%, #2D6A4F 60%, #52B788 100%)',
+            borderRadius: 3,
+            background: isDark
+              ? 'linear-gradient(160deg, #17192B 0%, #20243D 55%, #2B3154 100%)'
+              : 'linear-gradient(160deg, #1B4332 0%, #2D6A4F 60%, #52B788 100%)',
             color: 'white',
+            border: '1px solid',
+            borderColor: isDark ? '#2A2E49' : 'transparent',
           }}
         >
           <IconButton
@@ -296,7 +300,14 @@ export default function EventDetailPage({ event, onBack, openToTalk }) {
           </Grid>
         </Box>
 
-        <Grid container spacing={3}>
+        <Grid
+          container
+          spacing={10}
+          sx={{
+            position: 'relative',
+            left: { xs: 0, lg: 50, xl: 100 },
+          }}
+        >
           <Grid item xs={12} xl={8}>
             <Card>
               <CardContent sx={{ p: 3 }}>
@@ -338,7 +349,7 @@ export default function EventDetailPage({ event, onBack, openToTalk }) {
           </Grid>
 
           <Grid item xs={12} xl={4}>
-            <Stack spacing={3}>
+            <Stack spacing={3.5}>
               <Card>
                 <CardContent sx={{ p: 3, textAlign: 'center' }}>
                   <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 1.5 }}>
