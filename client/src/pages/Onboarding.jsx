@@ -11,6 +11,7 @@ import {
   TextField,
   useTheme,
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import BoltIcon from '@mui/icons-material/Bolt';
 import PeopleIcon from '@mui/icons-material/People';
 import LocalCafeIcon from '@mui/icons-material/LocalCafe';
@@ -106,7 +107,7 @@ export default function OnboardingPage({ onComplete }) {
     <Box
       sx={{
         minHeight: '100vh',
-        bgcolor: '#F8F5F0',
+        bgcolor: 'background.default',
         display: 'grid',
         placeItems: 'center',
         px: { xs: 2, md: 4 },
@@ -128,7 +129,7 @@ export default function OnboardingPage({ onComplete }) {
         }}
       >
         <Box sx={{ p: { xs: 3, md: 5 } }}>
-          {step > 0 && step < steps.length - 1 && <LinearProgress variant="determinate" value={progress} sx={{ mb: 4, bgcolor: '#E8E4DE', '& .MuiLinearProgress-bar': { background: 'linear-gradient(90deg, #2D6A4F, #52B788)' } }} />}
+          {step > 0 && step < steps.length - 1 && <LinearProgress variant="determinate" value={progress} sx={{ mb: 4, bgcolor: 'divider', '& .MuiLinearProgress-bar': { background: isDark ? 'linear-gradient(90deg, #6E5CE6, #8B7CF6)' : 'linear-gradient(90deg, #2D6A4F, #52B788)' } }} />}
 
           <Fade in key={step} timeout={300}>
             <Box>
@@ -143,7 +144,7 @@ export default function OnboardingPage({ onComplete }) {
                   </Typography>
                   <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
                     {['No forced interactions', 'Context-first', 'Low pressure'].map((tag) => (
-                      <Chip key={tag} label={tag} size="small" sx={{ bgcolor: '#E8F5E9', color: 'primary.dark', fontWeight: 600 }} />
+                      <Chip key={tag} label={tag} size="small" sx={{ bgcolor: isDark ? alpha('#8B7CF6', 0.15) : '#E8F5E9', color: isDark ? 'primary.light' : 'primary.dark', fontWeight: 600 }} />
                     ))}
                   </Stack>
                 </Box>
@@ -164,7 +165,7 @@ export default function OnboardingPage({ onComplete }) {
                           borderRadius: 4,
                           p: 2.25,
                           cursor: 'pointer',
-                          bgcolor: battery === option.value ? '#F0FAF4' : 'white',
+                          bgcolor: battery === option.value ? (isDark ? alpha('#8B7CF6', 0.15) : '#F0FAF4') : 'background.paper',
                           transition: 'all 0.18s ease',
                         }}
                       >
@@ -207,10 +208,10 @@ export default function OnboardingPage({ onComplete }) {
                             px: 1.5,
                             py: 3,
                             fontSize: '0.96rem',
-                            bgcolor: interests.includes(label) ? '#2D6A4F' : 'white',
+                            bgcolor: interests.includes(label) ? 'primary.main' : 'background.paper',
                             color: interests.includes(label) ? 'white' : 'text.primary',
                             border: '2px solid',
-                            borderColor: interests.includes(label) ? '#2D6A4F' : '#E8E4DE',
+                            borderColor: interests.includes(label) ? 'primary.main' : 'divider',
                             '& .MuiChip-icon': { color: interests.includes(label) ? 'white' : 'primary.main' },
                           }}
                         />
@@ -228,7 +229,7 @@ export default function OnboardingPage({ onComplete }) {
                   <CheckCircleIcon sx={{ fontSize: '5rem', mb: 1.5, color: 'primary.main' }} />
                   <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.8rem' }, mb: 1.4 }}>{current.title}</Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ mb: 3.5, maxWidth: 560 }}>{current.subtitle}</Typography>
-                  <Box sx={{ bgcolor: '#F8F5F0', borderRadius: 4, p: 2.2, maxWidth: 580 }}>
+                  <Box sx={{ bgcolor: 'action.hover', borderRadius: 4, p: 2.2, maxWidth: 580 }}>
                     <Typography variant="body2" color="text.secondary">
                       You’ll start with {batteryOptions.find((option) => option.value === battery)?.label.toLowerCase()} energy and {interests.length || 0} selected interest{interests.length === 1 ? '' : 's'}.
                     </Typography>
@@ -251,7 +252,9 @@ export default function OnboardingPage({ onComplete }) {
         <Box
           sx={{
             display: { xs: 'none', lg: 'block' },
-            background: 'linear-gradient(165deg, #1B4332 0%, #2D6A4F 48%, #52B788 100%)',
+            background: isDark
+              ? 'linear-gradient(165deg, #1a1040 0%, #2d1f6e 48%, #6E5CE6 100%)'
+              : 'linear-gradient(165deg, #1B4332 0%, #2D6A4F 48%, #52B788 100%)',
             color: 'white',
             p: 5,
             position: 'relative',

@@ -21,6 +21,7 @@ import SendIcon from '@mui/icons-material/Send';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
+import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
 import { messages } from '../data/mockData';
 import { alpha, useTheme } from '@mui/material/styles';
 
@@ -178,7 +179,7 @@ export default function MessagesPage() {
       <Box sx={{ mb: 3.2 }}>
         <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.5rem' }, mb: 0.8 }}>Messages</Typography>
         <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 720 }}>
-          Every chat started from a real shared moment. This view now uses wider layouts, a cleaner hierarchy, and roomier message cards on desktop.
+          Every conversation here started from a real shared moment — a study session, a café, or an event you both attended.
         </Typography>
       </Box>
 
@@ -197,15 +198,29 @@ export default function MessagesPage() {
                 sx={{ mb: 2 }}
               />
               <List sx={{ p: 0, display: 'grid', gap: 1.2 }}>
-                {filteredMessages.map((msg) => (
-                  <ListItemButton
-                    key={msg.id}
-                    onClick={() => setSelected(msg.id)}
-                    sx={{ p: 0, borderRadius: 3, display: 'block' }}
-                  >
-                    <MessageCard msg={msg} onOpen={setSelected} />
-                  </ListItemButton>
-                ))}
+                {filteredMessages.length === 0 ? (
+                  <Box sx={{ textAlign: 'center', py: 5 }}>
+                    <ForumOutlinedIcon sx={{ fontSize: 48, color: 'text.secondary', opacity: 0.4, mb: 1.5 }} />
+                    <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 0.5 }}>
+                      {query ? 'No messages found' : 'No messages yet'}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 260, mx: 'auto' }}>
+                      {query
+                        ? 'Try a different search term.'
+                        : 'Start a conversation by saying hi to someone at a nearby event.'}
+                    </Typography>
+                  </Box>
+                ) : (
+                  filteredMessages.map((msg) => (
+                    <ListItemButton
+                      key={msg.id}
+                      onClick={() => setSelected(msg.id)}
+                      sx={{ p: 0, borderRadius: 3, display: 'block' }}
+                    >
+                      <MessageCard msg={msg} onOpen={setSelected} />
+                    </ListItemButton>
+                  ))
+                )}
               </List>
             </CardContent>
           </Card>

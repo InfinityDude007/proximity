@@ -22,6 +22,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import MapIcon from '@mui/icons-material/Map';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
 import { connections, softInviteTemplates } from '../data/mockData';
 import { alpha, useTheme } from '@mui/material/styles';
 
@@ -290,7 +291,7 @@ export default function ConnectionsPage() {
             <Box>
               <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 0.4 }}>Acquaintance → Friend</Typography>
               <Typography variant="body2" color="text.secondary">
-                The more contexts you share, the stronger the connection becomes. This view now scales properly across desktop instead of compressing everything into a narrow stack.
+                The more shared moments you have with someone, the stronger your connection grows — from acquaintance to friend, naturally.
               </Typography>
             </Box>
           </Box>
@@ -311,13 +312,35 @@ export default function ConnectionsPage() {
         </Grid>
       </Grid>
 
-      <Grid container spacing={2.5}>
-        {connections.map((person) => (
-          <Grid item xs={12} md={6} xl={4} key={person.id}>
-            <ConnectionCard person={person} onViewProfile={setSelectedPerson} />
-          </Grid>
-        ))}
-      </Grid>
+      {connections.length === 0 ? (
+        <Box
+          sx={{
+            textAlign: 'center',
+            py: 8,
+            px: 3,
+            bgcolor: 'background.paper',
+            borderRadius: 5,
+            border: '1px solid',
+            borderColor: 'divider',
+          }}
+        >
+          <PeopleOutlinedIcon sx={{ fontSize: 56, color: 'text.secondary', opacity: 0.4, mb: 2 }} />
+          <Typography variant="h6" fontWeight={800} sx={{ mb: 1 }}>
+            No connections yet
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 420, mx: 'auto' }}>
+            Head to Discover and join a nearby event or spot — you'll build connections naturally through shared moments.
+          </Typography>
+        </Box>
+      ) : (
+        <Grid container spacing={2.5}>
+          {connections.map((person) => (
+            <Grid item xs={12} md={6} xl={4} key={person.id}>
+              <ConnectionCard person={person} onViewProfile={setSelectedPerson} />
+            </Grid>
+          ))}
+        </Grid>
+      )}
 
       <ProfileDialog person={selectedPerson} open={Boolean(selectedPerson)} onClose={() => setSelectedPerson(null)} />
     </Box>

@@ -23,6 +23,7 @@ import TuneIcon from '@mui/icons-material/Tune';
 import Battery1BarIcon from '@mui/icons-material/Battery1Bar';
 import Battery4BarIcon from '@mui/icons-material/Battery4Bar';
 import BatteryFullIcon from '@mui/icons-material/BatteryFull';
+import SearchOffIcon from '@mui/icons-material/SearchOff';
 import { contextFeed, batteryLevels, vibeFilters } from '../data/mockData';
 import { alpha } from '@mui/material/styles';
 
@@ -350,18 +351,43 @@ export default function FeedPage({ socialBattery, userInterests, onSelectEvent }
                 />
               ))}
             </Stack>
-            <Button startIcon={<TuneIcon />} variant="outlined" sx={{ alignSelf: { xs: 'flex-start', md: 'center' }, px: 2.5, py: 1.2 }} onClick={() => alert('Open advanced filter settings')}>
+            <Button startIcon={<TuneIcon />} variant="outlined" sx={{ alignSelf: { xs: 'flex-start', md: 'center' }, px: 2.5, py: 1.2 }}>
               Refine feed
             </Button>
           </Box>
 
-          <Grid container spacing={2.25}>
-            {filtered.map((event) => (
-              <Grid key={event.id} item xs={12} md={6}>
-                <ContextCard event={event} onSelect={onSelectEvent} />
-              </Grid>
-            ))}
-          </Grid>
+          {filtered.length === 0 ? (
+            <Box
+              sx={{
+                textAlign: 'center',
+                py: 8,
+                px: 3,
+                bgcolor: 'background.paper',
+                borderRadius: 5,
+                border: '1px solid',
+                borderColor: 'divider',
+              }}
+            >
+              <SearchOffIcon sx={{ fontSize: 56, color: 'text.secondary', opacity: 0.5, mb: 2 }} />
+              <Typography variant="h6" fontWeight={800} sx={{ mb: 1 }}>
+                No events match your filter
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 400, mx: 'auto', mb: 2.5 }}>
+                Try a different filter, or reset to "All" to see everything nearby.
+              </Typography>
+              <Button variant="outlined" onClick={() => setActiveFilter('All')}>
+                Show all events
+              </Button>
+            </Box>
+          ) : (
+            <Grid container spacing={2.25}>
+              {filtered.map((event) => (
+                <Grid key={event.id} item xs={12} md={6}>
+                  <ContextCard event={event} onSelect={onSelectEvent} />
+                </Grid>
+              ))}
+            </Grid>
+          )}
         </Grid>
 
         <Grid item xs={12} lg={3.7}>
@@ -378,8 +404,7 @@ export default function FeedPage({ socialBattery, userInterests, onSelectEvent }
                       borderColor: 'divider',
                       p: 1.2,
                     }}
-                    onClick={() => alert('Notification settings')}
-                    title="Notification settings"
+                      title="Notification settings"
                   >
                     <NotificationsNoneIcon fontSize="small" />
                   </IconButton>
