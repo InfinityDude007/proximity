@@ -76,7 +76,7 @@ function PageHero({ battery, socialBattery, setSocialBattery, openToTalk, setOpe
           }}
         />
         <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.5rem' }, lineHeight: 1.05, mb: 1.2 }}>
-          Discover What's Happening Around you
+          Discover What's Happening Around You
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ minWidth: '100%', mb: 2.2 }}>
           Shared places, active people, and low-pressure ways to connect across the University of Birmingham Dubai.
