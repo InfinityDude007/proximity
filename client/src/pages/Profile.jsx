@@ -10,7 +10,6 @@ import {
   Divider,
   Stack,
   Grid,
-  Button,
   IconButton,
   TextField,
 } from '@mui/material';
@@ -40,10 +39,7 @@ import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 
 import { currentUser, batteryLevels } from '../data/mockData';
-import {
-  loadUserPreferences,
-  saveOnboarded,
-} from '../utils/storage';
+import { saveOnboarded } from '../utils/storage';
 
 const batteryOptions = [
   { value: 'low', icon: <Battery1BarIcon />, label: 'Low' },
@@ -70,6 +66,32 @@ const interestOptions = [
   { label: 'Volunteering', icon: <VolunteerActivismIcon fontSize="small" /> },
 ];
 
+function SettingRow({ title, desc, control }) {
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 2,
+        flexWrap: 'wrap',
+      }}
+    >
+      <Box sx={{ flex: 1, minWidth: 160 }}>
+        <Typography variant="body1" fontWeight={700}>
+          {title}
+        </Typography>
+        {desc && (
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }}>
+            {desc}
+          </Typography>
+        )}
+      </Box>
+      {control}
+    </Box>
+  );
+}
+
 export default function ProfilePage({
   socialBattery,
   setSocialBattery,
@@ -81,7 +103,6 @@ export default function ProfilePage({
   setThemeMode,
 }) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [onboarded, setOnboarded] = useState(false);
   const battery = batteryLevels[socialBattery];
   const isDark = themeMode === 'dark';
   const handleThemeToggle = (event) => {
@@ -97,10 +118,9 @@ export default function ProfilePage({
   };
 
   const handleRedoOnboarding = () => {
-      setOnboarded(false);
-      saveOnboarded(false);
-      window.location.reload();
-    };
+    saveOnboarded(false);
+    window.location.reload();
+  };
 
   return (
     <Box>
@@ -115,8 +135,8 @@ export default function ProfilePage({
 
       <Stack spacing={2.5}>
         <Card>
-          <CardContent sx={{ p: 3 }}>
-            <Box sx={{ display: 'flex', gap: 2.4, alignItems: 'center', mb: 2.4 }}>
+          <CardContent sx={{ p: 3, textAlign: 'center' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.4, alignItems: 'center', mb: 2.4 }}>
               <Avatar sx={{ bgcolor: 'primary.main', width: 78, height: 78, fontSize: '1.8rem', fontWeight: 800 }}>
                 {currentUser.avatar}
               </Avatar>
@@ -164,7 +184,7 @@ export default function ProfilePage({
               placeholder="Search interests..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              sx={{ mb: 2 }}
+              sx={{ mb: 2, width: '100%', maxWidth: 360 }}
             />
             <Stack direction="row" spacing={1.2} useFlexGap sx={{ flexWrap: 'wrap' }}>
               {interestOptions
@@ -201,7 +221,7 @@ export default function ProfilePage({
               bgcolor: isDark ? alpha('#8B7CF6', 0.08) : '#FAFFF9',
             }}
           >
-            <CardContent sx={{ p: 2.4 }}>
+            <CardContent sx={{ p: 2.4, textAlign: 'center' }}>
               <Typography variant="caption" color="primary.main" fontWeight={800} display="block" sx={{ mb: 0.5 }}>
                 Your data & privacy
               </Typography>
@@ -211,59 +231,67 @@ export default function ProfilePage({
             </CardContent>
           </Card>
           <Card sx={{ flex: 1 }}>
-            <CardContent sx={{ p: 2.8 }}>
-              <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 2 }}>
-                <Box sx={{ flex: 1 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.6 }}>
-                    <Typography variant="h6" fontWeight={800}>Redo Onboarding</Typography>
-                  </Box>
-                  <Typography variant="body2" color="text.secondary">
-                    Need a refresher on how everything works? No problem!
-                  </Typography>
-                </Box>
-                <IconButton onClick={() => handleRedoOnboarding()} sx={{ p: 1, mx: "auto" }}>
+            <CardContent
+              sx={{
+                p: 2.5,
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textAlign: 'center',
+                gap: 1.25,
+              }}
+            >
+              <Typography variant="h6" fontWeight={800}>Redo Onboarding</Typography>
+              <Typography variant="body2" color="text.secondary">
+                Need a refresher on how everything works?
+              </Typography>
+              <IconButton onClick={handleRedoOnboarding} sx={{ bgcolor: 'action.hover', p: 1.25 }}>
                   <RestartAltIcon sx={{ fontSize: 28 }} />
-                </IconButton>
-              </Box>
+              </IconButton>
             </CardContent>
           </Card>
         </Box>
 
         <Card>
-          <CardContent sx={{ p: 2.8 }}>
-            <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 2 }}>
-              <Box sx={{ flex: 1 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.6 }}>
-                  {openToTalk ?
-                    <FiberManualRecordIcon sx={{ fontSize: 10, color: '#52B788' }} />
-                    : <FiberManualRecordIcon sx={{ fontSize: 10, color: '#E76F51' }} />
-                  }
-                  <Typography variant="h6" fontWeight={800}>Open to chat</Typography>
+          <CardContent sx={{ p: 3 }}>
+            <SettingRow
+              title={
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                  <FiberManualRecordIcon
+                    sx={{ fontSize: 10, color: openToTalk ? '#52B788' : '#E76F51' }}
+                  />
+                  Open to chat
                 </Box>
-                <Typography variant="body2" color="text.secondary">
-                  {openToTalk ? 'Others in the same location can send you a soft invite.' : 'You’re in private mode - no one can reach out.'}
-                </Typography>
-              </Box>
-              <Switch checked={openToTalk} onChange={(e) => setOpenToTalk(e.target.checked)} color="primary" />
-            </Box>
+              }
+              desc={
+                openToTalk
+                  ? 'Others in the same location can send you a soft invite.'
+                  : "You're in private mode — no one can reach out."
+              }
+              control={
+                <Switch checked={openToTalk} onChange={(e) => setOpenToTalk(e.target.checked)} color="primary" />
+              }
+            />
 
             {openToTalk && (
               <Box
                 sx={{
-                  mt: 1.8,
-                  p: 1.8,
+                  mt: 2,
+                  p: 1.75,
                   bgcolor: isDark ? alpha('#52B788', 0.12) : '#F0FAF4',
                   borderRadius: 3,
                   border: '1px solid',
                   borderColor: isDark ? alpha('#52B788', 0.26) : '#C8E6C9',
                   display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: 1,
+                  alignItems: 'center',
+                  gap: 1.25,
                 }}
               >
-                <FiberManualRecordIcon sx={{ color: 'primary.main', mt: 0.3, fontSize: 18, flexShrink: 0 }} />
+                <FiberManualRecordIcon sx={{ color: 'primary.main', fontSize: 16, flexShrink: 0 }} />
                 <Typography variant="body2" color={isDark ? 'text.primary' : 'primary.dark'}>
-                  You're visible to people at the same places as you. They can only send soft openers - no cold messages.
+                  You're visible to people at the same places as you. They can only send soft openers — no cold messages.
                 </Typography>
               </Box>
             )}
@@ -271,9 +299,9 @@ export default function ProfilePage({
         </Card>
 
         <Card>
-          <CardContent sx={{ p: 2.8 }}>
-            <Typography variant="h6" fontWeight={800} sx={{ mb: 0.5 }}>Social battery</Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2.4 }}>
+          <CardContent sx={{ p: 3, textAlign: 'center' }}>
+            <Typography variant="h6" fontWeight={800} sx={{ mb: 0.75 }}>Social battery</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5 }}>
               Adjust this to change what your feed prioritises.
             </Typography>
 
@@ -283,7 +311,7 @@ export default function ProfilePage({
                   <Box
                     onClick={() => setSocialBattery(option.value)}
                     sx={{
-                      height: '100%',
+                      minHeight: 120,
                       border: '2px solid',
                       borderColor: socialBattery === option.value ? 'primary.main' : 'divider',
                       borderRadius: 3,
@@ -294,11 +322,14 @@ export default function ProfilePage({
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
+                      justifyContent: 'center',
+                      textAlign: 'center',
+                      gap: 0.75,
                     }}
                   >
-                    <Box sx={{ fontSize: '2rem', mb: 0.8, color: 'primary.main' }}>{option.icon}</Box>
+                    <Box sx={{ color: 'primary.main' }}>{option.icon}</Box>
                     <Typography variant="subtitle1" fontWeight={800}>{option.label}</Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.4, textAlign: 'center' }}>
+                    <Typography variant="body2" color="text.secondary">
                       {batteryLevels[option.value].description}
                     </Typography>
                   </Box>
@@ -306,7 +337,7 @@ export default function ProfilePage({
               ))}
             </Grid>
 
-            <Box sx={{ mt: 2, p: 1.8, bgcolor: 'action.hover', borderRadius: 3 }}>
+            <Box sx={{ mt: 2, p: 1.75, bgcolor: 'action.hover', borderRadius: 3, textAlign: 'center' }}>
               <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.4 }}>
                 Current feed focus
               </Typography>
@@ -316,58 +347,56 @@ export default function ProfilePage({
         </Card>
 
         <Card>
-          <CardContent sx={{ p: 2.8 }}>
-            <Typography variant="h6" fontWeight={800} sx={{ mb: 2 }}>Preferences</Typography>
-            {[
-              { label: 'Event reminders', desc: 'Notify me when something nearby starts', defaultOn: true },
-              { label: 'Follow-up prompts', desc: 'Suggest reconnecting after shared events', defaultOn: true },
-              { label: 'Group suggestions only', desc: 'Prefer group over one-on-one', defaultOn: false },
-            ].map((pref, index) => (
-              <Box key={pref.label}>
-                {index > 0 && <Divider sx={{ my: 1.6 }} />}
-                <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 2 }}>
-                  <Box sx={{ flex: 1 }}>
-                    <Typography variant="body1" fontWeight={700}>{pref.label}</Typography>
-                    <Typography variant="body2" color="text.secondary">{pref.desc}</Typography>
-                  </Box>
-                  <Switch defaultChecked={pref.defaultOn} color="primary" size="small" />
+          <CardContent sx={{ p: 3 }}>
+            <Typography variant="h6" fontWeight={800} sx={{ mb: 2.5 }}>Preferences</Typography>
+            <Stack spacing={0}>
+              {[
+                { label: 'Event reminders', desc: 'Notify me when something nearby starts', defaultOn: true },
+                { label: 'Follow-up prompts', desc: 'Suggest reconnecting after shared events', defaultOn: true },
+                { label: 'Group suggestions only', desc: 'Prefer group over one-on-one', defaultOn: false },
+              ].map((pref, index) => (
+                <Box key={pref.label}>
+                  {index > 0 && <Divider sx={{ my: 1.75 }} />}
+                  <SettingRow
+                    title={pref.label}
+                    desc={pref.desc}
+                    control={<Switch defaultChecked={pref.defaultOn} color="primary" size="small" />}
+                  />
                 </Box>
-              </Box>
-            ))}
-            <Divider sx={{ my: 1.6 }} />
-            <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 2 }}>
-              <Box sx={{ flex: 1 }}>
-                <Typography variant="body1" fontWeight={700}>Appearance</Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Switch between light and dark mode.
-                </Typography>
-                <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap sx={{ mt: 1.25 }}>
-                  <Chip
-                    icon={<LightModeRoundedIcon />}
-                    label="Light"
+              ))}
+              <Divider sx={{ my: 1.75 }} />
+              <SettingRow
+                title="Appearance"
+                desc="Switch between light and dark mode."
+                control={
+                  <Switch
+                    checked={isDark}
+                    onChange={handleThemeToggle}
+                    color="primary"
                     size="small"
-                    variant={isDark ? 'outlined' : 'filled'}
-                    color={isDark ? 'default' : 'primary'}
-                    onClick={() => setThemeMode('light')}
+                    inputProps={{ 'aria-label': 'Toggle dark mode' }}
                   />
-                  <Chip
-                    icon={<DarkModeRoundedIcon />}
-                    label="Dark"
-                    size="small"
-                    variant={isDark ? 'filled' : 'outlined'}
-                    color={isDark ? 'primary' : 'default'}
-                    onClick={() => setThemeMode('dark')}
-                  />
-                </Stack>
-              </Box>
-              <Switch
-                checked={isDark}
-                onChange={handleThemeToggle}
-                color="primary"
-                size="small"
-                inputProps={{ 'aria-label': 'Toggle dark mode' }}
+                }
               />
-            </Box>
+              <Stack direction="row" spacing={1} alignItems="center" justifyContent="center" flexWrap="wrap" useFlexGap sx={{ mt: 1.5 }}>
+                <Chip
+                  icon={<LightModeRoundedIcon />}
+                  label="Light"
+                  size="small"
+                  variant={isDark ? 'outlined' : 'filled'}
+                  color={isDark ? 'default' : 'primary'}
+                  onClick={() => setThemeMode('light')}
+                />
+                <Chip
+                  icon={<DarkModeRoundedIcon />}
+                  label="Dark"
+                  size="small"
+                  variant={isDark ? 'filled' : 'outlined'}
+                  color={isDark ? 'primary' : 'default'}
+                  onClick={() => setThemeMode('dark')}
+                />
+              </Stack>
+            </Stack>
           </CardContent>
         </Card>
       </Stack>

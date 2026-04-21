@@ -115,6 +115,13 @@ export default function OnboardingPage({ onComplete }) {
     setInterests((prev) => (prev.includes(label) ? prev.filter((i) => i !== label) : [...prev, label]));
   };
 
+  const goNext = () =>
+    step === steps.length - 1
+      ? onComplete(battery, interests)
+      : setStep((s) => Math.min(steps.length - 1, s + 1));
+
+  const goBack = () => setStep((s) => Math.max(0, s - 1));
+
   return (
     <Box
       sx={{
@@ -140,18 +147,18 @@ export default function OnboardingPage({ onComplete }) {
           gridTemplateColumns: { xs: '1fr', lg: '1.02fr 0.98fr' },
         }}
       >
-        <Box sx={{ p: { xs: 3, md: 5 } }}>
+        <Box sx={{ p: { xs: 3, md: 5 }, display: 'flex', flexDirection: 'column' }}>
           {step > 0 && step < steps.length - 1 && <LinearProgress variant="determinate" value={progress} sx={{ mb: 4, bgcolor: 'divider', '& .MuiLinearProgress-bar': { background: isDark ? 'linear-gradient(90deg, #6E5CE6, #8B7CF6)' : 'linear-gradient(90deg, #2D6A4F, #52B788)' } }} />}
 
           <Fade in key={step} timeout={300}>
-            <Box>
+            <Box sx={{ flex: 1 }}>
               {current.type === 'splash' && (
-                <Box sx={{ minHeight: { lg: 560 }, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                  <Box component="img" src={isDark ? proximityLogoDark : proximityLogo} alt="Proximity logo" sx={{ width: { xs: 220, md: 400 }, height: 'auto', mb: 4 }} />
+                <Box sx={{ minHeight: { lg: 520 }, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <Box component="img" src={isDark ? proximityLogoDark : proximityLogo} alt="Proximity logo" sx={{ width: { xs: 200, md: 380 }, height: 'auto', mb: 4 }} />
                   <Typography variant="h2" sx={{ fontSize: { xs: '2.35rem', md: '3.6rem' }, lineHeight: 1.02, mb: 2.2, whiteSpace: 'pre-line', maxWidth: 520 }}>
                     {current.title}
                   </Typography>
-                  <Typography variant="body1" color="text.secondary" sx={{ mb: 4, maxWidth: 560 }}>
+                  <Typography variant="body1" color="text.secondary" sx={{ mb: 4, maxWidth: 520 }}>
                     {current.subtitle}
                   </Typography>
                   <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
@@ -165,8 +172,8 @@ export default function OnboardingPage({ onComplete }) {
               {current.type === 'battery' && (
                 <Box>
                   <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.7rem' }, lineHeight: 1.08, mb: 1.2 }}>{current.title}</Typography>
-                  <Typography variant="body1" color="text.secondary" sx={{ mb: 3.5, maxWidth: 640 }}>{current.subtitle}</Typography>
-                  <Stack spacing={1.6}>
+                  <Typography variant="body1" color="text.secondary" sx={{ mb: 3.5, maxWidth: 560 }}>{current.subtitle}</Typography>
+                  <Stack spacing={1.5}>
                     {batteryOptions.map((option) => (
                       <Box
                         key={option.value}
@@ -179,14 +186,26 @@ export default function OnboardingPage({ onComplete }) {
                           cursor: 'pointer',
                           bgcolor: battery === option.value ? alpha(option.color, isDark ? 0.18 : 0.1) : 'background.paper',
                           transition: 'all 0.18s ease',
+                          minHeight: 80,
+                          display: 'flex',
+                          alignItems: 'center',
                         }}
                       >
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                          <Box sx={{ color: option.color }}>{option.icon}</Box>
-                          <Box>
-                            <Typography variant="subtitle1" fontWeight={800}>{option.label}</Typography>
-                            <Typography variant="body2" color="text.secondary">{option.desc}</Typography>
-                          </Box>
+                        <Box
+                          sx={{
+                            width: 40,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: option.color,
+                            flexShrink: 0,
+                          }}
+                        >
+                          {option.icon}
+                        </Box>
+                        <Box sx={{ ml: 2 }}>
+                          <Typography variant="subtitle1" fontWeight={800}>{option.label}</Typography>
+                          <Typography variant="body2" color="text.secondary">{option.desc}</Typography>
                         </Box>
                       </Box>
                     ))}
@@ -197,7 +216,7 @@ export default function OnboardingPage({ onComplete }) {
               {current.type === 'interests' && (
                 <Box>
                   <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.7rem' }, lineHeight: 1.08, mb: 1.2 }}>{current.title}</Typography>
-                  <Typography variant="body1" color="text.secondary" sx={{ mb: 3.5, maxWidth: 640 }}>{current.subtitle}</Typography>
+                  <Typography variant="body1" color="text.secondary" sx={{ mb: 3.5, maxWidth: 560 }}>{current.subtitle}</Typography>
                   <TextField
                     fullWidth
                     placeholder="Search interests..."
@@ -205,7 +224,7 @@ export default function OnboardingPage({ onComplete }) {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     sx={{ mb: 2 }}
                   />
-                  <Grid container spacing={1.4}>
+                  <Grid container spacing={1.25}>
                     {interestOptions
                       .filter(({ label }) => label.toLowerCase().includes(searchTerm.toLowerCase()))
                       .map(({ label, icon }) => (
@@ -218,30 +237,32 @@ export default function OnboardingPage({ onComplete }) {
                             width: '100%',
                             justifyContent: 'flex-start',
                             px: 1.5,
-                            py: 3,
-                            fontSize: '0.96rem',
+                            py: 2.75,
+                            fontSize: '0.95rem',
                             bgcolor: interests.includes(label) ? 'primary.main' : 'background.paper',
                             color: interests.includes(label) ? 'white' : 'text.primary',
                             border: '2px solid',
                             borderColor: interests.includes(label) ? 'primary.main' : 'divider',
+                            borderRadius: 2,
                             '& .MuiChip-icon': { color: interests.includes(label) ? 'white' : 'primary.main' },
+                            transition: 'all 0.15s ease',
                           }}
                         />
                       </Grid>
                     ))}
                   </Grid>
                   <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block' }}>
-                    {interests.length} selected - you can update this anytime.
+                    {interests.length} selected — you can update this anytime.
                   </Typography>
                 </Box>
               )}
 
               {current.type === 'ready' && (
-                <Box sx={{ minHeight: { lg: 560 }, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                  <CheckCircleIcon sx={{ fontSize: '5rem', mb: 1.5, color: 'primary.main' }} />
-                  <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.8rem' }, mb: 1.4 }}>{current.title}</Typography>
-                  <Typography variant="body1" color="text.secondary" sx={{ mb: 3.5, maxWidth: 560 }}>{current.subtitle}</Typography>
-                  <Box sx={{ bgcolor: 'action.hover', borderRadius: 4, p: 2.2, maxWidth: 580 }}>
+                <Box sx={{ minHeight: { lg: 520 }, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <CheckCircleIcon sx={{ fontSize: '5rem', mb: 2, color: 'primary.main' }} />
+                  <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.8rem' }, mb: 1.5, maxWidth: 520 }}>{current.title}</Typography>
+                  <Typography variant="body1" color="text.secondary" sx={{ mb: 3.5, maxWidth: 520 }}>{current.subtitle}</Typography>
+                  <Box sx={{ bgcolor: 'action.hover', borderRadius: 4, p: 2.25, maxWidth: 520 }}>
                     <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} sx={{ mb: 1.4 }}>
                       <Chip
                         icon={renderSocialBatteryIcon(battery, { fontSize: 'small' })}
@@ -273,11 +294,11 @@ export default function OnboardingPage({ onComplete }) {
             </Box>
           </Fade>
 
-          <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-between', gap: 1.5 }}>
-            <Button disabled={step === 0} variant="text" color="inherit" onClick={() => setStep((s) => Math.max(0, s - 1))}>
+          <Box sx={{ mt: 5, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 1.5 }}>
+            <Button disabled={step === 0} variant="text" color="inherit" onClick={goBack} sx={{ minWidth: 80 }}>
               Back
             </Button>
-            <Button variant="contained" onClick={() => (step === steps.length - 1 ? onComplete(battery, interests) : setStep((s) => Math.min(steps.length - 1, s + 1)))}>
+            <Button variant="contained" onClick={goNext} sx={{ minWidth: 140 }}>
               {step === steps.length - 1 ? 'Enter Proximity' : 'Continue'}
             </Button>
           </Box>
@@ -285,13 +306,14 @@ export default function OnboardingPage({ onComplete }) {
 
         <Box
           sx={{
-            display: { xs: 'none', lg: 'block' },
+            display: { xs: 'none', lg: 'flex' },
+            flexDirection: 'column',
+            justifyContent: 'center',
             background: isDark
               ? 'linear-gradient(165deg, #1a1040 0%, #2d1f6e 48%, #6E5CE6 100%)'
               : 'linear-gradient(165deg, #1B4332 0%, #2D6A4F 48%, #52B788 100%)',
             color: 'white',
             p: 5,
-            position: 'relative',
           }}
         >
           <Typography variant="overline" sx={{ letterSpacing: '0.18em', opacity: 0.8 }}>Campus connection, redesigned</Typography>

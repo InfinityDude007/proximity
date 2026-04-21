@@ -171,6 +171,17 @@ function ContextCard({ event, onSelect }) {
   const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
   const successSurface = alpha(theme.palette.success.main, isDark ? 0.18 : 0.1);
 
+  const MetaItem = ({ icon, text }) => (
+    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.75 }}>
+      <Box sx={{ width: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        {icon}
+      </Box>
+      <Typography variant="body2" color="text.secondary">
+        {text}
+      </Typography>
+    </Box>
+  );
+
   return (
     <Card
       onClick={() => onSelect(event)}
@@ -185,10 +196,26 @@ function ContextCard({ event, onSelect }) {
         },
       }}
     >
-      <CardContent sx={{ p: { xs: 2.5, md: 3 }, height: '100%', display: 'flex', flexDirection: 'column', gap: 1.2 }}>
-        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1.2, mb: 1.5 }}>
-          <Box>
-            <Stack direction="row" spacing={0.8} flexWrap="wrap" useFlexGap sx={{ mb: 1 }}>
+      <CardContent
+        sx={{
+          p: { xs: 2.5, md: 3 },
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          textAlign: 'center',
+          gap: 0,
+        }}
+      >
+        <Box sx={{ width: '100%', mb: 2 }}>
+          <Stack
+            direction="row"
+            spacing={0.75}
+            flexWrap="wrap"
+            useFlexGap
+            justifyContent="center"
+            sx={{ mb: 1.25 }}
+          >
               <Chip label={event.vibe === 'quiet' ? 'Quiet' : 'Social'} size="small" sx={{ bgcolor: vibe.bg, color: vibe.text, fontWeight: 700 }} />
               {event.mutualCount > 0 && (
                 <Chip
@@ -201,61 +228,86 @@ function ContextCard({ event, onSelect }) {
                   }}
                 />
               )}
-            </Stack>
-            <Typography variant="h6" sx={{ fontWeight: 800, lineHeight: 1.25, mb: 0.4 }}>
-              {event.title}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {event.description}
-            </Typography>
-          </Box>
-          <Button variant="outlined" size="small" sx={{ minWidth: 94, flexShrink: 0, px: 2, py: 1.1 }} onClick={() => onSelect(event)}>
+          </Stack>
+
+          <Typography variant="h6" sx={{ fontWeight: 800, lineHeight: 1.25, mb: 0.5 }}>
+            {event.title}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 360, mx: 'auto', mb: 1.5 }}>
+            {event.description}
+          </Typography>
+
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelect(event);
+            }}
+            sx={{ minWidth: 100, px: 2.5, py: 1 }}
+          >
             View
           </Button>
         </Box>
 
-        <Stack spacing={0.85} sx={{ mb: 2.2 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <LocationOnIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
-            <Typography variant="body2" color="text.secondary">{event.location}</Typography>
-          </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <AccessTimeIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
-            <Typography variant="body2" color="text.secondary">{event.time}</Typography>
-          </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <DirectionsWalkIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
-            <Typography variant="body2" color="text.secondary">{event.distance}</Typography>
-          </Box>
+        <Stack spacing={0.85} sx={{ mb: 2.25, width: '100%', alignItems: 'center' }}>
+          <MetaItem icon={<LocationOnIcon sx={{ fontSize: 16, color: 'text.secondary' }} />} text={event.location} />
+          <MetaItem icon={<AccessTimeIcon sx={{ fontSize: 16, color: 'text.secondary' }} />} text={event.time} />
+          <MetaItem icon={<DirectionsWalkIcon sx={{ fontSize: 16, color: 'text.secondary' }} />} text={event.distance} />
         </Stack>
 
-        <Divider sx={{ mb: 2 }} />
+        <Divider sx={{ mb: 2, width: '100%' }} />
 
-        <Box sx={{ mt: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1.5 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, minWidth: 0 }}>
-            <AvatarGroup
-              max={4}
-              sx={{ '& .MuiAvatar-root': { width: 32, height: 32, fontSize: '0.78rem', border: '2px solid', borderColor: 'background.paper' } }}
-            >
-              {event.attendees.map((a) => (
-                <Avatar key={a.id} sx={{ bgcolor: a.openToTalk ? 'primary.main' : 'action.disabled' }}>
-                  {a.avatar}
-                </Avatar>
-              ))}
-            </AvatarGroup>
-            <Box>
-              <Typography variant="body2" fontWeight={700}>
-                {openCount} open to chat
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 1,
+            mb: 2,
+            width: '100%',
+          }}
+        >
+          <AvatarGroup
+            max={4}
+            sx={{
+              '& .MuiAvatar-root': {
+                width: 32,
+                height: 32,
+                fontSize: '0.78rem',
+                border: '2px solid',
+                borderColor: 'background.paper',
+              },
+            }}
+          >
+            {event.attendees.map((a) => (
+              <Avatar key={a.id} sx={{ bgcolor: a.openToTalk ? 'primary.main' : 'action.disabled' }}>
+                {a.avatar}
+              </Avatar>
+            ))}
+          </AvatarGroup>
+
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="body2" fontWeight={700}>
+              {openCount} open to chat
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5, mt: 0.25 }}>
+              <FiberManualRecordIcon sx={{ fontSize: 8, color: 'success.main' }} />
+              <Typography variant="caption" color="text.secondary">
+                active now
               </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <FiberManualRecordIcon sx={{ fontSize: 8, color: 'success.main' }} />
-                <Typography variant="caption" color="text.secondary">active now</Typography>
-              </Box>
             </Box>
           </Box>
         </Box>
 
-        <Stack direction="row" spacing={0.8} flexWrap="wrap" useFlexGap sx={{ mt: 2 }}>
+        <Stack
+          direction="row"
+          spacing={0.75}
+          flexWrap="wrap"
+          useFlexGap
+          justifyContent="center"
+          sx={{ mt: 'auto', width: '100%' }}
+        >
           {event.tags.map((tag) => (
             <Chip
               key={tag}
@@ -275,8 +327,6 @@ function ContextCard({ event, onSelect }) {
 }
 
 function QuickStats() {
-  const theme = useTheme();
-  const isDark = theme.palette.mode === 'dark';
   const stats = useMemo(
     () => [
       { value: contextFeed.length, label: 'Live contexts nearby' },
@@ -288,11 +338,11 @@ function QuickStats() {
 
   return (
     <Card sx={{ height: '100%' }}>
-      <CardContent sx={{ p: 2.5 }}>
+      <CardContent sx={{ p: 2.5, textAlign: 'center' }}>
         <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 2 }}>
           Snapshot
         </Typography>
-        <Stack spacing={1.2}>
+        <Stack spacing={1.25}>
           {stats.map((stat) => (
             <Box
               key={stat.label}
@@ -300,6 +350,7 @@ function QuickStats() {
                 p: 1.5,
                 borderRadius: 3,
                 bgcolor: 'action.hover',
+                textAlign: 'center',
               }}
             >
               <Typography variant="h6" fontWeight={800}>{stat.value}</Typography>
@@ -360,10 +411,10 @@ export default function FeedPage({
           <Box
             sx={{
               display: 'flex',
-              alignItems: { xs: 'stretch', md: 'center' },
+              alignItems: 'center',
               justifyContent: 'space-between',
               gap: 1.5,
-              flexDirection: { xs: 'column', md: 'row' },
+              flexWrap: 'wrap',
               mb: 2,
             }}
           >
@@ -380,11 +431,12 @@ export default function FeedPage({
                     fontWeight: 700,
                     bgcolor: activeFilter === f ? undefined : subtleSurface,
                     borderColor: 'divider',
+                    flexShrink: 0,
                   }}
                 />
               ))}
             </Stack>
-            <Button startIcon={<TuneIcon />} variant="outlined" sx={{ alignSelf: { xs: 'flex-start', md: 'center' }, px: 2.5, py: 1.2 }}>
+            <Button startIcon={<TuneIcon />} variant="outlined" sx={{ px: 2.5, py: 1.1, flexShrink: 0 }}>
               Refine feed
             </Button>
           </Box>
@@ -413,7 +465,7 @@ export default function FeedPage({
               </Button>
             </Box>
           ) : (
-            <Grid container spacing={2.25}>
+            <Grid container spacing={2.25} alignItems="stretch">
               {filtered.map((event) => (
                 <Grid key={event.id} item xs={12} md={6}>
                   <ContextCard event={event} onSelect={onSelectEvent} />
@@ -426,22 +478,23 @@ export default function FeedPage({
         <Grid item xs={12} lg={3.7}>
           <Stack spacing={2.5}>
             <Card>
-              <CardContent sx={{ p: 2.5 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
-                  <Typography variant="subtitle1" fontWeight={800}>Notifications</Typography>
-                  <IconButton
-                    size="small"
-                    sx={{
-                      bgcolor: subtleSurface,
-                      border: '1px solid',
-                      borderColor: 'divider',
-                      p: 1.2,
-                    }}
-                      title="Notification settings"
-                  >
-                    <NotificationsNoneIcon fontSize="small" />
-                  </IconButton>
-                </Box>
+              <CardContent sx={{ p: 2.5, textAlign: 'center' }}>
+                <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 1.25 }}>
+                  Notifications
+                </Typography>
+                <IconButton
+                  size="small"
+                  title="Notification settings"
+                  sx={{
+                    bgcolor: subtleSurface,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    p: 1.25,
+                    mb: 1.5,
+                  }}
+                >
+                  <NotificationsNoneIcon fontSize="small" />
+                </IconButton>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
                   You’ll only see activity that matches your current energy and shared context.
                 </Typography>
