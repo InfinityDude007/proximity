@@ -23,6 +23,7 @@ import {
   renderAvailabilityIcon,
   renderSocialBatteryIcon,
   SOCIAL_BATTERY_ORDER,
+  getPreferenceChipSx
 } from '../data/preferencesUi';
 import { interestOptions } from '../data/interestOptions';
 
@@ -230,30 +231,24 @@ export default function OnboardingPage({ onComplete }) {
 
               {current.type === 'ready' && (
                 <Box sx={{ minHeight: { lg: 520 }, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                  <CheckCircleIcon sx={{ fontSize: '5rem', mb: 2, color: 'primary.main' }} />
-                  <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.8rem' }, mb: 1.5, maxWidth: 520 }}>{current.title}</Typography>
+                  <Stack direction='row' sx={{ gap: 2 }}>
+                    <CheckCircleIcon sx={{ fontSize: '4rem', mb: 2, color: 'primary.main', }} />
+                    <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.8rem' }, mb: 1.5, maxWidth: 520 }}>{current.title}</Typography>
+                  </Stack>
                   <Typography variant="body1" color="text.secondary" sx={{ mb: 3.5, maxWidth: 520 }}>{current.subtitle}</Typography>
-                  <Box sx={{ bgcolor: 'action.hover', borderRadius: 4, p: 2.25, maxWidth: 520 }}>
+                  <Box sx={{ bgcolor: 'action.hover', borderRadius: 2, py: 2.25, px: 3, maxWidth: 520 }}>
                     <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} sx={{ mb: 1.4 }}>
                       <Chip
-                        icon={renderSocialBatteryIcon(battery, { fontSize: 'small' })}
+                        size="medium"
+                        icon={renderSocialBatteryIcon(battery)}
                         label={selectedBattery.label}
-                        size="small"
-                        sx={{
-                          bgcolor: alpha(selectedBattery.color, isDark ? 0.18 : 0.1),
-                          color: selectedBattery.color,
-                          fontWeight: 700,
-                        }}
+                        sx={getPreferenceChipSx(selectedBattery, isDark, { interactive: false })}
                       />
                       <Chip
-                        icon={renderAvailabilityIcon('open_to_connect', { fontSize: 'small' })}
+                        size="medium"
+                        icon={renderAvailabilityIcon('open_to_connect')}
                         label={defaultAvailability.label}
-                        size="small"
-                        sx={{
-                          bgcolor: alpha(defaultAvailability.color, isDark ? 0.18 : 0.1),
-                          color: defaultAvailability.color,
-                          fontWeight: 700,
-                        }}
+                        sx={getPreferenceChipSx(defaultAvailability, isDark, { interactive: false })}
                       />
                     </Stack>
                     <Typography variant="body2" color="text.secondary">
@@ -288,18 +283,15 @@ export default function OnboardingPage({ onComplete }) {
           }}
         >
           <Typography variant="overline" sx={{ letterSpacing: '0.18em', opacity: 0.8 }}>Campus connection, redesigned</Typography>
-          <Typography variant="h3" sx={{ fontSize: '2.4rem', lineHeight: 1.08, mt: 1.4, mb: 2 }}>
+          <Typography variant="h3" sx={{ fontSize: '2.4rem', lineHeight: 1.08, mt: 1.4, mb: 5 }}>
             A calmer way to discover people nearby.
-          </Typography>
-          <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.82)', maxWidth: 480, mb: 3 }}>
-            Instead of pushing users through a tiny mobile-style funnel, this version uses a spacious desktop layout with stronger hierarchy and room for context.
           </Typography>
 
           <Stack spacing={1.5}>
             {[
               'Context-first discovery rather than profile browsing',
               'Low-pressure openers instead of cold DMs',
-              'Responsive layout that actually uses browser width',
+              'Fully customizable interactions',
             ].map((item) => (
               <Box key={item} sx={{ p: 2, borderRadius: 4, bgcolor: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
                 <Typography variant="body1">{item}</Typography>
