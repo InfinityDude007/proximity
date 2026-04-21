@@ -14,20 +14,6 @@ import {
 import { alpha } from '@mui/material/styles';
 import BoltIcon from '@mui/icons-material/Bolt';
 import PeopleIcon from '@mui/icons-material/People';
-import LocalCafeIcon from '@mui/icons-material/LocalCafe';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
-import MusicNoteIcon from '@mui/icons-material/MusicNote';
-import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
-import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
-import NaturePeopleIcon from '@mui/icons-material/NaturePeople';
-import PaletteIcon from '@mui/icons-material/Palette';
-import CameraAltIcon from '@mui/icons-material/CameraAlt';
-import RestaurantIcon from '@mui/icons-material/Restaurant';
-import FlightIcon from '@mui/icons-material/Flight';
-import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
-import MovieIcon from '@mui/icons-material/Movie';
-import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
-import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import proximityLogo from '../assets/proximity-logo.png';
 import proximityLogoDark from '../assets/proximity-logo-dark.png';
@@ -38,6 +24,7 @@ import {
   renderSocialBatteryIcon,
   SOCIAL_BATTERY_ORDER,
 } from '../data/preferencesUi';
+import { interestOptions } from '../data/interestOptions';
 
 const steps = [
   {
@@ -64,25 +51,6 @@ const steps = [
     subtitle: 'No pressure to connect with anyone. Just explore what is happening around you.',
     type: 'ready',
   },
-];
-
-const interestOptions = [
-  { label: 'Coffee', icon: <LocalCafeIcon fontSize="small" /> },
-  { label: 'Study Groups', icon: <MenuBookIcon fontSize="small" /> },
-  { label: 'Music', icon: <MusicNoteIcon fontSize="small" /> },
-  { label: 'Gaming', icon: <SportsEsportsIcon fontSize="small" /> },
-  { label: 'Fitness', icon: <FitnessCenterIcon fontSize="small" /> },
-  { label: 'Outdoors', icon: <NaturePeopleIcon fontSize="small" /> },
-  { label: 'Socials', icon: <PeopleIcon fontSize="small" /> },
-  { label: 'Startups', icon: <BoltIcon fontSize="small" /> },
-  { label: 'Art', icon: <PaletteIcon fontSize="small" /> },
-  { label: 'Photography', icon: <CameraAltIcon fontSize="small" /> },
-  { label: 'Cooking', icon: <RestaurantIcon fontSize="small" /> },
-  { label: 'Travel', icon: <FlightIcon fontSize="small" /> },
-  { label: 'Books', icon: <LibraryBooksIcon fontSize="small" /> },
-  { label: 'Movies', icon: <MovieIcon fontSize="small" /> },
-  { label: 'Sports', icon: <SportsSoccerIcon fontSize="small" /> },
-  { label: 'Volunteering', icon: <VolunteerActivismIcon fontSize="small" /> },
 ];
 
 const batteryOptions = SOCIAL_BATTERY_ORDER.map((value) => {
@@ -244,7 +212,10 @@ export default function OnboardingPage({ onComplete }) {
                             border: '2px solid',
                             borderColor: interests.includes(label) ? 'primary.main' : 'divider',
                             borderRadius: 2,
-                            '& .MuiChip-icon': { color: interests.includes(label) ? 'white' : 'primary.main' },
+                            '& .MuiChip-icon': {
+                              color: interests.includes(label) ? 'white' : 'primary.main',
+                              mr: '0.05rem',
+                            },
                             transition: 'all 0.15s ease',
                           }}
                         />

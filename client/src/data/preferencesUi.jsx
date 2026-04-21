@@ -6,7 +6,7 @@ import GroupRoundedIcon from '@mui/icons-material/GroupRounded';
 import DoNotDisturbOnRoundedIcon from '@mui/icons-material/DoNotDisturbOnRounded';
 import { alpha } from '@mui/material/styles';
 
-export const SOCIAL_BATTERY_ORDER = ['low', 'medium', 'high'];
+export const SOCIAL_BATTERY_ORDER = ['high', 'medium', 'low'];
 export const AVAILABILITY_ORDER = ['open_to_connect', 'connections_only', 'not_available'];
 
 export const SOCIAL_BATTERY_META = {
@@ -86,27 +86,26 @@ export const renderAvailabilityIcon = (value, props = {}) => {
 
 export const getPreferenceChipSx = (meta, isDark, { interactive = false, fullWidth = false, compact = false } = {}) => ({
   width: fullWidth ? '100%' : 'fit-content',
-  justifyContent: 'flex-start',
-  px: compact ? 0.5 : 0.75,
-  py: compact ? 1.9 : 2.6,
+  minWidth: compact ? '0' : '180px',
+  justifyContent: 'center',
+  alignItems: 'center',
+  px: 1.5,
+  py: 2.5,
   fontWeight: 800,
   cursor: interactive ? 'pointer' : 'default',
-  borderRadius: compact ? 999 : 3,
+  borderRadius: compact ? 10 : 3,
   border: '1px solid',
   borderColor: alpha(meta.color, isDark ? 0.28 : 0.18),
   bgcolor: alpha(meta.color, isDark ? 0.14 : 0.08),
   color: 'text.primary',
   '& .MuiChip-label': {
     width: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 1,
     px: compact ? 0 : 0.5,
   },
   '& .MuiChip-icon': {
     color: meta.color,
-    mr: compact ? 0 : undefined,
+    mr: compact ? 0 : 1,
+    ml: compact ? 0 : 1,
   },
   '&:hover': interactive
     ? {
