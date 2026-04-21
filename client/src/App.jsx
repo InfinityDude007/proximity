@@ -144,7 +144,7 @@ function SidebarContent({
         </Tooltip>
       </Box>
 
-      <List sx={{ p: 0, display: 'grid', gap: 1 }}>
+      <List sx={{ px: collapsed ? 1.5 : 0, display: 'grid', gap: 1 }}>
         {navItems.map((item) => {
           const selected = tab === item.tab;
           return (
@@ -155,7 +155,8 @@ function SidebarContent({
                 onClick={() => setTab(item.tab)}
                 sx={{
                   px: collapsed ? 0 : 'auto',
-                  borderRadius: collapsed ? 5 : 3.5,
+                  py: collapsed ? 1 : 'auto',
+                  borderRadius: collapsed ? 10 : 3,
                   justifyContent: collapsed ? 'center' : 'flex-start',
                   bgcolor: selected
                     ? alpha(isDark ? '#8B7CF6' : '#2D6A4F', isDark ? 0.16 : 0.1)
@@ -176,8 +177,8 @@ function SidebarContent({
                   sx={{
                     color: selected ? 'primary.main' : 'text.secondary',
                     justifyContent: 'center',
-                    display: 'flex',
-                    mr: collapsed ? 0 : 1
+                    mr: collapsed ? 0 : 1,
+                    ml: 0
                   }}
                 >
                   {item.icon}
@@ -199,11 +200,11 @@ function SidebarContent({
 
       <Box
         sx={{
-          p: collapsed ? 1.2 : 1.5,
+          p: 1,
           display: 'flex',
           flexDirection: 'column',
           alignItems: collapsed ? 'center' : 'flex-start',
-          gap: collapsed ? 1 : 1,
+          gap: 1,
         }}
       >
         {!collapsed ? (
@@ -225,13 +226,13 @@ function SidebarContent({
               </Typography>
             </Box>
 
-            <Stack direction="column" gap={1} width="100%">
+            <Stack direction="column" spacing={1} sx={{ width: '100%' }}>
               <Chip
                 size="medium"
                 icon={renderAvailabilityIcon(openToTalk)}
                 label={availabilityMeta.label}
                 onClick={handleOpenToTalkToggle}
-                sx={getPreferenceChipSx(availabilityMeta, isDark, { interactive: true, fullWidth: true })}
+                sx={getPreferenceChipSx(availabilityMeta, isDark, { interactive: true  })}
               />
               <Chip
                 size="medium"
@@ -239,12 +240,12 @@ function SidebarContent({
                 label={batteryMeta.label}
                 color="default"
                 onClick={handleBatteryToggle}
-                sx={getPreferenceChipSx(batteryMeta, isDark, { interactive: true, fullWidth: true })}
+                sx={getPreferenceChipSx(batteryMeta, isDark, { interactive: true })}
               />
             </Stack>
           </>
         ) : (
-          <Stack direction="column" gap={0.75} alignItems="center">
+          <Stack direction="column" spacing={1} sx={{ width: '100%', alignItems: 'center' }}>
             <Tooltip title={availabilityMeta.label} placement="right">
               <Chip
                 size="small"
