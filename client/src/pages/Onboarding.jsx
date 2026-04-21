@@ -28,12 +28,16 @@ import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import MovieIcon from '@mui/icons-material/Movie';
 import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
-import Battery1BarIcon from '@mui/icons-material/Battery1Bar';
-import Battery4BarIcon from '@mui/icons-material/Battery4Bar';
-import BatteryFullIcon from '@mui/icons-material/BatteryFull';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import proximityLogo from '../assets/proximity-logo.png';
 import proximityLogoDark from '../assets/proximity-logo-dark.png';
+import {
+  getAvailabilityMeta,
+  getSocialBatteryMeta,
+  renderAvailabilityIcon,
+  renderSocialBatteryIcon,
+  SOCIAL_BATTERY_ORDER,
+} from '../data/preferencesUi';
 
 const steps = [
   {
@@ -81,11 +85,17 @@ const interestOptions = [
   { label: 'Volunteering', icon: <VolunteerActivismIcon fontSize="small" /> },
 ];
 
-const batteryOptions = [
-  { value: 'low', icon: <Battery1BarIcon fontSize="large" />, label: 'Running low', desc: 'Show me quiet spaces and one-on-one options' },
-  { value: 'medium', icon: <Battery4BarIcon fontSize="large" />, label: 'Moderate', desc: 'A balanced mix of social and quiet' },
-  { value: 'high', icon: <BatteryFullIcon fontSize="large" />, label: 'Fully charged', desc: "Show me everything - I'm ready to meet people" },
-];
+const batteryOptions = SOCIAL_BATTERY_ORDER.map((value) => {
+  const meta = getSocialBatteryMeta(value);
+
+  return {
+    value,
+    icon: renderSocialBatteryIcon(value, { fontSize: 'large' }),
+    label: meta.label,
+    desc: meta.description,
+    color: meta.color,
+  };
+});
 
 export default function OnboardingPage({ onComplete }) {
   const [step, setStep] = useState(0);
@@ -98,6 +108,8 @@ export default function OnboardingPage({ onComplete }) {
 
   const current = steps[step];
   const progress = (step / (steps.length - 1)) * 100;
+  const selectedBattery = getSocialBatteryMeta(battery);
+  const defaultAvailability = getAvailabilityMeta('open_to_connect');
 
   const toggleInterest = (label) => {
     setInterests((prev) => (prev.includes(label) ? prev.filter((i) => i !== label) : [...prev, label]));
@@ -161,16 +173,16 @@ export default function OnboardingPage({ onComplete }) {
                         onClick={() => setBattery(option.value)}
                         sx={{
                           border: '2px solid',
-                          borderColor: battery === option.value ? 'primary.main' : 'divider',
+                          borderColor: battery === option.value ? option.color : 'divider',
                           borderRadius: 4,
                           p: 2.25,
                           cursor: 'pointer',
-                          bgcolor: battery === option.value ? (isDark ? alpha('#8B7CF6', 0.15) : '#F0FAF4') : 'background.paper',
+                          bgcolor: battery === option.value ? alpha(option.color, isDark ? 0.18 : 0.1) : 'background.paper',
                           transition: 'all 0.18s ease',
                         }}
                       >
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                          <Box sx={{ color: 'primary.main' }}>{option.icon}</Box>
+                          <Box sx={{ color: option.color }}>{option.icon}</Box>
                           <Box>
                             <Typography variant="subtitle1" fontWeight={800}>{option.label}</Typography>
                             <Typography variant="body2" color="text.secondary">{option.desc}</Typography>
@@ -230,8 +242,30 @@ export default function OnboardingPage({ onComplete }) {
                   <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.8rem' }, mb: 1.4 }}>{current.title}</Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ mb: 3.5, maxWidth: 560 }}>{current.subtitle}</Typography>
                   <Box sx={{ bgcolor: 'action.hover', borderRadius: 4, p: 2.2, maxWidth: 580 }}>
+                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} sx={{ mb: 1.4 }}>
+                      <Chip
+                        icon={renderSocialBatteryIcon(battery, { fontSize: 'small' })}
+                        label={selectedBattery.label}
+                        size="small"
+                        sx={{
+                          bgcolor: alpha(selectedBattery.color, isDark ? 0.18 : 0.1),
+                          color: selectedBattery.color,
+                          fontWeight: 700,
+                        }}
+                      />
+                      <Chip
+                        icon={renderAvailabilityIcon('open_to_connect', { fontSize: 'small' })}
+                        label={defaultAvailability.label}
+                        size="small"
+                        sx={{
+                          bgcolor: alpha(defaultAvailability.color, isDark ? 0.18 : 0.1),
+                          color: defaultAvailability.color,
+                          fontWeight: 700,
+                        }}
+                      />
+                    </Stack>
                     <Typography variant="body2" color="text.secondary">
-                      You’ll start with {batteryOptions.find((option) => option.value === battery)?.label.toLowerCase()} energy and {interests.length || 0} selected interest{interests.length === 1 ? '' : 's'}.
+                      You’ll start with {selectedBattery.label.toLowerCase()}, default to {defaultAvailability.label.toLowerCase()}, and have {interests.length || 0} selected interest{interests.length === 1 ? '' : 's'}.
                     </Typography>
                   </Box>
                 </Box>

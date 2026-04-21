@@ -28,6 +28,7 @@ import HandshakeIcon from '@mui/icons-material/Handshake';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import { softInviteTemplates } from '../data/mockData';
 import { alpha, useTheme } from '@mui/material/styles';
+import { isReachableAvailability } from '../data/preferencesUi';
 
 const avatarColors = {
   R: '#2D6A4F',
@@ -70,7 +71,7 @@ function AttendeeRow({ person, openToTalk }) {
           </Stack>
         </Box>
 
-        {isOpen && !sent && openToTalk && <Button size="small" variant="outlined" onClick={() => setShowTemplates(true)} sx={{ px: 2, py: 1 }}>Say hi</Button>}
+        {isOpen && !sent && isReachableAvailability(openToTalk) && <Button size="small" variant="outlined" onClick={() => setShowTemplates(true)} sx={{ px: 2, py: 1 }}>Say hi</Button>}
         {sent && <Chip label="Sent" size="small" sx={{ bgcolor: successSurface, color: isDark ? 'text.primary' : 'primary.dark' }} />}
         {!isOpen && <Typography variant="caption" color="text.secondary" sx={{ fontStyle: 'italic' }}>busy</Typography>}
       </Box>

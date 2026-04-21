@@ -1,3 +1,5 @@
+import { normalizeAvailabilityStatus } from '../data/preferencesUi';
+
 // LocalStorage utilities for persisting user preferences
 
 const STORAGE_KEYS = {
@@ -12,7 +14,7 @@ export const loadUserPreferences = () => {
     return {
       socialBattery: localStorage.getItem(STORAGE_KEYS.SOCIAL_BATTERY) || 'medium',
       userInterests: JSON.parse(localStorage.getItem(STORAGE_KEYS.USER_INTERESTS)) || [],
-      openToTalk: localStorage.getItem(STORAGE_KEYS.OPEN_TO_TALK) === 'true',
+      openToTalk: normalizeAvailabilityStatus(localStorage.getItem(STORAGE_KEYS.OPEN_TO_TALK)),
       onboarded: localStorage.getItem(STORAGE_KEYS.ONBOARDED) === 'true',
     };
   } catch (error) {
@@ -20,7 +22,7 @@ export const loadUserPreferences = () => {
     return {
       socialBattery: 'medium',
       userInterests: [],
-      openToTalk: true,
+      openToTalk: 'open_to_connect',
       onboarded: false,
     };
   }

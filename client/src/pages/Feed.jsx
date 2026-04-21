@@ -20,45 +20,48 @@ import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import TuneIcon from '@mui/icons-material/Tune';
-import Battery1BarIcon from '@mui/icons-material/Battery1Bar';
-import Battery4BarIcon from '@mui/icons-material/Battery4Bar';
-import BatteryFullIcon from '@mui/icons-material/BatteryFull';
 import SearchOffIcon from '@mui/icons-material/SearchOff';
 import { contextFeed, batteryLevels, vibeFilters } from '../data/mockData';
 import { alpha } from '@mui/material/styles';
+import {
+  getAvailabilityMeta,
+  getNextAvailabilityStatus,
+  getPreferenceChipSx,
+  renderAvailabilityIcon,
+  renderSocialBatteryIcon,
+  SOCIAL_BATTERY_ORDER,
+} from '../data/preferencesUi';
 
 const vibeColor = {
   quiet: { bg: '#EEF2FF', text: '#4F46E5' },
   social: { bg: '#FFF7ED', text: '#C2410C' },
 };
 
-const getBatteryIcon = (iconName) => {
-  const icons = {
-    battery: <Battery1BarIcon fontSize="large" />,
-    medium: <Battery4BarIcon fontSize="large" />,
-    full: <BatteryFullIcon fontSize="large" />,
-  };
-  return icons[iconName] || icons.bolt;
-};
-
-function PageHero({ battery, userInterests }) {
+function PageHero({ battery, socialBattery, setSocialBattery, openToTalk, setOpenToTalk }) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
   const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
+  const availability = getAvailabilityMeta(openToTalk);
+
+  const handleBatteryToggle = () => {
+    const currentIndex = SOCIAL_BATTERY_ORDER.indexOf(socialBattery);
+    const nextIndex = (currentIndex + 1) % SOCIAL_BATTERY_ORDER.length;
+    setSocialBattery(SOCIAL_BATTERY_ORDER[nextIndex]);
+  };
 
   return (
     <Box
       sx={{
         mb: 4,
         p: { xs: 2.5, md: 3.5 },
-        borderRadius: 5,
+        borderRadius: 2,
         bgcolor: 'background.paper',
-        border: '1px solid',
-        borderColor: 'divider',
+        boxShadow: theme.shadows[1],
         display: 'grid',
         gridTemplateColumns: { xs: '1fr', xl: '1.3fr 0.7fr' },
         gap: 2.5,
         alignItems: 'stretch',
+        minWidth: '100%',
       }}
     >
       <Box>
@@ -73,9 +76,9 @@ function PageHero({ battery, userInterests }) {
           }}
         />
         <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.5rem' }, lineHeight: 1.05, mb: 1.2 }}>
-          Around you
+          Discover What's Happening Around you
         </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 720, mb: 2.2 }}>
+        <Typography variant="body1" color="text.secondary" sx={{ minWidth: '100%', mb: 2.2 }}>
           Shared places, active people, and low-pressure ways to connect across the University of Birmingham Dubai.
         </Typography>
 
@@ -100,44 +103,61 @@ function PageHero({ battery, userInterests }) {
 
       <Box
         sx={{
-          p: 2.2,
-          borderRadius: 4,
           bgcolor: 'background.paper',
-          border: '1px solid',
-          borderColor: 'divider',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'space-between',
+          gap: 1.5,
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.25 }}>
-          <Typography variant="subtitle2" fontWeight={800}>
-            Your vibe
-          </Typography>
-          <Box sx={{ color: 'primary.main', display: 'flex', alignItems: 'center' }}>
-            {getBatteryIcon(battery.icon)}
-          </Box>
-        </Box>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 1.6 }}>
-          {battery.description}
-        </Typography>
-        {userInterests.length > 0 && (
-          <Box
+        <Box>
+          <Typography
+            variant="overline"
             sx={{
-              p: 1.6,
-              borderRadius: 3,
-              bgcolor: 'action.hover',
+              color: 'text.secondary',
+              letterSpacing: '0.14em',
+              fontWeight: 700,
+              lineHeight: 1,
             }}
           >
-            <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.35 }}>
-              Your interests
+            Your Vibe
+          </Typography>
+        </Box>
+
+        <Stack spacing={1.5}>
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={1.25}
+            alignItems={{ xs: 'flex-start', sm: 'center' }}
+          >
+            <Chip
+              size="medium"
+              icon={renderAvailabilityIcon(openToTalk)}
+              label={availability.label}
+              onClick={() => setOpenToTalk(getNextAvailabilityStatus(openToTalk))}
+              sx={getPreferenceChipSx(availability, isDark, { interactive: true })}
+            />
+            <Typography variant="body2" color="text.secondary">
+              {availability.description}
             </Typography>
-            <Typography variant="body2" fontWeight={700} sx={{ fontSize: '0.9rem' }}>
-              {userInterests.slice(0, 3).join(' • ')}
-              {userInterests.length > 3 && ` +${userInterests.length - 3}`}
+          </Stack>
+
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={1.25}
+            alignItems={{ xs: 'flex-start', sm: 'center' }}
+          >
+            <Chip
+              size="medium"
+              icon={renderSocialBatteryIcon(battery.icon)}
+              label={battery.label}
+              onClick={handleBatteryToggle}
+              sx={getPreferenceChipSx(battery, isDark, { interactive: true })}
+            />
+            <Typography variant="body2" color="text.secondary">
+              {battery.description}
             </Typography>
-          </Box>
-        )}
+          </Stack>
+        </Stack>
       </Box>
     </Box>
   );
@@ -292,7 +312,14 @@ function QuickStats() {
   );
 }
 
-export default function FeedPage({ socialBattery, userInterests, onSelectEvent }) {
+export default function FeedPage({
+  socialBattery,
+  setSocialBattery,
+  openToTalk,
+  setOpenToTalk,
+  userInterests,
+  onSelectEvent,
+}) {
   const [activeFilter, setActiveFilter] = useState('All');
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
@@ -319,7 +346,13 @@ export default function FeedPage({ socialBattery, userInterests, onSelectEvent }
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2, mb: 2.5 }}>
-        <PageHero battery={battery} userInterests={userInterests} />
+        <PageHero
+          battery={battery}
+          socialBattery={socialBattery}
+          setSocialBattery={setSocialBattery}
+          openToTalk={openToTalk}
+          setOpenToTalk={setOpenToTalk}
+        />
       </Box>
 
       <Grid container spacing={3} sx={{ mb: 3.5 }}>

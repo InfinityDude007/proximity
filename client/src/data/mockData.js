@@ -1,3 +1,5 @@
+import { SOCIAL_BATTERY_META } from './preferencesUi';
+
 // Mock data for Proximity app
 
 export const currentUser = {
@@ -168,24 +170,24 @@ export const softInviteTemplates = [
 
 export const batteryLevels = {
   low: {
-    label: 'Low Battery',
-    description: 'You\'ll see fewer suggestions and quieter spaces',
-    color: '#E76F51',
+    label: SOCIAL_BATTERY_META.low.label,
+    description: SOCIAL_BATTERY_META.low.description,
+    color: SOCIAL_BATTERY_META.low.color,
     icon: 'low',
     recommendations: ['Quiet spots', 'One-on-one only'],
   },
   medium: {
-    label: 'Moderate Energy',
-    description: 'A balanced mix of events and quiet spots',
-    color: '#F4A261',
+    label: SOCIAL_BATTERY_META.medium.label,
+    description: SOCIAL_BATTERY_META.medium.description,
+    color: SOCIAL_BATTERY_META.medium.color,
     icon: 'medium',
     recommendations: ['Small groups', 'Drop-in events'],
   },
   high: {
-    label: 'Fully Charged',
-    description: 'You\'re open to anything - social events included',
-    color: '#52B788',
-    icon: 'full',
+    label: SOCIAL_BATTERY_META.high.label,
+    description: SOCIAL_BATTERY_META.high.description,
+    color: SOCIAL_BATTERY_META.high.color,
+    icon: 'high',
     recommendations: ['All events', 'Group socials', 'New connections'],
   },
 };
