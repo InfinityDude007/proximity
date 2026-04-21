@@ -131,7 +131,7 @@ export default function ProfilePage({
             
             {userInterests.length > 0 && (
               <Box sx={{ mb: 2 }}>
-                <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                <Stack direction="row" spacing={1.2} useFlexGap sx={{ flexWrap: 'wrap' }}>
                   {userInterests.map((interestLabel) => {
                     const interest = interestOptions.find(i => i.label === interestLabel);
                     return (
@@ -159,14 +159,14 @@ export default function ProfilePage({
               </Box>
             )}
 
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>Add Interests</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontSize: 16, fontWeight: 700 }}>Add Interests</Typography>
             <TextField
               placeholder="Search interests..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               sx={{ mb: 2 }}
             />
-            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+            <Stack direction="row" spacing={1.2} useFlexGap sx={{ flexWrap: 'wrap' }}>
               {interestOptions
                 .filter((interest) => !userInterests.includes(interest.label) && interest.label.toLowerCase().includes(searchTerm.toLowerCase()))
                 .map((interest) => (
