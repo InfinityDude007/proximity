@@ -12,11 +12,18 @@ import {
   Grid,
   IconButton,
   TextField,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
 import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
 import {
   AVAILABILITY_OPTIONS,
@@ -39,6 +46,7 @@ export default function ProfilePage({
   setThemeMode,
 }) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
   const isDark = themeMode === 'dark';
   const handleThemeToggle = (event) => {
     setThemeMode(event.target.checked ? 'dark' : 'light');
@@ -54,6 +62,11 @@ export default function ProfilePage({
 
   const handleRedoOnboarding = () => {
     saveOnboarded(false);
+    window.location.reload();
+  };
+
+  const handleResetData = () => {
+    localStorage.clear();
     window.location.reload();
   };
 
@@ -336,7 +349,44 @@ export default function ProfilePage({
             </Box>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardContent sx={{ p: 2.8 }}>
+            <Stack direction='row' sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+              <Box>
+                <Typography variant="h6" fontWeight={800} sx={{ mb: 0.5 }}>Reset Data</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>Delete all stored data and start fresh. This will clear your profile, preferences, and onboarding status.</Typography>
+                <Typography variant="overline" color="error" sx={{ fontWeight: 700, fontSize: '14px' }}>WARNING: THIS ACTION IS PERMANENT AND CAN NEVER BE UNDONE!</Typography>
+              </Box>
+              <Button variant="outlined" color="error" onClick={() => setResetDialogOpen(true)} sx={{ maxHeight: '60px' }} startIcon={<DeleteForeverIcon />}>Reset All Data</Button>
+            </Stack>
+          </CardContent>
+        </Card>
       </Stack>
+
+      <Dialog
+        open={resetDialogOpen}
+        onClose={() => setResetDialogOpen(false)}
+        aria-labelledby="reset-dialog-title"
+        aria-describedby="reset-dialog-description"
+      >
+        <DialogTitle id="reset-dialog-title">Reset All Data</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="reset-dialog-description">
+            Are really sure you sure you want to reset all data?
+            
+            <br /> <Typography variant="overline" color="error" sx={{ fontWeight: 700, fontSize: '16px' }}>WARNING: THIS ACTION IS PERMANENT AND CAN NEVER BE UNDONE!</Typography>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setResetDialogOpen(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleResetData} color="error" variant="contained">
+            Reset All Data
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
