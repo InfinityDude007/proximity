@@ -21,7 +21,7 @@ import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import TuneIcon from '@mui/icons-material/Tune';
 import SearchOffIcon from '@mui/icons-material/SearchOff';
-import { contextFeed, batteryLevels, vibeFilters } from '../data/mockData';
+import { batteryLevels, getUniversityMockData, vibeFilters } from '../data/mockData';
 import { alpha } from '@mui/material/styles';
 import {
   getAvailabilityMeta,
@@ -37,7 +37,20 @@ const vibeColor = {
   social: { bg: '#FFF7ED', text: '#C2410C' },
 };
 
-function PageHero({ battery, socialBattery, setSocialBattery, openToTalk, setOpenToTalk }) {
+function MetaItem({ icon, text }) {
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.75 }}>
+      <Box sx={{ width: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        {icon}
+      </Box>
+      <Typography variant="body2" color="text.secondary">
+        {text}
+      </Typography>
+    </Box>
+  );
+}
+
+function PageHero({ battery, socialBattery, setSocialBattery, openToTalk, setOpenToTalk, universityName, contextCount }) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
   const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
@@ -79,13 +92,13 @@ function PageHero({ battery, socialBattery, setSocialBattery, openToTalk, setOpe
           Discover What's Happening Around You
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ minWidth: '100%', mb: 2.2 }}>
-          Shared places, active people, and low-pressure ways to connect across the University of Birmingham Dubai.
+          Shared places, active people, and low-pressure ways to connect across {universityName}.
         </Typography>
 
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.2}>
           {[
-            { label: 'University of Birmingham Dubai' },
-            { label: `${contextFeed.length} nearby contexts` },
+            { label: universityName },
+            { label: `${contextCount} nearby contexts` },
           ].map((item) => (
             <Chip
               key={item.label}
@@ -170,17 +183,6 @@ function ContextCard({ event, onSelect }) {
   const openCount = event.attendees.filter((a) => a.openToTalk).length;
   const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
   const successSurface = alpha(theme.palette.success.main, isDark ? 0.18 : 0.1);
-
-  const MetaItem = ({ icon, text }) => (
-    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.75 }}>
-      <Box sx={{ width: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-        {icon}
-      </Box>
-      <Typography variant="body2" color="text.secondary">
-        {text}
-      </Typography>
-    </Box>
-  );
 
   return (
     <Card
@@ -326,14 +328,14 @@ function ContextCard({ event, onSelect }) {
   );
 }
 
-function QuickStats() {
+function QuickStats({ contextFeed }) {
   const stats = useMemo(
     () => [
       { value: contextFeed.length, label: 'Live contexts nearby' },
       { value: contextFeed.reduce((sum, event) => sum + event.attendees.length, 0), label: 'People visible now' },
       { value: contextFeed.filter((event) => event.vibe === 'quiet').length, label: 'Quiet options' },
     ],
-    [],
+    [contextFeed],
   );
 
   return (
@@ -370,17 +372,23 @@ export default function FeedPage({
   setOpenToTalk,
   userInterests,
   onSelectEvent,
+  userProfile,
 }) {
   const [activeFilter, setActiveFilter] = useState('All');
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
   const battery = batteryLevels[socialBattery];
+  const universityName = userProfile?.university || 'your campus';
+  const { contextFeed } = useMemo(
+    () => getUniversityMockData(userProfile?.university),
+    [userProfile?.university],
+  );
   const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
   const successSurface = alpha(theme.palette.success.main, isDark ? 0.18 : 0.1);
 
   // Filter events based on active filter and user interests
   let filtered = activeFilter === 'All'
-    ? contextFeed
+    ? [...contextFeed]
     : contextFeed.filter(
         (e) => e.vibe === activeFilter.toLowerCase() || e.tags.some((t) => t.toLowerCase() === activeFilter.toLowerCase()),
       );
@@ -403,6 +411,8 @@ export default function FeedPage({
           setSocialBattery={setSocialBattery}
           openToTalk={openToTalk}
           setOpenToTalk={setOpenToTalk}
+          universityName={universityName}
+          contextCount={contextFeed.length}
         />
       </Box>
 
@@ -508,7 +518,7 @@ export default function FeedPage({
                 </Box>
               </CardContent>
             </Card>
-            <QuickStats />
+            <QuickStats contextFeed={contextFeed} />
           </Stack>
         </Grid>
       </Grid>

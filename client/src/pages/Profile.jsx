@@ -10,23 +10,16 @@ import {
   Divider,
   Stack,
   Grid,
-  Button,
   IconButton,
   TextField,
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
-import BoltIcon from '@mui/icons-material/Bolt';
 import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
 import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import PeopleIcon from '@mui/icons-material/People';
 
-import { currentUser, batteryLevels } from '../data/mockData';
 import {
   AVAILABILITY_OPTIONS,
-  getAvailabilityMeta,
-  getPreferenceChipSx,
-  getSocialBatteryMeta,
   renderAvailabilityIcon,
   renderSocialBatteryIcon,
   SOCIAL_BATTERY_OPTIONS,
@@ -41,14 +34,11 @@ export default function ProfilePage({
   setOpenToTalk,
   userInterests = [],
   setUserInterests,
+  userProfile,
   themeMode = 'light',
   setThemeMode,
 }) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [onboarded, setOnboarded] = useState(false);
-  const battery = batteryLevels[socialBattery];
-  const availabilityMeta = getAvailabilityMeta(openToTalk);
-  const batteryMeta = getSocialBatteryMeta(socialBattery);
   const isDark = themeMode === 'dark';
   const handleThemeToggle = (event) => {
     setThemeMode(event.target.checked ? 'dark' : 'light');
@@ -63,10 +53,11 @@ export default function ProfilePage({
   };
 
   const handleRedoOnboarding = () => {
-      setOnboarded(false);
-      saveOnboarded(false);
-      window.location.reload();
-    };
+    saveOnboarded(false);
+    window.location.reload();
+  };
+
+  const profileMetaLine = [userProfile.year, userProfile.university].filter(Boolean).join(' · ');
 
   return (
     <Box>
@@ -84,12 +75,12 @@ export default function ProfilePage({
           <CardContent sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', gap: 2.4, alignItems: 'center', mb: 2.4 }}>
               <Avatar sx={{ bgcolor: 'primary.main', width: 78, height: 78, fontSize: '1.8rem', fontWeight: 800 }}>
-                {currentUser.avatar}
+                {userProfile.avatar}
               </Avatar>
               <Box>
-                <Typography variant="h5" fontWeight={800}>{currentUser.name}</Typography>
-                <Typography variant="body2" color="text.secondary">{currentUser.degree}</Typography>
-                <Typography variant="caption" color="text.secondary">{currentUser.year} · University of Birmingham Dubai</Typography>
+                <Typography variant="h5" fontWeight={800}>{userProfile.name}</Typography>
+                <Typography variant="body2" color="text.secondary">{userProfile.degree}</Typography>
+                <Typography variant="caption" color="text.secondary">{profileMetaLine}</Typography>
               </Box>
             </Box>
 

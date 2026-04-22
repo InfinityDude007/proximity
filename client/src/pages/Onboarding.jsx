@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import {
+  Autocomplete,
   Box,
   Typography,
   Button,
@@ -8,6 +9,7 @@ import {
   LinearProgress,
   Fade,
   Grid,
+  MenuItem,
   TextField,
   useTheme,
 } from '@mui/material';
@@ -26,6 +28,7 @@ import {
   getPreferenceChipSx
 } from '../data/preferencesUi';
 import { interestOptions } from '../data/interestOptions';
+import { buildUserProfile, UAE_UNIVERSITY_OPTIONS, YEAR_OPTIONS } from '../data/userProfile';
 
 const steps = [
   {
@@ -35,10 +38,10 @@ const steps = [
     type: 'splash',
   },
   {
-    key: 'battery',
-    title: 'How social are you feeling today?',
-    subtitle: 'We tailor your feed to match your energy. You can change this anytime.',
-    type: 'battery',
+    key: 'profile',
+    title: 'Tell us a little about you',
+    subtitle: 'We will use this to personalize your profile and make your campus presence feel real.',
+    type: 'profile',
   },
   {
     key: 'interests',
@@ -47,9 +50,15 @@ const steps = [
     type: 'interests',
   },
   {
+    key: 'battery',
+    title: 'How social are you feeling today?',
+    subtitle: 'We tailor your feed to match your energy. You can change this anytime.',
+    type: 'battery',
+  },
+  {
     key: 'ready',
-    title: "You're all set",
-    subtitle: 'No pressure to connect with anyone. Just explore what is happening around you.',
+    title: "You're all set {profile.name}!",
+    subtitle: 'No pressure to connect with anyone. Just explore what is happening around you at {profile.university}.',
     type: 'ready',
   },
 ];
@@ -66,8 +75,9 @@ const batteryOptions = SOCIAL_BATTERY_ORDER.map((value) => {
   };
 });
 
-export default function OnboardingPage({ onComplete }) {
+export default function OnboardingPage({ initialProfile, onComplete }) {
   const [step, setStep] = useState(0);
+  const [profile, setProfile] = useState(buildUserProfile(initialProfile));
   const [battery, setBattery] = useState('medium');
   const [interests, setInterests] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -79,6 +89,8 @@ export default function OnboardingPage({ onComplete }) {
   const progress = (step / (steps.length - 1)) * 100;
   const selectedBattery = getSocialBatteryMeta(battery);
   const defaultAvailability = getAvailabilityMeta('open_to_connect');
+  const isProfileStepComplete = profile.name.trim() && profile.degree.trim() && profile.year && profile.university;
+  const isInterestsStepComplete = interests.length > 0;
 
   const toggleInterest = (label) => {
     setInterests((prev) => (prev.includes(label) ? prev.filter((i) => i !== label) : [...prev, label]));
@@ -86,7 +98,7 @@ export default function OnboardingPage({ onComplete }) {
 
   const goNext = () =>
     step === steps.length - 1
-      ? onComplete(battery, interests)
+      ? onComplete(profile, battery, interests)
       : setStep((s) => Math.min(steps.length - 1, s + 1));
 
   const goBack = () => setStep((s) => Math.max(0, s - 1));
@@ -134,6 +146,61 @@ export default function OnboardingPage({ onComplete }) {
                     {['No forced interactions', 'Context-first', 'Low pressure'].map((tag) => (
                       <Chip key={tag} label={tag} size="small" sx={{ bgcolor: isDark ? alpha('#8B7CF6', 0.15) : '#E8F5E9', color: isDark ? 'primary.light' : 'primary.dark', fontWeight: 600 }} />
                     ))}
+                  </Stack>
+                </Box>
+              )}
+
+              {current.type === 'profile' && (
+                <Box sx={{ maxWidth: 620 }}>
+                  <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.7rem' }, lineHeight: 1.08, mb: 1.2 }}>{current.title}</Typography>
+                  <Typography variant="body1" color="text.secondary" sx={{ mb: 3.5, maxWidth: 560 }}>{current.subtitle}</Typography>
+
+                  <Stack container spacing={2}>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="Your name"
+                        value={profile.name}
+                        onChange={(event) => setProfile((prev) => buildUserProfile({ ...prev, name: event.target.value }))}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        label="Degree"
+                        value={profile.degree}
+                        onChange={(event) => setProfile((prev) => ({ ...prev, degree: event.target.value }))}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        select
+                        fullWidth
+                        label="Year"
+                        value={profile.year}
+                        onChange={(event) => setProfile((prev) => ({ ...prev, year: event.target.value }))}
+                      >
+                        {YEAR_OPTIONS.map((year) => (
+                          <MenuItem key={year} value={year}>
+                            {year}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Autocomplete
+                        options={UAE_UNIVERSITY_OPTIONS}
+                        value={profile.university}
+                        onChange={(_, value) => setProfile((prev) => ({ ...prev, university: value || '' }))}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="University"
+                            placeholder="Select your university"
+                          />
+                        )}
+                      />
+                    </Grid>
                   </Stack>
                 </Box>
               )}
@@ -233,9 +300,9 @@ export default function OnboardingPage({ onComplete }) {
                 <Box sx={{ minHeight: { lg: 520 }, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                   <Stack direction='row' sx={{ gap: 2 }}>
                     <CheckCircleIcon sx={{ fontSize: '4rem', mb: 2, color: 'primary.main', }} />
-                    <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.8rem' }, mb: 1.5, maxWidth: 520 }}>{current.title}</Typography>
+                    <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.8rem' }, mb: 1.5, maxWidth: 520 }}>{current.title.replace('{profile.name}', profile.name)}</Typography>
                   </Stack>
-                  <Typography variant="body1" color="text.secondary" sx={{ mb: 3.5, maxWidth: 520 }}>{current.subtitle}</Typography>
+                  <Typography variant="body1" color="text.secondary" sx={{ mb: 3.5, maxWidth: 520 }}>{current.subtitle.replace('{profile.university}', profile.university)}</Typography>
                   <Box sx={{ bgcolor: 'action.hover', borderRadius: 2, py: 2.25, px: 3, maxWidth: 520 }}>
                     <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} sx={{ mb: 1.4 }}>
                       <Chip
@@ -264,7 +331,7 @@ export default function OnboardingPage({ onComplete }) {
             <Button disabled={step === 0} variant="text" color="inherit" onClick={goBack} sx={{ minWidth: 80 }}>
               Back
             </Button>
-            <Button variant="contained" onClick={goNext} sx={{ minWidth: 140 }}>
+            <Button disabled={(current.type === 'profile' && !isProfileStepComplete) || (current.type === 'interests' && !isInterestsStepComplete)} variant="contained" onClick={goNext} sx={{ minWidth: 140 }}>
               {step === steps.length - 1 ? 'Enter Proximity' : 'Continue'}
             </Button>
           </Box>

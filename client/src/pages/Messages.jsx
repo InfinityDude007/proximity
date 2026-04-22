@@ -22,7 +22,7 @@ import CloseIcon         from '@mui/icons-material/Close';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import LightbulbIcon     from '@mui/icons-material/Lightbulb';
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
-import { messages }      from '../data/mockData';
+import { getUniversityMockData } from '../data/mockData';
 import { alpha, useTheme } from '@mui/material/styles';
 
 const avatarColors = {
@@ -30,12 +30,6 @@ const avatarColors = {
   S: '#B45309',
   J: '#1D4ED8',
 };
-
-const mockConversation = [
-  { from: 'other', text: 'Hey! Are you heading to the study session later?', time: '14:30' },
-  { from: 'me',    text: 'Yeah I was thinking about it! When are you going?',  time: '14:31' },
-  { from: 'other', text: 'Probably around 3pm — good table near the window',   time: '14:32' },
-];
 
 // ─── ChatDialog ────────────────────────────────────────────────────────────
 // FIX: Context banner icon + text vertically centred with gap: 0.75.
@@ -47,7 +41,7 @@ function ChatDialog({ msg, open, onClose }) {
   const isDark  = theme.palette.mode === 'dark';
   const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
   const [text, setText] = useState('');
-  const [chat, setChat] = useState(mockConversation);
+  const [chat, setChat] = useState(msg?.conversation || []);
 
   const send = () => {
     if (!text.trim()) return;
@@ -301,12 +295,16 @@ function MessageCard({ msg, onOpen }) {
 //      styles as ChatDialog so the two views look identical.
 // FIX: Empty panel state is centred both vertically and horizontally.
 // FIX: Send input at the bottom of the inline panel matches the dialog input.
-export default function MessagesPage() {
+export default function MessagesPage({ userProfile }) {
   const theme   = useTheme();
   const isDark  = theme.palette.mode === 'dark';
   const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
   const [selected, setSelected] = useState(null);
   const [query, setQuery]       = useState('');
+  const { messages } = useMemo(
+    () => getUniversityMockData(userProfile?.university),
+    [userProfile?.university],
+  );
 
   const filteredMessages = useMemo(
     () =>
@@ -316,7 +314,7 @@ export default function MessagesPage() {
           .toLowerCase()
           .includes(query.toLowerCase()),
       ),
-    [query],
+    [messages, query],
   );
 
   const selectedMsg = messages.find((m) => m.id === selected);
@@ -429,7 +427,7 @@ export default function MessagesPage() {
 
                   {/* Bubbles — FIX: same styles as ChatDialog for visual consistency */}
                   <Stack spacing={1.5} sx={{ flex: 1, overflowY: 'auto' }}>
-                    {mockConversation.map((c, i) => (
+                    {(selectedMsg.conversation || []).map((c, i) => (
                       <Box
                         key={i}
                         sx={{
@@ -506,6 +504,7 @@ export default function MessagesPage() {
       </Grid>
 
       <ChatDialog
+        key={selectedMsg?.id || 'empty-chat'}
         msg={selectedMsg}
         open={Boolean(selectedMsg)}
         onClose={() => setSelected(null)}

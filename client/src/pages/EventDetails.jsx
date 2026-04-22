@@ -42,6 +42,19 @@ const avatarColors = {
   Z: '#DC2626',
 };
 
+function MetaRow({ icon, text }) {
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
+      <Box sx={{ width: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        {icon}
+      </Box>
+      <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.92)' }}>
+        {text}
+      </Typography>
+    </Box>
+  );
+}
+
 function AttendeeRow({ person, openToTalk }) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
@@ -220,17 +233,6 @@ export default function EventDetailPage({ event, onBack, openToTalk }) {
     setJoined(true);
     setToastOpen(true);
   };
-
-  const MetaRow = ({ icon, text }) => (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
-      <Box sx={{ width: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-        {icon}
-      </Box>
-      <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.92)' }}>
-        {text}
-      </Typography>
-    </Box>
-  );
 
   return (
     <Box

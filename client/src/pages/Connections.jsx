@@ -23,7 +23,7 @@ import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import MapIcon from '@mui/icons-material/Map';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
-import { connections, softInviteTemplates } from '../data/mockData';
+import { getUniversityMockData, softInviteTemplates } from '../data/mockData';
 import { alpha, useTheme } from '@mui/material/styles';
 
 const statusColor = {
@@ -400,8 +400,12 @@ function ProfileDialog({ person, open, onClose }) {
 // FIX: Stats grid now uses xs={4} on all breakpoints so the three stat boxes
 //      are always equal-width and centred within their column.
 // FIX: Info banner is centred both horizontally and vertically in its grid cell.
-export default function ConnectionsPage() {
+export default function ConnectionsPage({ userProfile }) {
   const [selectedPerson, setSelectedPerson] = useState(null);
+  const { connections } = useMemo(
+    () => getUniversityMockData(userProfile?.university),
+    [userProfile?.university],
+  );
 
   const stats = useMemo(
     () => [
@@ -409,7 +413,7 @@ export default function ConnectionsPage() {
       { value: connections.filter((p) => p.openToTalk).length,        label: 'Open to chat' },
       { value: connections.filter((p) => p.status === 'friend').length, label: 'Friends'     },
     ],
-    [],
+    [connections],
   );
 
   return (

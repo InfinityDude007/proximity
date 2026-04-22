@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import {
   ThemeProvider,
   CssBaseline,
@@ -38,6 +38,7 @@ import {
   saveUserInterests,
   saveOpenToTalk,
   saveOnboarded,
+  saveUserProfile,
 } from './utils/storage';
 import {
   getNextAvailabilityStatus,
@@ -48,6 +49,7 @@ import {
   renderSocialBatteryIcon,
   SOCIAL_BATTERY_ORDER,
 } from './data/preferencesUi';
+import { buildUserProfile } from './data/userProfile';
 import FeedPage from './pages/Feed';
 import ConnectionsPage from './pages/Connections';
 import MessagesPage from './pages/Messages';
@@ -408,24 +410,16 @@ function AppShell({
 
 function App() {
   const [tab, setTab] = useState(0);
-  const [onboarded, setOnboarded] = useState(false);
+  const [onboarded, setOnboarded] = useState(() => loadUserPreferences().onboarded);
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [socialBattery, setSocialBattery] = useState('medium');
-  const [userInterests, setUserInterests] = useState([]);
-  const [openToTalk, setOpenToTalk] = useState('open_to_connect');
-  const [themeMode, setThemeMode] = useState('light');
-
-  useEffect(() => {
-    const preferences = loadUserPreferences();
-    setOnboarded(preferences.onboarded);
-    setSocialBattery(preferences.socialBattery);
-    setUserInterests(preferences.userInterests);
-    setOpenToTalk(preferences.openToTalk);
+  const [socialBattery, setSocialBattery] = useState(() => loadUserPreferences().socialBattery);
+  const [userInterests, setUserInterests] = useState(() => loadUserPreferences().userInterests);
+  const [openToTalk, setOpenToTalk] = useState(() => loadUserPreferences().openToTalk);
+  const [themeMode, setThemeMode] = useState(() => {
     const savedMode = window.localStorage.getItem(THEME_MODE_KEY);
-    if (savedMode === 'dark' || savedMode === 'light') {
-      setThemeMode(savedMode);
-    }
-  }, []);
+    return savedMode === 'dark' || savedMode === 'light' ? savedMode : 'light';
+  });
+  const [userProfile, setUserProfile] = useState(() => buildUserProfile(loadUserPreferences().userProfile));
 
   const muiTheme = useMemo(() => createAppTheme(themeMode), [themeMode]);
 
@@ -444,10 +438,13 @@ function App() {
     window.localStorage.setItem(THEME_MODE_KEY, value);
   };
 
-  const handleOnboardingComplete = (batteryValue, interestsArray) => {
+  const handleOnboardingComplete = (profileValue, batteryValue, interestsArray) => {
+    const nextProfile = buildUserProfile(profileValue);
+    setUserProfile(nextProfile);
     setSocialBattery(batteryValue);
     setUserInterests(interestsArray);
     setOnboarded(true);
+    saveUserProfile(nextProfile);
     saveSocialBattery(batteryValue);
     saveUserInterests(interestsArray);
     saveOnboarded(true);
@@ -463,9 +460,10 @@ function App() {
         setOpenToTalk={handleSetOpenToTalk}
         userInterests={userInterests}
         onSelectEvent={setSelectedEvent}
+        userProfile={userProfile}
       />,
-      <ConnectionsPage key="connections" userInterests={userInterests} />,
-      <MessagesPage key="messages" />,
+      <ConnectionsPage key="connections" userProfile={userProfile} />,
+      <MessagesPage key="messages" userProfile={userProfile} />,
       <ProfilePage
         key="profile"
         socialBattery={socialBattery}
@@ -477,18 +475,19 @@ function App() {
           setUserInterests(interests);
           saveUserInterests(interests);
         }}
+        userProfile={userProfile}
         themeMode={themeMode}
         setThemeMode={handleSetThemeMode}
       />,
     ],
-    [openToTalk, socialBattery, userInterests, themeMode],
+    [openToTalk, socialBattery, userInterests, userProfile, themeMode],
   );
 
   return (
     <ThemeProvider theme={muiTheme}>
       <CssBaseline />
       {!onboarded ? (
-        <OnboardingPage onComplete={handleOnboardingComplete} />
+        <OnboardingPage initialProfile={userProfile} onComplete={handleOnboardingComplete} />
       ) : selectedEvent ? (
         <EventDetailPage event={selectedEvent} onBack={() => setSelectedEvent(null)} openToTalk={openToTalk} />
       ) : (
