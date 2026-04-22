@@ -86,7 +86,7 @@ export const renderAvailabilityIcon = (value, props = {}) => {
 
 export const getPreferenceChipSx = (meta, isDark, { interactive = false, fullWidth = false, compact = false } = {}) => ({
   width: fullWidth ? '100%' : 'fit-content',
-  minWidth: compact ? '0' : '180px',
+  minWidth: compact ? '0' : '190px',
   justifyContent: 'center',
   alignItems: 'center',
   px: 1.5,

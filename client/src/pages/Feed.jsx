@@ -139,8 +139,8 @@ function PageHero({ battery, socialBattery, setSocialBattery, openToTalk, setOpe
         <Stack spacing={1.5}>
           <Stack
             direction={{ xs: 'column', sm: 'row' }}
-            spacing={1.25}
-            alignItems={{ xs: 'flex-start', sm: 'center' }}
+            spacing={2.5}
+            sx={{ alignItems: 'center' }}
           >
             <Chip
               size="medium"
@@ -156,8 +156,8 @@ function PageHero({ battery, socialBattery, setSocialBattery, openToTalk, setOpe
 
           <Stack
             direction={{ xs: 'column', sm: 'row' }}
-            spacing={1.25}
-            alignItems={{ xs: 'flex-start', sm: 'center' }}
+            spacing={2.5}
+            sx={{ alignItems: 'center' }}
           >
             <Chip
               size="medium"
