@@ -232,6 +232,10 @@ export default function ProfilePage({
                       flexDirection: 'column',
                       alignItems: 'center',
                       textAlign: 'center',
+                      '&:hover': {
+                        bgcolor: openToTalk === option.value ? alpha(option.color, isDark ? 0.18 : 0.1) : alpha(option.color, isDark ? 0.08 : 0.04),
+                        borderColor: openToTalk === option.value ? option.color : alpha(option.color, 0.3),
+                      },
                     }}
                   >
                     <Stack direction='row' useFlexGap spacing={1.5} sx={{ fontSize: '2rem', alignItems: 'center', justifyContent: 'center', mb: 0.8, color: option.color }}>
@@ -273,6 +277,10 @@ export default function ProfilePage({
                       flexDirection: 'column',
                       alignItems: 'center',
                       textAlign: 'center',
+                      '&:hover': {
+                        bgcolor: socialBattery === option.value ? alpha(option.color, isDark ? 0.18 : 0.1) : alpha(option.color, isDark ? 0.08 : 0.04),
+                        borderColor: socialBattery === option.value ? option.color : alpha(option.color, 0.3),
+                      },
                     }}
                   >
                     <Stack
