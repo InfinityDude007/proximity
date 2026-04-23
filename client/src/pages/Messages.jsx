@@ -7,9 +7,6 @@ import {
   Badge,
   TextField,
   IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
   Grid,
   List,
   ListItemButton,
@@ -17,10 +14,10 @@ import {
   Card,
   CardContent,
 } from '@mui/material';
-import SendIcon          from '@mui/icons-material/Send';
-import CloseIcon         from '@mui/icons-material/Close';
+import SendIcon from '@mui/icons-material/Send';
+import CloseIcon from '@mui/icons-material/Close';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
-import LightbulbIcon     from '@mui/icons-material/Lightbulb';
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
 import { getUniversityMockData } from '../data/mockData';
 import { alpha, useTheme } from '@mui/material/styles';
@@ -31,180 +28,10 @@ const avatarColors = {
   J: '#1D4ED8',
 };
 
-// ─── ChatDialog ────────────────────────────────────────────────────────────
-// FIX: Context banner icon + text vertically centred with gap: 0.75.
-// FIX: Send button is always the same height as the input via sx height match.
-// FIX: Message bubbles use consistent px/py; "me" and "other" bubbles share
-//      the same vertical rhythm.
-function ChatDialog({ msg, open, onClose }) {
-  const theme   = useTheme();
-  const isDark  = theme.palette.mode === 'dark';
-  const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
-  const [text, setText] = useState('');
-  const [chat, setChat] = useState(msg?.conversation || []);
-
-  const send = () => {
-    if (!text.trim()) return;
-    setChat((prev) => [...prev, { from: 'me', text: text.trim(), time: 'Now' }]);
-    setText('');
-  };
-
-  if (!msg) return null;
-
-  return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      fullWidth
-      maxWidth="md"
-      PaperProps={{ sx: { borderRadius: 5, minHeight: { md: 620 } } }}
-    >
-      {/* ── Header ── */}
-      <DialogTitle
-        sx={{ pb: 1, borderBottom: '1px solid', borderColor: 'divider' }}
-      >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <Avatar
-            sx={{
-              bgcolor: avatarColors[msg.avatar] || 'primary.main',
-              width: 42,
-              height: 42,
-              fontWeight: 800,
-              flexShrink: 0,
-            }}
-          >
-            {msg.avatar}
-          </Avatar>
-          <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography variant="subtitle1" fontWeight={800} noWrap>
-              {msg.name}
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              via {msg.context}
-            </Typography>
-          </Box>
-          <IconButton size="small" onClick={onClose} sx={{ flexShrink: 0 }}>
-            <CloseIcon fontSize="small" />
-          </IconButton>
-        </Box>
-      </DialogTitle>
-
-      <DialogContent sx={{ display: 'flex', flexDirection: 'column', p: 0 }}>
-
-        {/* Context hint bar */}
-        {/* FIX: consistent gap: 0.75 and centred vertically */}
-        <Box
-          sx={{
-            px: 2.5,
-            py: 1.25,
-            bgcolor: 'action.hover',
-            borderBottom: '1px solid',
-            borderColor: 'divider',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 0.75,
-          }}
-        >
-          <LightbulbIcon sx={{ fontSize: 18, color: 'primary.main', flexShrink: 0 }} />
-          <Typography variant="caption" color="text.secondary">
-            You connected through <strong>{msg.context}</strong>
-          </Typography>
-        </Box>
-
-        {/* Messages */}
-        <Box sx={{ flex: 1, overflowY: 'auto', px: { xs: 2, md: 3 }, py: 2.5 }}>
-          {chat.map((c, i) => (
-            <Box
-              key={i}
-              sx={{
-                display: 'flex',
-                justifyContent: c.from === 'me' ? 'flex-end' : 'flex-start',
-                mb: 1.5,          // FIX: unified margin between bubbles
-              }}
-            >
-              <Box
-                sx={{
-                  maxWidth: { xs: '84%', md: '68%' },
-                  bgcolor: c.from === 'me' ? 'primary.main' : 'background.paper',
-                  color:   c.from === 'me' ? 'primary.contrastText' : 'text.primary',
-                  border:  c.from === 'other' ? '1px solid' : 'none',
-                  borderColor: 'divider',
-                  // FIX: consistent border-radius shape for each side
-                  borderRadius: c.from === 'me'
-                    ? '18px 18px 4px 18px'
-                    : '18px 18px 18px 4px',
-                  px: 2,
-                  py: 1.25,       // FIX: unified py instead of 1.2
-                }}
-              >
-                <Typography variant="body2">{c.text}</Typography>
-                <Typography
-                  variant="caption"
-                  sx={{
-                    display: 'block',
-                    mt: 0.4,
-                    textAlign: 'right',
-                    opacity: 0.7,
-                    fontSize: '0.68rem',
-                  }}
-                >
-                  {c.time}
-                </Typography>
-              </Box>
-            </Box>
-          ))}
-        </Box>
-
-        {/* Input row */}
-        {/* FIX: send button height matches the input height via sx */}
-        <Box
-          sx={{
-            px: { xs: 2, md: 3 },
-            py: 1.75,
-            borderTop: '1px solid',
-            borderColor: 'divider',
-            display: 'flex',
-            gap: 1,
-            alignItems: 'center',
-          }}
-        >
-          <TextField
-            fullWidth
-            size="small"
-            placeholder="Type a message..."
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && send()}
-            sx={{ '& .MuiOutlinedInput-root': { borderRadius: 999, bgcolor: subtleSurface } }}
-          />
-          <IconButton
-            color="primary"
-            onClick={send}
-            disabled={!text.trim()}
-            sx={{
-              bgcolor: 'primary.main',
-              color: 'primary.contrastText',
-              width: 40,           // FIX: fixed size for perfect circle
-              height: 40,
-              flexShrink: 0,
-              '&:hover': { bgcolor: 'primary.dark' },
-              '&.Mui-disabled': { bgcolor: 'action.disabledBackground', color: 'action.disabled' },
-            }}
-          >
-            <SendIcon fontSize="small" />
-          </IconButton>
-        </Box>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
 // ─── MessageCard ───────────────────────────────────────────────────────────
-// FIX: Avatar + text + timestamp all vertically centred.
-// FIX: Context chip sits consistently below the preview text via mt: 0.75.
 function MessageCard({ msg, onOpen }) {
-  const theme   = useTheme();
-  const isDark  = theme.palette.mode === 'dark';
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const unreadSurface = alpha(theme.palette.success.main, isDark ? 0.16 : 0.08);
   const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
 
@@ -220,7 +47,7 @@ function MessageCard({ msg, onOpen }) {
         transition: 'all 0.15s ease',
       }}
     >
-      <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>  {/* FIX: unified padding */}
+      <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
         <Box sx={{ display: 'flex', gap: 1.75, alignItems: 'center' }}>
           <Badge
             overlap="circular"
@@ -230,7 +57,7 @@ function MessageCard({ msg, onOpen }) {
             <Avatar
               sx={{
                 bgcolor: avatarColors[msg.avatar] || 'primary.main',
-                width: 46,            // FIX: slightly reduced from 48 to match dialog
+                width: 46,
                 height: 46,
                 fontWeight: 800,
               }}
@@ -240,12 +67,11 @@ function MessageCard({ msg, onOpen }) {
           </Badge>
 
           <Box sx={{ flex: 1, minWidth: 0 }}>
-            {/* Name + timestamp row */}
             <Box
               sx={{
                 display: 'flex',
                 justifyContent: 'space-between',
-                alignItems: 'center',  // FIX: vertically centred
+                alignItems: 'center',
                 gap: 1,
                 mb: 0.25,
               }}
@@ -258,16 +84,11 @@ function MessageCard({ msg, onOpen }) {
               >
                 {msg.name}
               </Typography>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                sx={{ flexShrink: 0 }}
-              >
+              <Typography variant="caption" color="text.secondary" sx={{ flexShrink: 0 }}>
                 {msg.time}
               </Typography>
             </Box>
 
-            {/* Preview */}
             <Typography
               variant="body2"
               color={msg.unread ? 'text.primary' : 'text.secondary'}
@@ -277,7 +98,6 @@ function MessageCard({ msg, onOpen }) {
               {msg.preview}
             </Typography>
 
-            {/* Context chip */}
             <Chip
               label={`📍 ${msg.context}`}
               size="small"
@@ -290,20 +110,23 @@ function MessageCard({ msg, onOpen }) {
   );
 }
 
-// ─── MessagesPage ──────────────────────────────────────────────────────────
-// FIX: Inline conversation panel (right column on xl) uses the same bubble
-//      styles as ChatDialog so the two views look identical.
-// FIX: Empty panel state is centred both vertically and horizontally.
-// FIX: Send input at the bottom of the inline panel matches the dialog input.
+// ─── MessagesPage (inline chat panel, no popup) ────────────────────────────
 export default function MessagesPage({ userProfile }) {
-  const theme   = useTheme();
-  const isDark  = theme.palette.mode === 'dark';
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
-  const [selected, setSelected] = useState(null);
-  const [query, setQuery]       = useState('');
+  const [selectedId, setSelectedId] = useState(null);
+  const [query, setQuery] = useState('');
+
+  // Store the current state of every conversation (keyed by message id)
+  const [conversationsState, setConversationsState] = useState({});
+
+  // Input state for the inline chat panel
+  const [inputText, setInputText] = useState('');
+
   const { messages } = useMemo(
     () => getUniversityMockData(userProfile?.university),
-    [userProfile?.university],
+    [userProfile?.university]
   );
 
   const filteredMessages = useMemo(
@@ -312,16 +135,45 @@ export default function MessagesPage({ userProfile }) {
         [m.name, m.preview, m.context]
           .join(' ')
           .toLowerCase()
-          .includes(query.toLowerCase()),
+          .includes(query.toLowerCase())
       ),
-    [messages, query],
+    [messages, query]
   );
 
-  const selectedMsg = messages.find((m) => m.id === selected);
+  const selectedMsg = messages.find((m) => m.id === selectedId);
+
+  // Get the conversation for the selected message – either from local state or original mock data
+  const currentConversation =
+    selectedId && conversationsState[selectedId]
+      ? conversationsState[selectedId]
+      : selectedMsg?.conversation || [];
+
+  // Send a new message (from "me")
+  const sendMessage = () => {
+    if (!inputText.trim() || !selectedId) return;
+
+    const newMessage = {
+      from: 'me',
+      text: inputText.trim(),
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+
+    const updatedConversation = [...currentConversation, newMessage];
+
+    setConversationsState((prev) => ({
+      ...prev,
+      [selectedId]: updatedConversation,
+    }));
+
+    setInputText('');
+  };
+
+  // Clear the selected conversation (optional, gives a way to go back to empty state)
+  const clearSelected = () => setSelectedId(null);
 
   return (
     <Box>
-      {/* ── Page header ── */}
+      {/* Page header */}
       <Box sx={{ mb: 3.25 }}>
         <Typography
           variant="h3"
@@ -335,15 +187,14 @@ export default function MessagesPage({ userProfile }) {
       </Box>
 
       <Grid container spacing={3}>
-        {/* ── Inbox list ── */}
-        <Grid item xs={12} xl={4.2}>
+        {/* Inbox list – narrower on large screens */}
+        <Grid item xs={12} md={4} lg={3.5}>
           <Card sx={{ height: '100%' }}>
             <CardContent sx={{ p: 2.5, display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Typography variant="subtitle1" fontWeight={800} sx={{ textAlign: 'center' }}>
                 Inbox
               </Typography>
 
-              {/* Search */}
               <TextField
                 fullWidth
                 size="small"
@@ -360,7 +211,6 @@ export default function MessagesPage({ userProfile }) {
                 }}
               />
 
-              {/* List */}
               <List sx={{ p: 0, display: 'flex', flexDirection: 'column', gap: 1.25 }}>
                 {filteredMessages.length === 0 ? (
                   <Box sx={{ textAlign: 'center', py: 5 }}>
@@ -384,10 +234,10 @@ export default function MessagesPage({ userProfile }) {
                   filteredMessages.map((msg) => (
                     <ListItemButton
                       key={msg.id}
-                      onClick={() => setSelected(msg.id)}
+                      onClick={() => setSelectedId(msg.id)}
                       sx={{ p: 0, borderRadius: 3, display: 'block' }}
                     >
-                      <MessageCard msg={msg} onOpen={setSelected} />
+                      <MessageCard msg={msg} onOpen={setSelectedId} />
                     </ListItemButton>
                   ))
                 )}
@@ -396,13 +246,13 @@ export default function MessagesPage({ userProfile }) {
           </Card>
         </Grid>
 
-        {/* ── Inline conversation panel ── */}
-        <Grid item xs={12} xl={7.8}>
+        {/* Inline conversation panel – wider, fills the right side */}
+        <Grid item xs={12} md={8} lg={8.5}>
           <Card sx={{ minHeight: 620, height: '100%' }}>
             <CardContent sx={{ p: { xs: 2.5, md: 3.5 }, height: '100%', display: 'flex', flexDirection: 'column' }}>
               {selectedMsg ? (
                 <>
-                  {/* Header */}
+                  {/* Header with close button */}
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2.5 }}>
                     <Avatar
                       sx={{
@@ -415,7 +265,7 @@ export default function MessagesPage({ userProfile }) {
                     >
                       {selectedMsg.avatar}
                     </Avatar>
-                    <Box sx={{ minWidth: 0 }}>
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
                       <Typography variant="h6" fontWeight={800} noWrap>
                         {selectedMsg.name}
                       </Typography>
@@ -423,11 +273,14 @@ export default function MessagesPage({ userProfile }) {
                         Connected through {selectedMsg.context}
                       </Typography>
                     </Box>
+                    <IconButton size="small" onClick={clearSelected} sx={{ flexShrink: 0 }}>
+                      <CloseIcon fontSize="small" />
+                    </IconButton>
                   </Box>
 
-                  {/* Bubbles — FIX: same styles as ChatDialog for visual consistency */}
-                  <Stack spacing={1.5} sx={{ flex: 1, overflowY: 'auto' }}>
-                    {(selectedMsg.conversation || []).map((c, i) => (
+                  {/* Messages bubble area */}
+                  <Stack spacing={1.5} sx={{ flex: 1, overflowY: 'auto', mb: 2 }}>
+                    {currentConversation.map((c, i) => (
                       <Box
                         key={i}
                         sx={{
@@ -438,30 +291,52 @@ export default function MessagesPage({ userProfile }) {
                         <Box
                           sx={{
                             maxWidth: '75%',
+                            width: '600px',
                             bgcolor: c.from === 'me' ? 'primary.main' : 'action.hover',
-                            color:   c.from === 'me' ? 'primary.contrastText' : 'text.primary',
-                            borderRadius: c.from === 'me'
-                              ? '18px 18px 4px 18px'
-                              : '18px 18px 18px 4px',
+                            color: c.from === 'me' ? 'primary.contrastText' : 'text.primary',
+                            borderRadius:
+                              c.from === 'me'
+                                ? '18px 18px 4px 18px'
+                                : '18px 18px 18px 4px',
                             px: 2,
-                            py: 1.25,   // FIX: unified py
+                            py: 1.25,
                           }}
                         >
                           <Typography variant="body2">{c.text}</Typography>
+                          {c.time && (
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                display: 'block',
+                                mt: 0.4,
+                                textAlign: 'right',
+                                opacity: 0.7,
+                                fontSize: '0.68rem',
+                              }}
+                            >
+                              {c.time}
+                            </Typography>
+                          )}
                         </Box>
                       </Box>
                     ))}
                   </Stack>
 
-                  {/* Input row — FIX: matches ChatDialog exactly */}
-                  <Box sx={{ mt: 2.5, display: 'flex', gap: 1, alignItems: 'center' }}>
+                  {/* Input row – exactly matching the previous dialog style */}
+                  <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                     <TextField
                       fullWidth
                       size="small"
                       placeholder="Type a message..."
+                      value={inputText}
+                      onChange={(e) => setInputText(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
                       sx={{ '& .MuiOutlinedInput-root': { borderRadius: 999, bgcolor: subtleSurface } }}
                     />
                     <IconButton
+                      color="primary"
+                      onClick={sendMessage}
+                      disabled={!inputText.trim()}
                       sx={{
                         bgcolor: 'primary.main',
                         color: 'primary.contrastText',
@@ -469,6 +344,7 @@ export default function MessagesPage({ userProfile }) {
                         height: 40,
                         flexShrink: 0,
                         '&:hover': { bgcolor: 'primary.dark' },
+                        '&.Mui-disabled': { bgcolor: 'action.disabledBackground', color: 'action.disabled' },
                       }}
                     >
                       <SendIcon fontSize="small" />
@@ -476,7 +352,7 @@ export default function MessagesPage({ userProfile }) {
                   </Box>
                 </>
               ) : (
-                /* Empty state — FIX: perfectly centred via display:grid */
+                /* Empty state – perfectly centred */
                 <Box
                   sx={{
                     flex: 1,
@@ -502,13 +378,6 @@ export default function MessagesPage({ userProfile }) {
           </Card>
         </Grid>
       </Grid>
-
-      <ChatDialog
-        key={selectedMsg?.id || 'empty-chat'}
-        msg={selectedMsg}
-        open={Boolean(selectedMsg)}
-        onClose={() => setSelected(null)}
-      />
     </Box>
   );
 }
