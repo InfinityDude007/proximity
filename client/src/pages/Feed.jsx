@@ -17,7 +17,7 @@ import {
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
-import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import TuneIcon from '@mui/icons-material/Tune';
 import SearchOffIcon from '@mui/icons-material/SearchOff';
@@ -39,7 +39,7 @@ const vibeColor = {
 
 function MetaItem({ icon, text }) {
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.75 }}>
+    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
       <Box sx={{ width: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
         {icon}
       </Box>
@@ -65,7 +65,7 @@ function PageHero({ battery, socialBattery, setSocialBattery, openToTalk, setOpe
   return (
     <Box
       sx={{
-        mb: 4,
+        mb: 2,
         p: { xs: 2.5, md: 3.5 },
         borderRadius: 2,
         bgcolor: 'background.paper',
@@ -200,12 +200,11 @@ function ContextCard({ event, onSelect }) {
     >
       <CardContent
         sx={{
-          p: { xs: 2.5, md: 3 },
+          py: 2.5,
+          px: 3.5,
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
-          textAlign: 'center',
           gap: 0,
         }}
       >
@@ -213,15 +212,13 @@ function ContextCard({ event, onSelect }) {
           <Stack
             direction="row"
             spacing={0.75}
-            flexWrap="wrap"
             useFlexGap
-            justifyContent="center"
-            sx={{ mb: 1.25 }}
+            sx={{ alignItems: 'center', mb: 2 }}
           >
               <Chip label={event.vibe === 'quiet' ? 'Quiet' : 'Social'} size="small" sx={{ bgcolor: vibe.bg, color: vibe.text, fontWeight: 700 }} />
               {event.mutualCount > 0 && (
                 <Chip
-                  label={`${event.mutualCount} mutual${event.mutualCount > 1 ? 's' : ''}`}
+                  label={`${event.mutualCount} mutual${event.mutualCount > 1 ? 's' : ''} going`}
                   size="small"
                   sx={{
                     bgcolor: successSurface,
@@ -232,12 +229,87 @@ function ContextCard({ event, onSelect }) {
               )}
           </Stack>
 
-          <Typography variant="h6" sx={{ fontWeight: 800, lineHeight: 1.25, mb: 0.5 }}>
+          <Typography variant="h6" sx={{ fontWeight: 800, mb: 1 }}>
             {event.title}
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 360, mx: 'auto', mb: 1.5 }}>
+
+          <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 320, mx: 'auto', mb: 1 }}>
             {event.description}
           </Typography>
+        </Box>
+
+        <Stack spacing={1} sx={{ mb: 2.25, width: '100%', alignItems: 'flex-start' }}>
+          <MetaItem icon={<LocationOnIcon sx={{ fontSize: 18, color: 'text.secondary' }} />} text={event.location} />
+          <MetaItem icon={<AccessTimeIcon sx={{ fontSize: 18, color: 'text.secondary' }} />} text={event.time} />
+          <MetaItem icon={<DirectionsWalkIcon sx={{ fontSize: 18, color: 'text.secondary' }} />} text={event.distance} />
+
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+            <Box sx={{ width: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <LocalOfferIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+            </Box>
+            <Stack direction='row' spacing={1} sx={{ justifyContent: 'flex-end' }}>
+              {event.tags.map((tag) => (
+                <Chip
+                  key={tag}
+                  label={tag}
+                  size="small"
+                  sx={{
+                    color: 'text.secondary',
+                    bgcolor: subtleSurface,
+                  }}
+                />
+              ))}
+            </Stack>
+          </Box>
+        </Stack>
+
+        <Divider sx={{ mb: 3, mt: 1, width: '100%' }} />
+        
+        <Stack direction='row' sx={{ justifyContent: 'space-between', alignItems: 'flex-end' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'start',
+              width: '100%',
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 1,
+              }}
+            >
+              <AvatarGroup
+                max={4}
+                sx={{
+                  '& .MuiAvatar-root': {
+                    width: 32,
+                    height: 32,
+                    fontSize: '0.78rem',
+                    border: '2px solid',
+                    borderColor: 'background.paper',
+                  },
+                }}
+              >
+                {event.attendees.map((a) => (
+                  <Avatar key={a.id} sx={{ bgcolor: a.openToTalk ? 'primary.main' : alpha(theme.palette.primary.main) }}>
+                    {a.avatar}
+                  </Avatar>
+                ))}
+              </AvatarGroup>
+
+              <Box sx={{ textAlign: 'center' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.8 }}>
+                  <FiberManualRecordIcon sx={{ fontSize: 14, color: '#2e6a4f' }} />
+                  <Typography variant="caption" sx={{ color: "text.secondary", fontSize: '16px' }}>
+                    {openCount} open to chat
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
 
           <Button
             variant="outlined"
@@ -246,83 +318,12 @@ function ContextCard({ event, onSelect }) {
               e.stopPropagation();
               onSelect(event);
             }}
-            sx={{ minWidth: 100, px: 2.5, py: 1 }}
+            sx={{ minWidth: '40%', maxHeight: '70%', px: 2, py: 1 }}
           >
-            View
+            View Context
           </Button>
-        </Box>
-
-        <Stack spacing={0.85} sx={{ mb: 2.25, width: '100%', alignItems: 'center' }}>
-          <MetaItem icon={<LocationOnIcon sx={{ fontSize: 16, color: 'text.secondary' }} />} text={event.location} />
-          <MetaItem icon={<AccessTimeIcon sx={{ fontSize: 16, color: 'text.secondary' }} />} text={event.time} />
-          <MetaItem icon={<DirectionsWalkIcon sx={{ fontSize: 16, color: 'text.secondary' }} />} text={event.distance} />
         </Stack>
 
-        <Divider sx={{ mb: 2, width: '100%' }} />
-
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 1,
-            mb: 2,
-            width: '100%',
-          }}
-        >
-          <AvatarGroup
-            max={4}
-            sx={{
-              '& .MuiAvatar-root': {
-                width: 32,
-                height: 32,
-                fontSize: '0.78rem',
-                border: '2px solid',
-                borderColor: 'background.paper',
-              },
-            }}
-          >
-            {event.attendees.map((a) => (
-              <Avatar key={a.id} sx={{ bgcolor: a.openToTalk ? 'primary.main' : 'action.disabled' }}>
-                {a.avatar}
-              </Avatar>
-            ))}
-          </AvatarGroup>
-
-          <Box sx={{ textAlign: 'center' }}>
-            <Typography variant="body2" fontWeight={700}>
-              {openCount} open to chat
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5, mt: 0.25 }}>
-              <FiberManualRecordIcon sx={{ fontSize: 8, color: 'success.main' }} />
-              <Typography variant="caption" color="text.secondary">
-                active now
-              </Typography>
-            </Box>
-          </Box>
-        </Box>
-
-        <Stack
-          direction="row"
-          spacing={0.75}
-          flexWrap="wrap"
-          useFlexGap
-          justifyContent="center"
-          sx={{ mt: 'auto', width: '100%' }}
-        >
-          {event.tags.map((tag) => (
-            <Chip
-              key={tag}
-              label={tag}
-              size="small"
-              variant="outlined"
-              sx={{
-                color: 'text.secondary',
-                bgcolor: subtleSurface,
-              }}
-            />
-          ))}
-        </Stack>
       </CardContent>
     </Card>
   );
@@ -339,24 +340,25 @@ function QuickStats({ contextFeed }) {
   );
 
   return (
-    <Card sx={{ height: '100%' }}>
-      <CardContent sx={{ p: 2.5, textAlign: 'center' }}>
-        <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 2 }}>
-          Snapshot
+    <Card sx={{ height: '100%', mb: 5 }}>
+      <CardContent sx={{ py: 2.5, px: 3, }}>
+        <Typography variant="h6" fontWeight={800} sx={{ mb: 2 }}>
+          Feed Summary
         </Typography>
-        <Stack spacing={1.25}>
+        <Stack direction='row' spacing={4} sx={{ width: '100%', justifyContent: 'center'}}>
           {stats.map((stat) => (
             <Box
               key={stat.label}
               sx={{
                 p: 1.5,
-                borderRadius: 3,
+                borderRadius: 2,
                 bgcolor: 'action.hover',
                 textAlign: 'center',
+                minWidth: '25%'
               }}
             >
-              <Typography variant="h6" fontWeight={800}>{stat.value}</Typography>
-              <Typography variant="caption" color="text.secondary">{stat.label}</Typography>
+              <Typography variant="h5" fontWeight={800}>{stat.value}</Typography>
+              <Typography variant="body1" color="text.secondary">{stat.label}</Typography>
             </Box>
           ))}
         </Stack>
@@ -416,19 +418,19 @@ export default function FeedPage({
         />
       </Box>
 
-      <Grid container spacing={3} sx={{ mb: 3.5 }}>
-        <Grid item xs={12} lg={8.3}>
+      <Grid container spacing={3} sx={{ mb: 5 }}>
+        <Grid item sx={{ width: '100%' }}>
           <Box
             sx={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
               gap: 1.5,
-              flexWrap: 'wrap',
               mb: 2,
+              width: '100%'
             }}
           >
-            <Stack direction="row" spacing={1} sx={{ overflowX: 'auto', pb: 0.5, '&::-webkit-scrollbar': { display: 'none' } }}>
+            <Stack direction="row" spacing={1} sx={{ overflowX: 'auto', pb: 0.5, width: '100%', '&::-webkit-scrollbar': { display: 'none' } }}>
               {vibeFilters.map((f) => (
                 <Chip
                   key={f}
@@ -475,53 +477,18 @@ export default function FeedPage({
               </Button>
             </Box>
           ) : (
-            <Grid container spacing={2.25} alignItems="stretch">
+            <Grid container spacing={2.5} sx={{ alignItems: 'center', justifyContent: 'center' }}>
               {filtered.map((event) => (
-                <Grid key={event.id} item xs={12} md={6}>
+                <Grid key={event.id} item>
                   <ContextCard event={event} onSelect={onSelectEvent} />
                 </Grid>
               ))}
             </Grid>
           )}
         </Grid>
-
-        <Grid item xs={12} lg={3.7}>
-          <Stack spacing={2.5}>
-            <Card>
-              <CardContent sx={{ p: 2.5, textAlign: 'center' }}>
-                <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 1.25 }}>
-                  Notifications
-                </Typography>
-                <IconButton
-                  size="small"
-                  title="Notification settings"
-                  sx={{
-                    bgcolor: subtleSurface,
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    p: 1.25,
-                    mb: 1.5,
-                  }}
-                >
-                  <NotificationsNoneIcon fontSize="small" />
-                </IconButton>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
-                  You’ll only see activity that matches your current energy and shared context.
-                </Typography>
-                <Box sx={{ p: 1.5, borderRadius: 3, bgcolor: successSurface }}>
-                  <Typography variant="caption" color={isDark ? 'text.primary' : 'primary.dark'} fontWeight={700}>
-                    Low-pressure by design
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                    No cold messaging. Every interaction starts from a real shared moment.
-                  </Typography>
-                </Box>
-              </CardContent>
-            </Card>
-            <QuickStats contextFeed={contextFeed} />
-          </Stack>
-        </Grid>
       </Grid>
+
+      <QuickStats contextFeed={contextFeed} />
     </Box>
   );
 }
