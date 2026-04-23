@@ -342,9 +342,9 @@ export default function OnboardingPage({ initialProfile, onComplete }) {
                     <CheckCircleIcon sx={{ fontSize: '4rem', mb: 2, color: 'primary.main', }} />
                     <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.8rem' }, mb: 1.5, maxWidth: 520 }}>{current.title.replace('{profile.name}', profile.name)}</Typography>
                   </Stack>
-                  <Typography variant="body1" color="text.secondary" sx={{ mb: 3.5, maxWidth: 520 }}>{current.subtitle.replace('{profile.university}', profile.university)}</Typography>
-                  <Box sx={{ bgcolor: 'action.hover', borderRadius: 2, py: 2.25, px: 3, maxWidth: 520 }}>
-                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} sx={{ mb: 1.4 }}>
+                  <Typography variant="body1" color="text.secondary" sx={{ mb: 3.5, ml: 2, maxWidth: 520 }}>{current.subtitle.replace('{profile.university}', profile.university)}</Typography>
+                  <Box sx={{ bgcolor: 'action.hover', borderRadius: 1.5, ml: 1, py: 3, px: 3.5, maxWidth: '100%' }}>
+                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} sx={{ mb: 3, justifyContent: 'center' }}>
                       <Chip
                         size="medium"
                         icon={renderSocialBatteryIcon(battery)}
@@ -358,6 +358,23 @@ export default function OnboardingPage({ initialProfile, onComplete }) {
                         sx={getPreferenceChipSx(defaultAvailability, isDark, { interactive: false })}
                       />
                     </Stack>
+                    {interests.length > 0 && (
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3, justifyContent: 'center' }}>
+                        {interests.map((interest) => (
+                          <Chip
+                            key={interest}
+                            label={interest}
+                            size="small"
+                            sx={{
+                              bgcolor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+                              color: 'text.primary',
+                              border: '1px solid',
+                              borderColor: isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)',
+                            }}
+                          />
+                        ))}
+                      </Box>
+                    )}
                     <Typography variant="body2" color="text.secondary">
                       You’ll start with {selectedBattery.label.toLowerCase()}, default to {defaultAvailability.label.toLowerCase()}, and have {interests.length || 0} selected interest{interests.length === 1 ? '' : 's'}.
                     </Typography>
