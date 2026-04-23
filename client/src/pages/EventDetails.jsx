@@ -52,6 +52,13 @@ function AttendeeRow({ person, openToTalk }) {
   const successSurface = alpha(theme.palette.success.main, isDark ? 0.18 : 0.1);
   const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
 
+  const toneColors = {
+    casual: { bg: alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07), color: 'primary.main' },
+    warm: { bg: alpha(theme.palette.warning.main, isDark ? 0.14 : 0.07), color: 'warning.main' },
+    'low-pressure': { bg: alpha(theme.palette.success.main, isDark ? 0.14 : 0.07), color: 'success.main' },
+    flexible: { bg: alpha(theme.palette.info.main, isDark ? 0.14 : 0.07), color: 'info.main' },
+  };
+
   return (
     <Box>
       <Box
@@ -179,29 +186,30 @@ function AttendeeRow({ person, openToTalk }) {
                   border: '1.5px solid',
                   borderColor: 'divider',
                   borderRadius: 2,
-                  p: 2,
-                  minHeight: 72,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
+                  px: 3,
+                  py: 2,
                   cursor: 'pointer',
                   '&:hover': { borderColor: 'primary.main', bgcolor: successSurface },
                 }}
               >
-                <Typography variant="body2" fontWeight={500}>
-                  "{template.text}"
-                </Typography>
-                <Chip
-                  label={template.tone}
-                  size="small"
-                  sx={{ mt: 1, bgcolor: subtleSurface, color: 'text.secondary', alignSelf: 'flex-start' }}
-                />
+                <Stack direction='row' sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Typography variant="body2" fontWeight={500}>
+                    "{template.text}"
+                  </Typography>
+                  <Chip
+                    label={template.tone}
+                    size="small"
+                    sx={{ bgcolor: toneColors[template.tone]?.bg || subtleSurface, color: toneColors[template.tone]?.color || 'text.secondary', alignSelf: 'flex-start' }}
+                  />
+                </Stack>
               </Box>
-            ))}
+          ))}
           </Stack>
-          <Button fullWidth variant="text" color="inherit" sx={{ color: 'text.secondary' }} onClick={() => setShowTemplates(false)}>
-            Cancel
-          </Button>
+          <Box sx={{ display: 'flex', width: '100%', justifyContent: 'flex-end', mt: 1 }}>
+            <Button variant="outlined" onClick={() => setShowTemplates(false)}>
+              Cancel
+            </Button>
+          </Box>
         </DialogContent>
       </Dialog>
     </Box>
