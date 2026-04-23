@@ -13,12 +13,16 @@ import {
   Stack,
   Card,
   CardContent,
+  InputAdornment,
+  Divider,
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import SearchIcon from '@mui/icons-material/Search';
 import { getUniversityMockData } from '../data/mockData';
 import { alpha, useTheme } from '@mui/material/styles';
 
@@ -29,7 +33,7 @@ const avatarColors = {
 };
 
 // ─── MessageCard ───────────────────────────────────────────────────────────
-function MessageCard({ msg, onOpen }) {
+function MessageCard({ msg, onOpen, isSelected }) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
   const unreadSurface = alpha(theme.palette.success.main, isDark ? 0.16 : 0.08);
@@ -40,14 +44,14 @@ function MessageCard({ msg, onOpen }) {
       onClick={() => onOpen(msg.id)}
       sx={{
         cursor: 'pointer',
-        border: msg.unread ? '1.5px solid' : '1px solid',
-        borderColor: msg.unread ? 'primary.light' : 'divider',
-        bgcolor: msg.unread ? unreadSurface : 'background.paper',
+        border: isSelected ? '1.5px solid' : '1px solid',
+        borderColor: isSelected ? 'primary.light' : 'divider',
+        bgcolor: isSelected ? unreadSurface : 'background.paper',
         '&:hover': { boxShadow: 4, transform: 'translateY(-2px)' },
         transition: 'all 0.15s ease',
       }}
     >
-      <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+      <CardContent sx={{ p: 2 }}>
         <Box sx={{ display: 'flex', gap: 1.75, alignItems: 'center' }}>
           <Badge
             overlap="circular"
@@ -78,7 +82,7 @@ function MessageCard({ msg, onOpen }) {
             >
               <Typography
                 variant="subtitle2"
-                fontWeight={msg.unread ? 800 : 700}
+                fontWeight={isSelected ? 800 : 700}
                 noWrap
                 sx={{ flex: 1 }}
               >
@@ -91,15 +95,16 @@ function MessageCard({ msg, onOpen }) {
 
             <Typography
               variant="body2"
-              color={msg.unread ? 'text.primary' : 'text.secondary'}
-              fontWeight={msg.unread ? 500 : 400}
+              color={isSelected ? 'text.primary' : 'text.secondary'}
+              fontWeight={isSelected ? 500 : 400}
               noWrap
             >
               {msg.preview}
             </Typography>
 
             <Chip
-              label={`📍 ${msg.context}`}
+              icon={<LocationOnIcon />}
+              label={msg.context}
               size="small"
               sx={{ mt: 0.75, bgcolor: subtleSurface, color: 'text.secondary' }}
             />
@@ -181,35 +186,38 @@ export default function MessagesPage({ userProfile }) {
         >
           Messages
         </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 720 }}>
+        <Typography variant="body1" color="text.secondary">
           Every conversation here started from a real shared moment — a study session, a café, or an event you both attended.
         </Typography>
       </Box>
 
       <Grid container spacing={3}>
         {/* Inbox list – narrower on large screens */}
-        <Grid item xs={12} md={4} lg={3.5}>
+        <Grid item sx={{ width: '40%' }}>
           <Card sx={{ height: '100%' }}>
-            <CardContent sx={{ p: 2.5, display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Typography variant="subtitle1" fontWeight={800} sx={{ textAlign: 'center' }}>
-                Inbox
-              </Typography>
+            <CardContent sx={{ py: 2, px: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Stack direction='column' spacing={1} sx={{ justifyContent: 'space-between', alignItems: 'start' }}>
+                <Typography variant="body1" sx={{ fontSize: '20px', fontWeight: 700 }}>
+                  Inbox
+                </Typography>
 
-              <TextField
-                fullWidth
-                size="small"
-                placeholder="Search by name, place, or context"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <SearchRoundedIcon
-                      fontSize="small"
-                      style={{ marginRight: 8, opacity: 0.65 }}
-                    />
-                  ),
-                }}
-              />
+                <TextField
+                  size="small"
+                  placeholder="Search by name, place, or context"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  sx={{ width: "100%" }}
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SearchIcon />
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
+                />
+              </Stack>
 
               <List sx={{ p: 0, display: 'flex', flexDirection: 'column', gap: 1.25 }}>
                 {filteredMessages.length === 0 ? (
@@ -233,11 +241,12 @@ export default function MessagesPage({ userProfile }) {
                 ) : (
                   filteredMessages.map((msg) => (
                     <ListItemButton
+                      disableRipple
                       key={msg.id}
                       onClick={() => setSelectedId(msg.id)}
-                      sx={{ p: 0, borderRadius: 3, display: 'block' }}
+                      sx={{ p: 0, borderRadius: 1, display: 'block', '&:hover': { bgcolor: 'transparent' }, }}
                     >
-                      <MessageCard msg={msg} onOpen={setSelectedId} />
+                      <MessageCard msg={msg} onOpen={setSelectedId} isSelected={msg.id === selectedId} />
                     </ListItemButton>
                   ))
                 )}
@@ -247,7 +256,7 @@ export default function MessagesPage({ userProfile }) {
         </Grid>
 
         {/* Inline conversation panel – wider, fills the right side */}
-        <Grid item xs={12} md={8} lg={8.5}>
+        <Grid item sx={{ flex: 1, minWidth: 0 }}>
           <Card sx={{ minHeight: 620, height: '100%' }}>
             <CardContent sx={{ p: { xs: 2.5, md: 3.5 }, height: '100%', display: 'flex', flexDirection: 'column' }}>
               {selectedMsg ? (
@@ -270,7 +279,7 @@ export default function MessagesPage({ userProfile }) {
                         {selectedMsg.name}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        Connected through {selectedMsg.context}
+                        You connected through {selectedMsg.context}
                       </Typography>
                     </Box>
                     <IconButton size="small" onClick={clearSelected} sx={{ flexShrink: 0 }}>
@@ -278,8 +287,10 @@ export default function MessagesPage({ userProfile }) {
                     </IconButton>
                   </Box>
 
+                  <Divider />
+
                   {/* Messages bubble area */}
-                  <Stack spacing={1.5} sx={{ flex: 1, overflowY: 'auto', mb: 2 }}>
+                  <Stack spacing={1.5} sx={{ flex: 1, overflowY: 'auto', mb: 2, mt: 3 }}>
                     {currentConversation.map((c, i) => (
                       <Box
                         key={i}
@@ -359,6 +370,7 @@ export default function MessagesPage({ userProfile }) {
                     display: 'grid',
                     placeItems: 'center',
                     textAlign: 'center',
+                    minWidth: '100%'
                   }}
                 >
                   <Box>
