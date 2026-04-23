@@ -111,21 +111,21 @@ export default function OnboardingPage({ initialProfile, onComplete }) {
         display: 'grid',
         placeItems: 'center',
         px: { xs: 2, md: 4 },
-        py: { xs: 2, md: 4 },
+        py: { xs: 2, md: 5 },
       }}
     >
       <Box
         sx={{
           width: '100%',
           maxWidth: 1280,
-          borderRadius: { xs: 0, md: 6 },
+          borderRadius: { xs: 0, md: 3 },
           overflow: 'hidden',
           border: { xs: 'none', md: '1px solid' },
           borderColor: 'divider',
           bgcolor: 'background.paper',
           boxShadow: { xs: 'none', md: '0 28px 60px rgba(45,106,79,0.08)' },
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', lg: '1.02fr 0.98fr' },
+          gridTemplateColumns: current.type === 'interests' ? '1fr' : { xs: '1fr', lg: '1.02fr 0.98fr' },
         }}
       >
         <Box sx={{ p: { xs: 3, md: 5 }, display: 'flex', flexDirection: 'column' }}>
@@ -201,6 +201,11 @@ export default function OnboardingPage({ initialProfile, onComplete }) {
                         )}
                       />
                     </Grid>
+                    {current.type === 'profile' && !isProfileStepComplete && (
+                      <Typography variant="caption" color="error" sx={{ fontSize: '14px', fontStyle: 'italic' }}>
+                        Please fill in all fields to continue
+                      </Typography>
+                    )}
                   </Stack>
                 </Box>
               )}
@@ -290,9 +295,14 @@ export default function OnboardingPage({ initialProfile, onComplete }) {
                       </Grid>
                     ))}
                   </Grid>
-                  <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block' }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block', fontSize: '14px' }}>
                     {interests.length} selected — you can update this anytime.
                   </Typography>
+                  {current.type === 'interests' && interests.length == 0 && (
+                      <Typography variant="caption" color="error" sx={{ fontSize: '14px', fontStyle: 'italic' }}>
+                        Please select atleast 1 interest to continue
+                      </Typography>
+                    )}
                 </Box>
               )}
 
@@ -327,45 +337,49 @@ export default function OnboardingPage({ initialProfile, onComplete }) {
             </Box>
           </Fade>
 
-          <Box sx={{ mt: 5, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 1.5 }}>
-            <Button disabled={step === 0} variant="text" color="inherit" onClick={goBack} sx={{ minWidth: 80 }}>
-              Back
-            </Button>
-            <Button disabled={(current.type === 'profile' && !isProfileStepComplete) || (current.type === 'interests' && !isInterestsStepComplete)} variant="contained" onClick={goNext} sx={{ minWidth: 140 }}>
-              {step === steps.length - 1 ? 'Enter Proximity' : 'Continue'}
-            </Button>
+          <Box sx={{ mt: 5 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 1.5 }}>
+              <Button disabled={step === 0} variant="outlined" size="small" onClick={goBack} sx={{ minWidth: 80 }}>
+                Back
+              </Button>
+              <Button disabled={(current.type === 'profile' && !isProfileStepComplete) || (current.type === 'interests' && !isInterestsStepComplete)} variant="contained" onClick={goNext} sx={{ minWidth: 140 }}>
+                {step === steps.length - 1 ? 'Enter Proximity' : 'Continue'}
+              </Button>
+            </Box>        
           </Box>
         </Box>
 
-        <Box
-          sx={{
-            display: { xs: 'none', lg: 'flex' },
-            flexDirection: 'column',
-            justifyContent: 'center',
-            background: isDark
-              ? 'linear-gradient(165deg, #1a1040 0%, #2d1f6e 48%, #6E5CE6 100%)'
-              : 'linear-gradient(165deg, #1B4332 0%, #2D6A4F 48%, #52B788 100%)',
-            color: 'white',
-            p: 5,
-          }}
-        >
-          <Typography variant="overline" sx={{ letterSpacing: '0.18em', opacity: 0.8 }}>Campus connection, redesigned</Typography>
-          <Typography variant="h3" sx={{ fontSize: '2.4rem', lineHeight: 1.08, mt: 1.4, mb: 5 }}>
-            A calmer way to discover people nearby.
-          </Typography>
+        {current.type !== 'interests' && ( 
+          <Box
+            sx={{
+              display: { xs: 'none', lg: 'flex' },
+              flexDirection: 'column',
+              justifyContent: 'center',
+              background: isDark
+                ? 'linear-gradient(165deg, #1a1040 0%, #2d1f6e 48%, #6E5CE6 100%)'
+                : 'linear-gradient(165deg, #1B4332 0%, #2D6A4F 48%, #52B788 100%)',
+              color: 'white',
+              p: 5,
+            }}
+          >
+            <Typography variant="overline" sx={{ letterSpacing: '0.18em', opacity: 0.8 }}>Campus connection, redesigned</Typography>
+            <Typography variant="h3" sx={{ fontSize: '2.4rem', lineHeight: 1.08, mt: 1.4, mb: 5 }}>
+              A calmer way to discover people nearby.
+            </Typography>
 
-          <Stack spacing={1.5}>
-            {[
-              'Context-first discovery rather than profile browsing',
-              'Low-pressure openers instead of cold DMs',
-              'Fully customizable interactions',
-            ].map((item) => (
-              <Box key={item} sx={{ p: 2, borderRadius: 4, bgcolor: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
-                <Typography variant="body1">{item}</Typography>
-              </Box>
-            ))}
-          </Stack>
-        </Box>
+            <Stack spacing={1.5}>
+              {[
+                'Context-first discovery rather than profile browsing',
+                'Low-pressure openers instead of cold DMs',
+                'Fully customizable interactions',
+              ].map((item) => (
+                <Box key={item} sx={{ p: 2, borderRadius: 4, bgcolor: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
+                  <Typography variant="body1">{item}</Typography>
+                </Box>
+              ))}
+            </Stack>
+          </Box>
+        )}
       </Box>
     </Box>
   );
