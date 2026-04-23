@@ -63,8 +63,8 @@ const THEME_MODE_KEY = 'proximity-theme-mode';
 
 const navItems = [
   { label: 'Discover', icon: <ExploreIcon />, tab: 0 },
-  { label: 'People', icon: <PeopleAltIcon />, tab: 1 },
-  { label: 'Messages', icon: <ChatBubbleOutlineOutlinedIcon />, tab: 2 },
+  { label: 'Messages', icon: <ChatBubbleOutlineOutlinedIcon />, tab: 1 },
+  { label: 'People', icon: <PeopleAltIcon />, tab: 2 },
   { label: 'Profile', icon: <AccountCircleOutlinedIcon />, tab: 3 },
 ];
 
@@ -461,8 +461,8 @@ function App() {
         onSelectEvent={setSelectedEvent}
         userProfile={userProfile}
       />,
-      <ConnectionsPage key="connections" userProfile={userProfile} />,
       <MessagesPage key="messages" userProfile={userProfile} />,
+      <ConnectionsPage key="connections" userProfile={userProfile} />,
       <ProfilePage
         key="profile"
         socialBattery={socialBattery}
