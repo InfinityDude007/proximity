@@ -11,12 +11,14 @@ import {
   Grid,
   MenuItem,
   TextField,
+  InputAdornment,
   useTheme,
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import BoltIcon from '@mui/icons-material/Bolt';
 import PeopleIcon from '@mui/icons-material/People';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import SearchIcon from '@mui/icons-material/Search';
 import proximityLogo from '../assets/proximity-logo.png';
 import proximityLogoDark from '../assets/proximity-logo-dark.png';
 import {
@@ -185,7 +187,7 @@ export default function OnboardingPage({ initialProfile, onComplete }) {
                   <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.7rem' }, lineHeight: 1.08, mb: 1.2 }}>{current.title}</Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ mb: 3.5, maxWidth: 560 }}>{current.subtitle}</Typography>
 
-                  <Stack container spacing={2}>
+                  <Stack container spacing={4}>
                     <Grid item xs={12}>
                       <TextField
                         fullWidth
@@ -209,9 +211,31 @@ export default function OnboardingPage({ initialProfile, onComplete }) {
                         label="Year"
                         value={profile.year}
                         onChange={(event) => setProfile((prev) => ({ ...prev, year: event.target.value }))}
+                        slotProps={{
+                          select: {
+                            slotProps: {
+                              listbox: {},
+                            },
+                            MenuProps: {
+                              anchorOrigin: { vertical: 'top', horizontal: 'left' },
+                              transformOrigin: { vertical: 'bottom', horizontal: 'left' },
+                              slotProps: {
+                                paper: {
+                                  sx: {
+                                    bgcolor: 'background.paper',
+                                    border: '2px solid',
+                                    borderColor: 'primary.main',
+                                    borderRadius: 1,
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        }}
                       >
                         {YEAR_OPTIONS.map((year) => (
-                          <MenuItem key={year} value={year}>
+                          <MenuItem
+                            key={year} value={year}>
                             {year}
                           </MenuItem>
                         ))}
@@ -222,6 +246,21 @@ export default function OnboardingPage({ initialProfile, onComplete }) {
                         options={UAE_UNIVERSITY_OPTIONS}
                         value={profile.university}
                         onChange={(_, value) => setProfile((prev) => ({ ...prev, university: value || '' }))}
+                        autoHighlight
+                        slotProps={{
+                          popper: {
+                            placement: 'bottom-start',
+                            modifiers: [{ name: 'flip', enabled: true }],
+                          },
+                          paper: {
+                            sx: {
+                              bgcolor: 'background.paper',
+                              border: '2px solid',
+                              borderColor: 'primary.main',
+                              borderRadius: 1,
+                            },
+                          },
+                        }}
                         renderInput={(params) => (
                           <TextField
                             {...params}
@@ -290,10 +329,20 @@ export default function OnboardingPage({ initialProfile, onComplete }) {
                   <Typography variant="body1" color="text.secondary" sx={{ mb: 3.5, maxWidth: 560 }}>{current.subtitle}</Typography>
                   <TextField
                     fullWidth
+                    variant='standard'
                     placeholder="Search interests..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     sx={{ mb: 2 }}
+                    slotProps={{
+                      input: {
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <SearchIcon />
+                          </InputAdornment>
+                        ),
+                      },
+                    }}
                   />
                   <Grid container spacing={1.25}>
                     {interestOptions
