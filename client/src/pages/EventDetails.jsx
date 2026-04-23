@@ -16,6 +16,7 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
+  AvatarGroup,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -25,7 +26,7 @@ import AccessibilityNewIcon from '@mui/icons-material/AccessibilityNew';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import HandshakeIcon from '@mui/icons-material/Handshake';
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import { softInviteTemplates } from '../data/mockData';
 import { alpha, useTheme } from '@mui/material/styles';
 import { isReachableAvailability } from '../data/preferencesUi';
@@ -41,19 +42,6 @@ const avatarColors = {
   M: '#9333EA',
   Z: '#DC2626',
 };
-
-function MetaRow({ icon, text }) {
-  return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
-      <Box sx={{ width: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-        {icon}
-      </Box>
-      <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.92)' }}>
-        {text}
-      </Typography>
-    </Box>
-  );
-}
 
 function AttendeeRow({ person, openToTalk }) {
   const theme = useTheme();
@@ -174,7 +162,7 @@ function AttendeeRow({ person, openToTalk }) {
           <Typography variant="h6" fontWeight={800}>
             Say hi to {person.name}
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+          <Typography variant="body2" sx={{ mt: 0.5, mb: 2, color: "text.secondary"}}>
             Pick a soft opener — no pressure on either side.
           </Typography>
         </DialogTitle>
@@ -190,7 +178,7 @@ function AttendeeRow({ person, openToTalk }) {
                 sx={{
                   border: '1.5px solid',
                   borderColor: 'divider',
-                  borderRadius: 3,
+                  borderRadius: 2,
                   p: 2,
                   minHeight: 72,
                   display: 'flex',
@@ -227,7 +215,8 @@ export default function EventDetailPage({ event, onBack, openToTalk }) {
   const [toastOpen, setToastOpen] = useState(false);
   const successSurface = alpha(theme.palette.success.main, isDark ? 0.18 : 0.1);
   const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
-  const vibeChipColor = event.vibe === 'quiet' ? theme.palette.secondary.main : theme.palette.warning.main;
+  const vibeColor = event.vibe === 'quiet' ? { bg: '#EEF2FF', text: '#4F46E5' } : { bg: '#FFF7ED', text: '#C2410C' };
+  const openCount = event.attendees.filter((a) => a.openToTalk).length;
 
   const handleJoin = () => {
     setJoined(true);
@@ -243,177 +232,221 @@ export default function EventDetailPage({ event, onBack, openToTalk }) {
         py: { xs: 2, md: 4 },
       }}
     >
-      <Box sx={{ maxWidth: 1360, mx: 'auto' }}>
-        <Box
-          sx={{
-            p: { xs: 2.5, md: 4 },
-            mb: 3,
-            borderRadius: 3,
-            background: isDark
-              ? 'linear-gradient(160deg, #17192B 0%, #20243D 55%, #2B3154 100%)'
-              : 'linear-gradient(160deg, #1B4332 0%, #2D6A4F 60%, #52B788 100%)',
-            color: 'white',
-            border: '1px solid',
-            borderColor: isDark ? '#2A2E49' : 'transparent',
-          }}
-        >
-          <IconButton
+      <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
+        {/* Back button */}
+        <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Button
             onClick={onBack}
-            sx={{
-              bgcolor: 'rgba(255,255,255,0.15)',
-              color: 'white',
-              mb: 3,
-              '&:hover': { bgcolor: 'rgba(255,255,255,0.25)' },
-            }}
+            variant='outlined'
+            sx={{ bgcolor: 'background.paper' }}
             size="small"
           >
-            <ArrowBackIcon fontSize="small" />
-          </IconButton>
-
-          <Grid container spacing={3} alignItems="flex-end">
-            <Grid item xs={12} lg={8}>
-              <Chip
-                label={event.type === 'event' ? '📅 Event' : '📍 Spot'}
-                size="small"
-                sx={{ bgcolor: 'rgba(255,255,255,0.18)', color: 'white', fontWeight: 700, mb: 1.5 }}
-              />
-              <Typography
-                variant="h3"
-                sx={{
-                  color: 'white',
-                  fontSize: { xs: '2rem', md: '3rem' },
-                  lineHeight: 1.05,
-                  mb: 1.25,
-                }}
-              >
-                {event.title}
-              </Typography>
-              <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.82)', maxWidth: 760 }}>
-                {event.description}
-              </Typography>
-            </Grid>
-            <Grid item xs={12} lg={4}>
-              <Stack spacing={1.25}>
-                <MetaRow icon={<LocationOnIcon sx={{ fontSize: 18, color: 'rgba(255,255,255,0.84)' }} />} text={event.location} />
-                <MetaRow icon={<AccessTimeIcon sx={{ fontSize: 18, color: 'rgba(255,255,255,0.84)' }} />} text={event.time} />
-                <MetaRow icon={<DirectionsWalkIcon sx={{ fontSize: 18, color: 'rgba(255,255,255,0.84)' }} />} text={event.distance} />
-              </Stack>
-            </Grid>
-          </Grid>
+            <Stack direction='row' spacing={1} sx={{ justifyContent: 'center', alignItems: 'center' }}>
+              <ArrowBackIcon fontSize="small" />
+              <Typography variant='caption' sx={{ fontSize: '14px', fontWeight: 600 }}>Back to your feed</Typography>
+            </Stack>
+          </Button>
         </Box>
 
-        <Grid
-          container
-          spacing={10}
+        {/* Main content card */}
+        <Card
           sx={{
-            position: 'relative',
-            left: { xs: 0, lg: 50, xl: 100 },
+            mb: 3,
+            overflow: 'hidden',
+            border: '1px solid',
+            borderColor: 'divider',
           }}
         >
-          <Grid item xs={12} xl={8}>
-            <Card>
-              <CardContent sx={{ p: 3 }}>
-                <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 0.75, textAlign: 'center' }}>
-                  Who's here
+          <CardContent sx={{ p: 4, justifyContent: 'space-between' }}>
+            <Stack direction='row' sx={{ justifyContent: 'space-between', alignItems: 'flex-end', mb: 3 }}>
+              <Stack spacing={2.5}>
+                <Box>
+                  <Stack direction="row" spacing={1} sx={{ mb: 2, alignItems: 'center' }}>
+                    <Chip
+                      label={event.vibe === 'quiet' ? 'Quiet' : 'Social'}
+                      size="small"
+                      sx={{ bgcolor: vibeColor.bg, color: vibeColor.text, fontWeight: 700 }}
+                    />
+                    {event.mutualCount > 0 && (
+                      <Chip
+                        label={`${event.mutualCount} mutual${event.mutualCount > 1 ? 's' : ''} going`}
+                        size="small"
+                        sx={{
+                          bgcolor: successSurface,
+                          color: isDark ? 'text.primary' : 'primary.dark',
+                          fontWeight: 700,
+                        }}
+                      />
+                    )}
+                  </Stack>
+
+                  <Typography variant="h4" sx={{ fontWeight: 800, mb: 1.5 }}>
+                    {event.title}
+                  </Typography>
+
+                  <Typography variant="body1" color="text.secondary">
+                    {event.description}
+                  </Typography>
+                </Box>
+              </Stack>
+
+              <Stack spacing={2.5}>
+                <Box>
+                  <Stack spacing={1.5}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <VerifiedIcon sx={{ fontSize: 18, color: 'primary.main', flexShrink: 0 }} />
+                      <Typography variant="body2">{event.credibility}</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <AccessibilityNewIcon sx={{ fontSize: 18, color: 'text.secondary', flexShrink: 0 }} />
+                      <Typography variant="body2" color="text.secondary">{event.accessibility}</Typography>
+                    </Box>
+                  </Stack>
+                </Box>
+              </Stack>
+            </Stack>
+
+            <Divider />
+            
+            <Stack direction='row' sx={{ justifyContent: 'space-between', mt: 3 }}>
+              <Stack>
+                <Typography variant="body1" sx={{ mb: 2, fontSize: '18px', fontWeight: 700 }}>
+                  Event Details
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2, textAlign: 'center' }}>
-                  Green dot = open to chat. Tap "Say hi" for a soft, no-pressure opener.
-                </Typography>
-                <Divider sx={{ mb: 0.5 }} />
+                <Stack spacing={1.5}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <LocationOnIcon sx={{ fontSize: 20, color: 'text.secondary', flexShrink: 0 }} />
+                    <Typography variant="body2">{event.location}</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <AccessTimeIcon sx={{ fontSize: 20, color: 'text.secondary', flexShrink: 0 }} />
+                    <Typography variant="body2">{event.time}</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <DirectionsWalkIcon sx={{ fontSize: 20, color: 'text.secondary', flexShrink: 0 }} />
+                    <Typography variant="body2">{event.distance}</Typography>
+                  </Box>
+                </Stack>
+
+                <Box>
+                  <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', useFlexGap: true, alignItems: 'center', mt: 1}}>
+                    <Typography variant="overline" sx={{ color: 'text.secondary', display: 'block' }}>
+                      Tags
+                    </Typography>
+                    {event.tags.map((tag) => (
+                      <Chip
+                        key={tag}
+                        label={tag}
+                        size="small"
+                        sx={{
+                          color: 'text.secondary',
+                          bgcolor: subtleSurface,
+                        }}
+                      />
+                    ))}
+                  </Stack>
+                </Box>
+              </Stack>
+              
+              <Box>
+                {!joined ? (
+                    <Button
+                      variant="contained"
+                      size="large"
+                      onClick={handleJoin}
+                      sx={{ width: '100%', py: 2 }}
+                    >
+                      I'm heading there
+                    </Button>
+                  ) : (
+                    <Box
+                      sx={{
+                        bgcolor: successSurface,
+                        border: '2px solid',
+                        borderColor: 'primary.light',
+                        borderRadius: 2,
+                        p: 2,
+                        textAlign: 'center',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: 1,
+                      }}
+                    >
+                      <Box>
+                        <Stack direction='row' spacing={1} sx={{ alignItems: 'center', justifyContent: 'center' }}>
+                          <EventAvailableIcon sx={{ fontSize: 30, color: 'primary.main' }} />
+                          <Typography variant="body2" color={isDark ? 'text.primary' : 'primary.dark'} sx={{ fontSize: '16px', fontWeight: 700 }}>
+                            You're in
+                          </Typography>
+                        </Stack>  
+                        <Typography variant="caption" color="text.secondary" sx={{ fontSize: '14px' }}>
+                          Your presence helps signal shared context.
+                        </Typography>
+                      </Box>
+                    </Box>
+                  )}
+                </Box>
+            </Stack>
+          </CardContent>
+        </Card>
+
+        {/* Who's here section */}
+        <Card
+          sx={{
+            border: '1px solid',
+            borderColor: 'divider',
+          }}
+        >
+          <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+            <Box sx={{ mb: 2.5 }}>
+              <Typography variant="body1" sx={{ fontSize: '16px', fontWeight: 700, mb: 1 }}>
+                Who's here
+              </Typography>
+              <Typography variant="body2" sx={{ fontSize: '14px', color: "text.secondary" }}>
+                Green dot = open to chat. Tap "Say hi" for a soft, no-pressure opener.
+              </Typography>
+            </Box>
+
+            <Divider sx={{ mb: 2.5 }} />
+
+            {event.attendees.length > 0 ? (
+              <Stack spacing={0}>
                 {event.attendees.map((person, i) => (
                   <Box key={person.id}>
                     <AttendeeRow person={person} openToTalk={openToTalk} />
                     {i < event.attendees.length - 1 && <Divider />}
                   </Box>
                 ))}
-                {event.mutualCount > 0 && (
-                  <Box
-                    sx={{
-                      mt: 2,
-                      p: 2,
-                      bgcolor: successSurface,
-                      borderRadius: 3,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      gap: 0.75,
-                      textAlign: 'center',
-                    }}
-                  >
-                    <HandshakeIcon sx={{ color: isDark ? 'text.primary' : 'primary.dark' }} />
-                    <Typography variant="body2" color={isDark ? 'text.primary' : 'primary.dark'} fontWeight={700}>
-                      {event.mutualCount} mutual connection{event.mutualCount > 1 ? 's' : ''} here
-                    </Typography>
-                  </Box>
-                )}
-              </CardContent>
-            </Card>
-          </Grid>
+              </Stack>
+            ) : (
+              <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 3 }}>
+                No attendees yet
+              </Typography>
+            )}
 
-          <Grid item xs={12} xl={4}>
-            <Stack spacing={3.5}>
-              <Card>
-                <CardContent sx={{ p: 3, textAlign: 'center' }}>
-                  <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 1.5 }}>
-                    Details
-                  </Typography>
-                  <Stack spacing={1.25} alignItems="center">
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
-                      <VerifiedIcon sx={{ fontSize: 16, color: 'primary.main', flexShrink: 0 }} />
-                      <Typography variant="body2">{event.credibility}</Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
-                      <AccessibilityNewIcon sx={{ fontSize: 16, color: 'text.secondary', flexShrink: 0 }} />
-                      <Typography variant="body2" color="text.secondary">{event.accessibility}</Typography>
-                    </Box>
-                  </Stack>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent sx={{ p: 3, textAlign: 'center' }}>
-                  <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 1.5 }}>
-                    Vibe
-                  </Typography>
-                  <Stack direction="row" spacing={0.75} flexWrap="wrap" useFlexGap justifyContent="center">
-                    {event.tags.map((tag) => <Chip key={tag} label={tag} size="small" sx={{ bgcolor: subtleSurface, color: 'text.secondary' }} />)}
-                  </Stack>
-                  <Chip
-                    label={event.vibe === 'quiet' ? 'Quiet atmosphere' : 'Social atmosphere'}
-                    sx={{ mt: 1.5, bgcolor: alpha(vibeChipColor, isDark ? 0.24 : 0.14), color: isDark ? 'text.primary' : vibeChipColor, fontWeight: 700 }}
-                  />
-                </CardContent>
-              </Card>
-
-              {!joined ? (
-                <Button variant="contained" size="large" onClick={handleJoin} sx={{ py: 2, fontSize: '1.05rem', fontWeight: 700 }}>
-                  I'm heading there
-                </Button>
-              ) : (
-                <Box
-                  sx={{
-                    bgcolor: successSurface,
-                    border: '2px solid',
-                    borderColor: 'primary.light',
-                    borderRadius: 4,
-                    p: 2.5,
-                    textAlign: 'center',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: 1,
-                  }}
-                >
-                  <EmojiEventsIcon sx={{ fontSize: 32, color: 'primary.main' }} />
-                  <Box>
-                    <Typography variant="body1" fontWeight={800} color={isDark ? 'text.primary' : 'primary.dark'} sx={{ mb: 0.6 }}>You're in</Typography>
-                    <Typography variant="body2" color="text.secondary">Your presence helps signal shared context for others nearby.</Typography>
-                  </Box>
-                </Box>
-              )}
-            </Stack>
-          </Grid>
-        </Grid>
+            {event.mutualCount > 0 && (
+              <Box
+                sx={{
+                  mt: 2.5,
+                  p: 2,
+                  bgcolor: successSurface,
+                  borderRadius: 3,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 0.75,
+                  textAlign: 'center',
+                }}
+              >
+                <HandshakeIcon sx={{ color: isDark ? 'text.primary' : 'primary.dark' }} />
+                <Typography variant="body2" color={isDark ? 'text.primary' : 'primary.dark'} fontWeight={700}>
+                  {event.mutualCount} mutual connection{event.mutualCount > 1 ? 's' : ''} here
+                </Typography>
+              </Box>
+            )}
+          </CardContent>
+        </Card>
       </Box>
 
       <Snackbar
