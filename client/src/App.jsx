@@ -188,7 +188,6 @@ function SidebarContent({
                 {!collapsed && (
                   <ListItemText
                     primary={item.label}
-                    primaryTypographyProps={{ fontWeight: 700, fontSize: '0.95rem' }}
                   />
                 )}
               </ListItemButton>
