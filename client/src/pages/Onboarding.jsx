@@ -36,30 +36,35 @@ const steps = [
     title: 'Find your people,\nnaturally.',
     subtitle: 'Proximity connects you to students around you through shared spaces, not awkward profiles.',
     type: 'splash',
+    summary: 'Landing',
   },
   {
     key: 'profile',
     title: 'Tell us a little about you',
     subtitle: 'We will use this to personalize your profile and make your campus presence feel real.',
     type: 'profile',
+    summary: 'Your profile',
   },
   {
     key: 'interests',
     title: 'What are you into?',
     subtitle: 'Pick a few things you enjoy. This helps surface relevant events and people.',
     type: 'interests',
+    summary: 'Your interests',
   },
   {
     key: 'battery',
     title: 'How social are you feeling today?',
     subtitle: 'We tailor your feed to match your energy. You can change this anytime.',
     type: 'battery',
+    summary: 'Your social battery',
   },
   {
     key: 'ready',
     title: "You're all set {profile.name}!",
     subtitle: 'No pressure to connect with anyone. Just explore what is happening around you at {profile.university}.',
     type: 'ready',
+    summary: 'Review your choices',
   },
 ];
 
@@ -129,7 +134,32 @@ export default function OnboardingPage({ initialProfile, onComplete }) {
         }}
       >
         <Box sx={{ p: { xs: 3, md: 5 }, display: 'flex', flexDirection: 'column' }}>
-          {step > 0 && step < steps.length - 1 && <LinearProgress variant="determinate" value={progress} sx={{ mb: 4, bgcolor: 'divider', '& .MuiLinearProgress-bar': { background: isDark ? 'linear-gradient(90deg, #6E5CE6, #8B7CF6)' : 'linear-gradient(90deg, #2D6A4F, #52B788)' } }} />}
+          {step > 0 && step < steps.length && (
+            <Box sx={{ mb: 4 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '16px', fontWeight: 600 }}>
+                  {step}/{steps.length - 1}
+                </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '16px', fontWeight: 600 }}>
+                  {current.summary}
+                </Typography>
+              </Box>
+              <LinearProgress
+                variant="determinate"
+                value={progress}
+                sx={{
+                  height: 10,
+                  borderRadius: 5,
+                  bgcolor: 'divider',
+                  '& .MuiLinearProgress-bar': {
+                    background: isDark
+                      ? 'linear-gradient(90deg, #6E5CE6, #8B7CF6)'
+                      : 'linear-gradient(270deg, #2D6A4F, #52B788)',
+                  },
+                }}
+              />
+            </Box>
+          )}
 
           <Fade in key={step} timeout={300}>
             <Box sx={{ flex: 1 }}>
