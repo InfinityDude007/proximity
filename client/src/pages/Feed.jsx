@@ -488,9 +488,11 @@ export default function FeedPage({
                 />
               ))}
             </Stack>
-            <Button startIcon={<TuneIcon />} variant="outlined" sx={{ px: 2.5, py: 1.1, flexShrink: 0 }}>
+
+            {/* TODO <Button startIcon={<TuneIcon />} variant="outlined" sx={{ px: 2.5, py: 1.1, flexShrink: 0 }}>
               Refine feed
-            </Button>
+            </Button> */}
+            
           </Box>
 
           {filtered.length === 0 ? (

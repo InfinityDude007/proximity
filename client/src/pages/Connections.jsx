@@ -22,13 +22,17 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import MapIcon from '@mui/icons-material/Map';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import AnalyticsIcon from '@mui/icons-material/Analytics';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import MarkChatReadIcon from '@mui/icons-material/MarkChatRead';
+import HandshakeIcon from '@mui/icons-material/Handshake';
 import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
 import { getUniversityMockData, softInviteTemplates } from '../data/mockData';
 import { alpha, useTheme } from '@mui/material/styles';
 
 const statusColor = {
   acquaintance: { bg: '#FFF7ED', text: '#C2410C', label: 'Acquaintance' },
-  friend:       { bg: '#F0FAF4', text: '#166534', label: 'Friend' },
+  friend: { bg: '#F0FAF4', text: '#166534', label: 'Friend' },
 };
 
 const avatarColors = {
@@ -37,171 +41,163 @@ const avatarColors = {
   S: '#B45309',
 };
 
-// ─── ConnectionCard ────────────────────────────────────────────────────────
-// FIX: All child elements now use consistent centred alignment.
-// FIX: Removed inconsistent gap values; standardised to gap={2}.
-// FIX: Button row now always full-width with equal flex-basis so both
-//      buttons are exactly the same width regardless of label length.
 function ConnectionCard({ person, onViewProfile }) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
   const status = statusColor[person.status];
-  const tintedSurface = alpha(theme.palette.primary.main, isDark ? 0.16 : 0.1);
+  const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
+  const successSurface = alpha(theme.palette.success.main, isDark ? 0.18 : 0.1);
 
   return (
-    <Card sx={{ height: '100%' }}>
+    <Card
+      sx={{
+        height: '100%',
+        cursor: 'pointer',
+        border: '1px solid',
+        borderColor: 'divider',
+        transition: 'transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease',
+        '&:hover': {
+          transform: 'translateY(-4px)',
+          boxShadow: theme.shadows[4],
+          borderColor: alpha(theme.palette.primary.main, 0.35),
+        },
+      }}
+      onClick={() => onViewProfile(person)}
+    >
       <CardContent
         sx={{
-          p: 3,
+          py: 2.5,
+          px: 2.5,
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',   // FIX: was already set but propagated inconsistently
-          textAlign: 'center',
-          gap: 2,                 // FIX: was 1.2 — unified to 2 for consistent vertical rhythm
+          gap: 2,
         }}
       >
-        {/* ── Avatar + status ring ── */}
-        <Box sx={{ position: 'relative', flexShrink: 0 }}>
-          <Avatar
-            sx={{
-              bgcolor: avatarColors[person.avatar] || 'primary.main',
-              width: 56,
-              height: 56,
-              fontWeight: 800,
-              fontSize: '1.15rem',
-            }}
-          >
-            {person.avatar}
-          </Avatar>
-          {person.openToTalk && (
-            <Box
+        <Box sx={{ display: 'flex', gap: 1.75, alignItems: 'center' }}>
+          <Box sx={{ position: 'relative', flexShrink: 0 }}>
+            <Avatar
               sx={{
-                position: 'absolute',
-                bottom: 2,
-                right: 2,
-                width: 13,
-                height: 13,
-                bgcolor: 'success.main',
-                borderRadius: '50%',
-                border: '2px solid',
-                borderColor: 'background.paper',
+                bgcolor: avatarColors[person.avatar] || 'primary.main',
+                width: 50,
+                height: 50,
+                fontWeight: 800,
               }}
-            />
-          )}
-        </Box>
+            >
+              {person.avatar}
+            </Avatar>
+            {person.openToTalk && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  bottom: 1,
+                  right: 1,
+                  width: 12,
+                  height: 12,
+                  bgcolor: 'success.main',
+                  borderRadius: '50%',
+                  border: '2px solid',
+                  borderColor: 'background.paper',
+                }}
+              />
+            )}
+          </Box>
 
-        {/* ── Name + degree row ── */}
-        {/* FIX: Moved name/status chip into a single centred column instead of
-                a row with flexWrap so the chip never misaligns on short names. */}
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 0.5,
-            width: '100%',
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap', justifyContent: 'center' }}>
-            <Typography variant="subtitle1" fontWeight={800}>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Typography variant="subtitle1" fontWeight={800} noWrap>
               {person.name}
             </Typography>
+            <Typography variant="body2" color="text.secondary" noWrap>
+              {person.degree} · {person.year}
+            </Typography>
+          </Box>
+        </Box>
+
+        <Stack direction="row" spacing={0.75} useFlexGap sx={{ flexWrap: 'wrap', alignItems: 'center' }}>
+          <Chip
+            label={status.label}
+            size="small"
+            sx={{
+              bgcolor: alpha(status.text, isDark ? 0.22 : 0.12),
+              color: isDark ? 'text.primary' : status.text,
+              fontWeight: 700,
+            }}
+          />
+          {person.openToTalk && (
             <Chip
-              label={status.label}
+              icon={<FiberManualRecordIcon sx={{ fontSize: '9px !important', color: `${theme.palette.success.main} !important` }} />}
+              label="Open to chat"
               size="small"
               sx={{
-                bgcolor: isDark ? 'action.selected' : status.bg,
-                color:   isDark ? 'text.primary'   : status.text,
+                bgcolor: successSurface,
+                color: isDark ? 'text.primary' : 'success.dark',
                 fontWeight: 700,
               }}
             />
-          </Box>
+          )}
+        </Stack>
 
-          <Typography variant="body2" color="text.secondary">
-            {person.degree} · {person.year}
-          </Typography>
-        </Box>
-
-        {/* ── How you met ── */}
-        {/* FIX: Set explicit maxWidth: '100%' so it never overflows the card. */}
         <Box
           sx={{
-            p: 1.5,
+            py: 1,
+            px: 2.5,
             bgcolor: 'action.hover',
-            borderRadius: 3,
-            border: '1px solid',
-            borderColor: 'divider',
+            borderRadius: 1,
             width: '100%',
           }}
         >
-          <Typography
-            variant="caption"
-            fontWeight={800}
-            color="text.secondary"
-            display="block"
-            sx={{ mb: 0.5 }}
-          >
-            How you met
+          <Typography variant="caption" color="text.secondary" display="block">
+            How you connected
           </Typography>
           <Typography variant="body2" color="text.secondary">
             {person.sharedContext}
           </Typography>
         </Box>
 
-        {/* ── Last seen ── */}
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 0.5,
-          }}
-        >
-          <LocationOnIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
-          <Typography variant="caption" color="text.secondary">
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <LocationOnIcon sx={{ fontSize: 18, color: 'text.secondary', flexShrink: 0 }} />
+          <Typography variant="body2" color="text.secondary">
             {person.lastSeen}
           </Typography>
         </Box>
 
-        {/* ── Shared-interest chips ── */}
         {person.sharedInterests.length > 0 && (
-          <Stack
-            direction="row"
-            spacing={0.75}
-            flexWrap="wrap"
-            useFlexGap
-            sx={{ justifyContent: 'center', width: '100%' }}
-          >
+          <Stack direction="row" spacing={0.75} flexWrap="wrap" useFlexGap>
             {person.sharedInterests.map((interest) => (
               <Chip
                 key={interest}
-                label={`✦ ${interest}`}
+                label={interest}
                 size="small"
-                sx={{ bgcolor: tintedSurface, color: isDark ? 'primary.light' : 'primary.dark' }}
+                sx={{
+                  bgcolor: subtleSurface,
+                  color: 'text.secondary',
+                  fontWeight: 600,
+                }}
               />
             ))}
           </Stack>
         )}
 
-        {/* FIX: Divider + button group pushed to the bottom with mt: 'auto' on
-                a wrapper so cards of different heights stay bottom-aligned. */}
         <Box sx={{ mt: 'auto', width: '100%' }}>
-          <Divider sx={{ mb: 2 }} />
-
-          {/* FIX: Both buttons use flex: 1 so they share width equally. */}
+          <Divider sx={{ mb: 2, mt: 0.5 }} />
           <Stack direction="row" spacing={1.5} sx={{ width: '100%' }}>
             <Button
               variant="outlined"
-              onClick={() => onViewProfile(person)}
-              sx={{ flex: 1, py: 1.2 }}
+              onClick={(event) => {
+                event.stopPropagation();
+                onViewProfile(person);
+              }}
+              sx={{ flex: 1, py: 1 }}
             >
               View profile
             </Button>
             <Button
               variant="contained"
-              onClick={() => onViewProfile(person)}
-              sx={{ flex: 1, py: 1.2 }}
+              onClick={(event) => {
+                event.stopPropagation();
+                onViewProfile(person);
+              }}
+              sx={{ flex: 1, py: 1 }}
             >
               Send invite
             </Button>
@@ -212,9 +208,6 @@ function ConnectionCard({ person, onViewProfile }) {
   );
 }
 
-// ─── ProfileDialog ─────────────────────────────────────────────────────────
-// FIX: Template list items now have consistent padding and min-height so
-//      short vs. long templates don't make the list feel jagged.
 function ProfileDialog({ person, open, onClose }) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
@@ -222,8 +215,10 @@ function ProfileDialog({ person, open, onClose }) {
   const [toastOpen, setToastOpen] = useState(false);
 
   if (!person) return null;
+
   const status = statusColor[person.status];
-  const softSurface = alpha(theme.palette.primary.main, isDark ? 0.18 : 0.08);
+  const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
+  const successSurface = alpha(theme.palette.success.main, isDark ? 0.18 : 0.1);
 
   return (
     <Dialog
@@ -231,150 +226,180 @@ function ProfileDialog({ person, open, onClose }) {
       onClose={onClose}
       fullWidth
       maxWidth="sm"
-      PaperProps={{ sx: { borderRadius: 5 } }}
+      PaperProps={{
+        sx: {
+          borderRadius: 5,
+          border: '1px solid',
+          borderColor: 'divider',
+        },
+      }}
     >
-      <DialogTitle sx={{ pb: 0.5 }}>
-        {/* FIX: Title row uses space-between with consistent gap */}
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1 }}>
-          <Typography variant="h6" fontWeight={800}>
+      <DialogTitle sx={{ pb: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 2 }}>
+          <Typography variant="overline" sx={{ mt: 0.5, color:"text.secondary", fontWeight: 700, letterSpacing: '0.14em', fontSize: '14px' }}>
             Profile
           </Typography>
-          <IconButton size="small" onClick={onClose}>
+          <IconButton size="small" onClick={onClose} sx={{ flexShrink: 0 }}>
             <CloseIcon fontSize="small" />
           </IconButton>
         </Box>
       </DialogTitle>
 
-      <DialogContent sx={{ pt: 1.5 }}>
-        {/* ── Avatar hero ── */}
-        <Box sx={{ textAlign: 'center', mb: 2.5 }}>
-          <Avatar
-            sx={{
-              bgcolor: avatarColors[person.avatar] || 'primary.main',
-              width: 80,
-              height: 80,
-              fontSize: '1.9rem',
-              fontWeight: 800,
-              mx: 'auto',
-              mb: 1.5,
-            }}
-          >
-            {person.avatar}
-          </Avatar>
-          <Typography variant="h5" fontWeight={800}>
-            {person.name}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {person.degree} · {person.year}
-          </Typography>
+      <DialogContent sx={{ py: 2, px: 3, mt: 0.5 }}>
+        <Stack direction='row' sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2.5 }}>
+            <Box sx={{ position: 'relative', flexShrink: 0 }}>
+              <Avatar
+                sx={{
+                  bgcolor: avatarColors[person.avatar] || 'primary.main',
+                  width: 78,
+                  height: 78,
+                  fontSize: '1.8rem',
+                  fontWeight: 800,
+                }}
+              >
+                {person.avatar}
+              </Avatar>
+              {person.openToTalk && (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    bottom: 4,
+                    right: 4,
+                    width: 14,
+                    height: 14,
+                    bgcolor: 'success.main',
+                    borderRadius: '50%',
+                    border: '2px solid',
+                    borderColor: 'background.paper',
+                  }}
+                />
+              )}
+            </Box>
 
-          {/* FIX: Chips are centred and wrapped consistently */}
-          <Stack
-            direction="row"
-            spacing={1}
-            justifyContent="center"
-            flexWrap="wrap"
-            useFlexGap
-            sx={{ mt: 1.5 }}
-          >
+            <Box sx={{ minWidth: 0 }}>
+              <Typography variant="h5" fontWeight={800}>
+                {person.name}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {person.degree} - {person.year}
+              </Typography>
+            </Box>
+          </Box>
+
+          <Stack direction="column" spacing={1} useFlexGap sx={{ flexWrap: 'wrap', mb: 2 }}>
             <Chip
               label={status.label}
               size="small"
               sx={{
                 bgcolor: alpha(status.text, isDark ? 0.22 : 0.12),
-                color:   isDark ? 'text.primary' : status.text,
+                color: isDark ? 'text.primary' : status.text,
                 fontWeight: 700,
               }}
             />
             {person.openToTalk && (
               <Chip
-                icon={
-                  <FiberManualRecordIcon
-                    sx={{ fontSize: '10px !important', color: `${theme.palette.success.main} !important` }}
-                  />
-                }
+                icon={<FiberManualRecordIcon sx={{ fontSize: '9px !important', color: `${theme.palette.success.main} !important` }} />}
                 label="Open to chat"
                 size="small"
                 sx={{
-                  bgcolor: alpha(theme.palette.success.main, isDark ? 0.18 : 0.1),
-                  color:   isDark ? 'text.primary' : 'success.dark',
+                  bgcolor: successSurface,
+                  color: isDark ? 'text.primary' : 'success.dark',
                   fontWeight: 700,
                 }}
               />
             )}
           </Stack>
-        </Box>
+        </Stack>
 
-        {/* ── Shared context ── */}
-        <Box sx={{ bgcolor: 'action.hover', borderRadius: 4, p: 2, mb: 2.5 }}>
-          <Typography
-            variant="caption"
-            fontWeight={800}
-            color="text.secondary"
-            display="block"
-            sx={{ mb: 0.5 }}
-          >
-            Shared context
+        {/* TODO <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: 'wrap', mb: 1, alignItems: 'center', justifyContent: 'space-between' }}>
+          <Typography variant='body1'>Interests</Typography>
+          <Stack direction='row' spacing={1} sx={{ alignItems: 'center' }}>
+            <FiberManualRecordIcon sx={{ fontSize: '14px !important', color: `${theme.palette.primary.main} !important` }} />
+            <Typography variant='overline' sx={{ letterSpacing: '0.14em', fontSize: '10px' }}>your shared interests</Typography>
+          </Stack>
+        </Stack> */}
+
+        <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: 'wrap', mb: 2.5, alignItems: 'center' }}>
+          {person.sharedInterests.map((interest) => (
+            <Chip
+              key={interest}
+              label={interest}
+              size="small"
+              sx={{ bgcolor: subtleSurface, color: 'text.secondary', fontWeight: 600 }}
+            />
+          ))}
+        </Stack>
+
+        <Box sx={{ bgcolor: 'action.hover', borderRadius: 1, px: 2, py: 1, mb: 2.5 }}>
+          <Typography variant="body1" display="block" sx={{ mb: 0.2, color: "text.secondary" }}>
+            Your shared context
           </Typography>
           <Typography variant="body2">{person.sharedContext}</Typography>
         </Box>
 
-        {/* ── Soft-invite templates ── */}
-        <Typography variant="subtitle2" fontWeight={800} sx={{ mb: 1.5, textAlign: 'center' }}>
-          Send a soft invite
-        </Typography>
+        <Divider sx={{ mb: 2.5 }} />
+
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="body1" display="block" sx={{ mb: 0.5, color: "text.secondary" }}>
+            Send a soft invite
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Pick a low-pressure opener that matches the tone used elsewhere in the app.
+          </Typography>
+        </Box>
 
         {!sent ? (
-          <Stack spacing={1} sx={{ mb: 2 }}>
+          <Stack spacing={1.25} sx={{ mb: 2 }}>
             {softInviteTemplates.slice(0, 3).map((template) => (
-              // FIX: All template boxes have the same minHeight so the list
-              //      rows are vertically equal.
               <Box
                 key={template.id}
-                onClick={() => { setSent(true); setToastOpen(true); }}
+                onClick={() => {
+                  setSent(true);
+                  setToastOpen(true);
+                }}
                 sx={{
                   border: '1.5px solid',
                   borderColor: 'divider',
-                  borderRadius: 3,
-                  p: 1.75,
-                  minHeight: 56,           // FIX: prevents height variation
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  textAlign: 'center',
+                  borderRadius: 2,
+                  px: 3,
+                  py: 2,
                   cursor: 'pointer',
                   transition: 'all 0.15s ease',
-                  '&:hover': { borderColor: 'primary.main', bgcolor: softSurface },
+                  '&:hover': {
+                    borderColor: 'primary.main',
+                    bgcolor: subtleSurface,
+                  },
                 }}
               >
-                <Typography variant="body2">"{template.text}"</Typography>
+                <Typography variant="body2" fontWeight={500}>
+                  "{template.text}"
+                </Typography>
               </Box>
             ))}
           </Stack>
         ) : (
           <Box
             sx={{
-              bgcolor: alpha(theme.palette.success.main, isDark ? 0.16 : 0.1),
-              borderRadius: 4,
+              bgcolor: successSurface,
+              border: '2px solid',
+              borderColor: 'primary.light',
+              borderRadius: 2,
               p: 2,
               textAlign: 'center',
               mb: 2,
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              gap: 0.75,
+              gap: 1,
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-              <CheckCircleIcon sx={{ color: 'primary.main', fontSize: 20 }} />
-              <Typography
-                variant="body2"
-                fontWeight={700}
-                color={isDark ? 'text.primary' : 'primary.dark'}
-              >
+            <Stack direction="row" spacing={1} sx={{ alignItems: 'center', justifyContent: 'center' }}>
+              <CheckCircleIcon sx={{ color: 'primary.main', fontSize: 24 }} />
+              <Typography variant="body2" fontWeight={700} color={isDark ? 'text.primary' : 'primary.dark'}>
                 Soft invite sent to {person.name}
               </Typography>
-            </Box>
+            </Stack>
             <Typography variant="caption" color="text.secondary">
               No pressure — they can respond in their own time.
             </Typography>
@@ -396,30 +421,41 @@ function ProfileDialog({ person, open, onClose }) {
   );
 }
 
-// ─── ConnectionsPage ───────────────────────────────────────────────────────
-// FIX: Stats grid now uses xs={4} on all breakpoints so the three stat boxes
-//      are always equal-width and centred within their column.
-// FIX: Info banner is centred both horizontally and vertically in its grid cell.
 export default function ConnectionsPage({ userProfile }) {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const [selectedPerson, setSelectedPerson] = useState(null);
   const { connections } = useMemo(
     () => getUniversityMockData(userProfile?.university),
     [userProfile?.university],
   );
 
+  const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
+
   const stats = useMemo(
     () => [
-      { value: connections.length,                                    label: 'Connections'  },
-      { value: connections.filter((p) => p.openToTalk).length,        label: 'Open to chat' },
-      { value: connections.filter((p) => p.status === 'friend').length, label: 'Friends'     },
+      {
+        value: connections.length,
+        label: `Connection${connections.length === 1 ? '' : 's'}`,
+        icon: <PersonAddIcon sx={{ fontSize: '28px', color: 'primary.main' }}/>
+      },
+      {
+        value: connections.filter((p) => p.openToTalk).length,
+        label: 'Open to chat',
+        icon: <MarkChatReadIcon sx={{ color: 'primary.main' }}/>
+      },
+      {
+        value: connections.filter((p) => p.status === 'friend').length,
+        label: `Friend${connections.filter((p) => p.status === 'friend').length === 1 ? '' : 's'}`,
+        icon: <HandshakeIcon sx={{ fontSize: '28px', color: 'primary.main' }}/>
+      },
     ],
     [connections],
   );
 
   return (
     <Box>
-      {/* ── Page header ── */}
-      <Box sx={{ mb: 3.5 }}>
+      <Box sx={{ mb: 3 }}>
         <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.5rem' }, mb: 0.75 }}>
           Your people
         </Typography>
@@ -428,98 +464,101 @@ export default function ConnectionsPage({ userProfile }) {
         </Typography>
       </Box>
 
-      {/* ── Info bar + stats ── */}
-      <Grid container spacing={3} sx={{ mb: 3.5 }} alignItems="stretch">
-        {/* Banner */}
-        <Grid item xs={12} xl={8}>
-          <Box
-            sx={{
-              height: '100%',
-              p: { xs: 2.5, md: 3 },
-              borderRadius: 5,
-              bgcolor: 'background.paper',
-              border: '1px solid',
-              borderColor: 'divider',
-              display: 'flex',
-              flexDirection: 'column',    // FIX: column so content stays centred
-              alignItems: 'center',
-              justifyContent: 'center',   // FIX: vertical centering within row
-              gap: 1.5,
-              textAlign: 'center',
-            }}
-          >
-            <MapIcon sx={{ fontSize: 32, color: 'primary.main' }} />
-            <Box>
-              <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 0.4 }}>
-                Acquaintance → Friend
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                The more shared moments you have with someone, the stronger your connection grows — naturally.
-              </Typography>
-            </Box>
-          </Box>
-        </Grid>
-
-        {/* Stat boxes */}
-        {/* FIX: Three equal-width stat boxes — each xl={4} inside the xl={4} column */}
-        <Grid item xs={12} xl={4}>
-          <Grid container spacing={1.5} sx={{ height: '100%' }}>
-            {stats.map((stat) => (
-              <Grid key={stat.label} item xs={4}>
-                <Card sx={{ height: '100%' }}>
-                  <CardContent
-                    sx={{
-                      p: 2,
-                      height: '100%',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'center', // FIX: vertically centred numbers
-                      textAlign: 'center',
-                    }}
-                  >
-                    <Typography variant="h6" fontWeight={800}>
-                      {stat.value}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {stat.label}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        </Grid>
-      </Grid>
-
-      {/* ── Empty state ── */}
-      {connections.length === 0 ? (
-        <Box
+      <Card sx={{ height: '100%', mb: 3}}>
+        <CardContent
           sx={{
-            textAlign: 'center',
-            py: 8,
-            px: 3,
-            bgcolor: 'background.paper',
-            borderRadius: 5,
-            border: '1px solid',
-            borderColor: 'divider',
+            p: { xs: 2.5, md: 3.5 },
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
           }}
         >
-          <PeopleOutlinedIcon sx={{ fontSize: 56, color: 'text.secondary', opacity: 0.4, mb: 2 }} />
-          <Typography variant="h6" fontWeight={800} sx={{ mb: 1 }}>
-            No connections yet
-          </Typography>
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{ maxWidth: 420, mx: 'auto' }}
-          >
-            Head to Discover and join a nearby event or spot — you'll build connections naturally.
-          </Typography>
-        </Box>
+          <Stack direction='column' sx={{ width: '100%' }}>
+            <Stack direction='row' spacing={2} sx={{ alignItems: 'center' }}>
+              <Box
+                sx={{
+                  width: 46,
+                  height: 46,
+                  borderRadius: 2,
+                  bgcolor: subtleSurface,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                <MapIcon sx={{ fontSize: 30, color: 'primary.main' }} />
+              </Box>
+              <Box>
+                <Typography variant="h6" fontWeight={800} sx={{ mb: 0.5 }}>
+                  Acquaintance → Friend
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  The more shared moments you have with someone, the stronger your connection grows — naturally.
+                </Typography>
+              </Box>
+            </Stack>
+            
+            <Stack direction='row' spacing={2} sx={{ alignItems: 'center', mb: 2, mt: 3 }}>
+              <Box
+                sx={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 2,
+                  bgcolor: subtleSurface,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                <AnalyticsIcon sx={{ fontSize: 24, color: 'primary.main' }} />
+              </Box>
+              <Box>
+                <Typography variant="h6" sx={{ fontSize: '16px'}}>
+                  Connections Summary
+                </Typography>
+              </Box>
+            </Stack>
+            <Stack direction='row' spacing={4} sx={{ width: '100%', justifyContent: 'center'}}>
+              {stats.map((stat) => (
+                <Box
+                  key={stat.label}
+                  sx={{
+                    p: 1.5,
+                    borderRadius: 2,
+                    bgcolor: 'action.hover',
+                    textAlign: 'center',
+                    minWidth: '25%'
+                  }}
+                >
+                  <Stack direction='row' spacing={1} sx={{ alignItems: 'center', justifyContent: 'center' }}>
+                    {stat.icon}
+                    <Typography variant="h5" fontWeight={800}>{stat.value}</Typography>
+                  </Stack>
+                  <Typography variant="body1" color="text.secondary">{stat.label}</Typography>
+                </Box>
+              ))}
+            </Stack>
+          </Stack>
+        </CardContent>
+      </Card>
+
+      {connections.length === 0 ? (
+        <Card sx={{ border: '1px solid', borderColor: 'divider' }}>
+          <CardContent sx={{ textAlign: 'center', py: 8, px: 3 }}>
+            <PeopleOutlinedIcon sx={{ fontSize: 56, color: 'text.secondary', opacity: 0.4, mb: 2 }} />
+            <Typography variant="h6" fontWeight={800} sx={{ mb: 1 }}>
+              No connections yet
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 420, mx: 'auto' }}>
+              Head to Discover and join a nearby event or spot — you'll build connections naturally.
+            </Typography>
+          </CardContent>
+        </Card>
       ) : (
-        /* ── Connection cards — equal-height rows via alignItems stretch ── */
-        <Grid container spacing={2.5} alignItems="stretch">
+        <Grid container spacing={2.5} alignItems="stretch" sx={{ justifyContent: 'center' }}>
           {connections.map((person) => (
             <Grid item xs={12} md={6} xl={4} key={person.id}>
               <ConnectionCard person={person} onViewProfile={setSelectedPerson} />
