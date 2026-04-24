@@ -21,6 +21,10 @@ import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import TuneIcon from '@mui/icons-material/Tune';
 import SearchOffIcon from '@mui/icons-material/SearchOff';
+import AnalyticsIcon from '@mui/icons-material/Analytics';
+import ShareLocationIcon from '@mui/icons-material/ShareLocation';
+import Groups2Icon from '@mui/icons-material/Groups2';
+import SpaIcon from '@mui/icons-material/Spa';
 import { batteryLevels, getUniversityMockData, vibeFilters } from '../data/mockData';
 import { alpha } from '@mui/material/styles';
 import {
@@ -330,11 +334,26 @@ function ContextCard({ event, onSelect }) {
 }
 
 function QuickStats({ contextFeed }) {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+  const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
   const stats = useMemo(
     () => [
-      { value: contextFeed.length, label: 'Live contexts nearby' },
-      { value: contextFeed.reduce((sum, event) => sum + event.attendees.length, 0), label: 'People visible now' },
-      { value: contextFeed.filter((event) => event.vibe === 'quiet').length, label: 'Quiet options' },
+      {
+        value: contextFeed.length,
+        label:`Live context${contextFeed.length === 1 ? '' : 's'} nearby`,
+        icon: <ShareLocationIcon sx={{ fontSize: '28px', color: 'primary.main' }}/>
+      },
+      {
+        value: contextFeed.reduce((sum, event) => sum + event.attendees.length, 0),
+        label: `${contextFeed.reduce((sum, event) => sum + event.attendees.length == 1 ? 'Person' : 'People')} visible now`,
+        icon: <Groups2Icon sx={{ fontSize: '28px', color: 'primary.main' }}/>
+      },
+      {
+        value: contextFeed.filter((event) => event.vibe === 'quiet').length,
+        label: `Quiet option${contextFeed.filter((event) => event.vibe === 'quiet').length === 1 ? '' : 's'}`,
+        icon: <SpaIcon sx={{ color: 'primary.main' }}/>
+      },
     ],
     [contextFeed],
   );
@@ -342,9 +361,27 @@ function QuickStats({ contextFeed }) {
   return (
     <Card sx={{ height: '100%', mb: 5 }}>
       <CardContent sx={{ py: 2.5, px: 3, }}>
-        <Typography variant="h6" fontWeight={800} sx={{ mb: 2 }}>
-          Feed Summary
-        </Typography>
+        <Stack direction='row' spacing={2} sx={{ alignItems: 'center', mb: 2 }}>
+          <Box
+            sx={{
+              width: 46,
+              height: 46,
+              borderRadius: 2,
+              bgcolor: subtleSurface,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+            }}
+          >
+            <AnalyticsIcon sx={{ fontSize: 30, color: 'primary.main' }} />
+          </Box>
+          <Box>
+            <Typography variant="h6" fontWeight={800}>
+            Feed Summary
+          </Typography>
+          </Box>
+        </Stack>
         <Stack direction='row' spacing={4} sx={{ width: '100%', justifyContent: 'center'}}>
           {stats.map((stat) => (
             <Box
@@ -357,7 +394,10 @@ function QuickStats({ contextFeed }) {
                 minWidth: '25%'
               }}
             >
-              <Typography variant="h5" fontWeight={800}>{stat.value}</Typography>
+              <Stack direction='row' spacing={1} sx={{ alignItems: 'center', justifyContent: 'center' }}>
+                {stat.icon}
+                <Typography variant="h5" fontWeight={800}>{stat.value}</Typography>
+              </Stack>
               <Typography variant="body1" color="text.secondary">{stat.label}</Typography>
             </Box>
           ))}
