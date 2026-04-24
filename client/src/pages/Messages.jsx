@@ -2,26 +2,28 @@ import { useMemo, useState } from 'react';
 import {
   Box,
   Typography,
-  Card,
-  CardContent,
   Avatar,
   Chip,
   Badge,
   TextField,
   IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
   Grid,
   List,
   ListItemButton,
   Stack,
+  Card,
+  CardContent,
+  InputAdornment,
+  Divider,
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
-import { messages } from '../data/mockData';
+import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import SearchIcon from '@mui/icons-material/Search';
+import { getUniversityMockData } from '../data/mockData';
 import { alpha, useTheme } from '@mui/material/styles';
 
 const avatarColors = {
@@ -30,92 +32,8 @@ const avatarColors = {
   J: '#1D4ED8',
 };
 
-const mockConversation = [
-  { from: 'other', text: 'Hey! Are you heading to the study session later?', time: '14:30' },
-  { from: 'me', text: 'Yeah I was thinking about it! When are you going?', time: '14:31' },
-  { from: 'other', text: 'Probably around 3pm - good table near the window', time: '14:32' },
-];
-
-function ChatDialog({ msg, open, onClose }) {
-  const theme = useTheme();
-  const isDark = theme.palette.mode === 'dark';
-  const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
-  const [text, setText] = useState('');
-  const [chat, setChat] = useState(mockConversation);
-
-  const send = () => {
-    if (!text.trim()) return;
-    setChat((prev) => [...prev, { from: 'me', text: text.trim(), time: 'Now' }]);
-    setText('');
-  };
-
-  if (!msg) return null;
-
-  return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md" PaperProps={{ sx: { borderRadius: 5, minHeight: { md: 620 } } }}>
-      <DialogTitle sx={{ pb: 1, borderBottom: '1px solid', borderColor: 'divider' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <Avatar sx={{ bgcolor: avatarColors[msg.avatar] || 'primary.main', width: 42, height: 42, fontWeight: 800 }}>
-            {msg.avatar}
-          </Avatar>
-          <Box sx={{ flex: 1 }}>
-            <Typography variant="subtitle1" fontWeight={800}>{msg.name}</Typography>
-            <Typography variant="caption" color="text.secondary">via {msg.context}</Typography>
-          </Box>
-          <IconButton size="small" onClick={onClose}><CloseIcon fontSize="small" /></IconButton>
-        </Box>
-      </DialogTitle>
-
-      <DialogContent sx={{ display: 'flex', flexDirection: 'column', p: 0 }}>
-        <Box sx={{ px: 2.5, py: 1.25, bgcolor: 'action.hover', borderBottom: '1px solid', borderColor: 'divider', display: 'flex', alignItems: 'center', gap: 1 }}>
-          <LightbulbIcon sx={{ fontSize: 18, color: 'primary.main' }} />
-          <Typography variant="caption" color="text.secondary">You connected through <strong>{msg.context}</strong></Typography>
-        </Box>
-
-        <Box sx={{ flex: 1, overflowY: 'auto', px: { xs: 2, md: 3 }, py: 2.5 }}>
-          {chat.map((c, i) => (
-            <Box key={i} sx={{ display: 'flex', justifyContent: c.from === 'me' ? 'flex-end' : 'flex-start', mb: 1.6 }}>
-              <Box
-                sx={{
-                  maxWidth: { xs: '84%', md: '68%' },
-                  bgcolor: c.from === 'me' ? 'primary.main' : 'background.paper',
-                  color: c.from === 'me' ? 'primary.contrastText' : 'text.primary',
-                  border: c.from === 'other' ? '1px solid' : 'none',
-                  borderColor: 'divider',
-                  borderRadius: c.from === 'me' ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
-                  px: 2,
-                  py: 1.2,
-                }}
-              >
-                <Typography variant="body2">{c.text}</Typography>
-                <Typography variant="caption" sx={{ display: 'block', mt: 0.3, textAlign: 'right', opacity: 0.75, fontSize: '0.68rem' }}>
-                  {c.time}
-                </Typography>
-              </Box>
-            </Box>
-          ))}
-        </Box>
-
-        <Box sx={{ px: { xs: 2, md: 3 }, py: 1.8, borderTop: '1px solid', borderColor: 'divider', display: 'flex', gap: 1, alignItems: 'center' }}>
-          <TextField
-            fullWidth
-            size="small"
-            placeholder="Type a message..."
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && send()}
-            sx={{ '& .MuiOutlinedInput-root': { borderRadius: 999, bgcolor: subtleSurface } }}
-          />
-          <IconButton color="primary" onClick={send} disabled={!text.trim()} sx={{ bgcolor: 'primary.main', color: 'primary.contrastText', '&:hover': { bgcolor: 'primary.dark' }, '&.Mui-disabled': { bgcolor: 'action.disabledBackground', color: 'action.disabled' } }}>
-            <SendIcon fontSize="small" />
-          </IconButton>
-        </Box>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-function MessageCard({ msg, onOpen }) {
+// ─── MessageCard ───────────────────────────────────────────────────────────
+function MessageCard({ msg, onOpen, isSelected }) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
   const unreadSurface = alpha(theme.palette.success.main, isDark ? 0.16 : 0.08);
@@ -126,32 +44,70 @@ function MessageCard({ msg, onOpen }) {
       onClick={() => onOpen(msg.id)}
       sx={{
         cursor: 'pointer',
-        border: msg.unread ? '1.5px solid' : '1px solid',
-        borderColor: msg.unread ? 'primary.light' : 'divider',
-        bgcolor: msg.unread ? unreadSurface : 'background.paper',
+        border: isSelected ? '1.5px solid' : '1px solid',
+        borderColor: isSelected ? 'primary.light' : 'divider',
+        bgcolor: isSelected ? unreadSurface : 'background.paper',
         '&:hover': { boxShadow: 4, transform: 'translateY(-2px)' },
         transition: 'all 0.15s ease',
       }}
     >
-      <CardContent sx={{ p: 2.1, '&:last-child': { pb: 2.1 } }}>
-        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+      <CardContent sx={{ p: 2 }}>
+        <Box sx={{ display: 'flex', gap: 1.75, alignItems: 'center' }}>
           <Badge
             overlap="circular"
             variant={msg.unread ? 'dot' : 'standard'}
-            sx={{ '& .MuiBadge-badge': { bgcolor: 'success.main' } }}
+            sx={{ '& .MuiBadge-badge': { bgcolor: 'success.main' }, flexShrink: 0 }}
           >
-            <Avatar sx={{ bgcolor: avatarColors[msg.avatar] || 'primary.main', width: 48, height: 48, fontWeight: 800 }}>{msg.avatar}</Avatar>
+            <Avatar
+              sx={{
+                bgcolor: avatarColors[msg.avatar] || 'primary.main',
+                width: 46,
+                height: 46,
+                fontWeight: 800,
+              }}
+            >
+              {msg.avatar}
+            </Avatar>
           </Badge>
 
           <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 1, alignItems: 'center', mb: 0.2 }}>
-              <Typography variant="subtitle2" fontWeight={msg.unread ? 800 : 700} noWrap>{msg.name}</Typography>
-              <Typography variant="caption" color="text.secondary" sx={{ flexShrink: 0 }}>{msg.time}</Typography>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: 1,
+                mb: 0.25,
+              }}
+            >
+              <Typography
+                variant="subtitle2"
+                fontWeight={isSelected ? 800 : 700}
+                noWrap
+                sx={{ flex: 1 }}
+              >
+                {msg.name}
+              </Typography>
+              <Typography variant="caption" color="text.secondary" sx={{ flexShrink: 0 }}>
+                {msg.time}
+              </Typography>
             </Box>
-            <Typography variant="body2" color={msg.unread ? 'text.primary' : 'text.secondary'} fontWeight={msg.unread ? 500 : 400} noWrap>
+
+            <Typography
+              variant="body2"
+              color={isSelected ? 'text.primary' : 'text.secondary'}
+              fontWeight={isSelected ? 500 : 400}
+              noWrap
+            >
               {msg.preview}
             </Typography>
-            <Chip label={`📍 ${msg.context}`} size="small" sx={{ mt: 0.9, bgcolor: subtleSurface, color: 'text.secondary' }} />
+
+            <Chip
+              icon={<LocationOnIcon />}
+              label={msg.context}
+              size="small"
+              sx={{ mt: 0.75, bgcolor: subtleSurface, color: 'text.secondary' }}
+            />
           </Box>
         </Box>
       </CardContent>
@@ -159,105 +115,273 @@ function MessageCard({ msg, onOpen }) {
   );
 }
 
-export default function MessagesPage() {
+// ─── MessagesPage (inline chat panel, no popup) ────────────────────────────
+export default function MessagesPage({ userProfile }) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
   const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
-  const [selected, setSelected] = useState(null);
+  const [selectedId, setSelectedId] = useState(null);
   const [query, setQuery] = useState('');
 
-  const filteredMessages = useMemo(
-    () => messages.filter((m) => [m.name, m.preview, m.context].join(' ').toLowerCase().includes(query.toLowerCase())),
-    [query],
+  // Store the current state of every conversation (keyed by message id)
+  const [conversationsState, setConversationsState] = useState({});
+
+  // Input state for the inline chat panel
+  const [inputText, setInputText] = useState('');
+
+  const { messages } = useMemo(
+    () => getUniversityMockData(userProfile?.university),
+    [userProfile?.university]
   );
 
-  const selectedMsg = messages.find((m) => m.id === selected);
+  const filteredMessages = useMemo(
+    () =>
+      messages.filter((m) =>
+        [m.name, m.preview, m.context]
+          .join(' ')
+          .toLowerCase()
+          .includes(query.toLowerCase())
+      ),
+    [messages, query]
+  );
+
+  const selectedMsg = messages.find((m) => m.id === selectedId);
+
+  // Get the conversation for the selected message – either from local state or original mock data
+  const currentConversation =
+    selectedId && conversationsState[selectedId]
+      ? conversationsState[selectedId]
+      : selectedMsg?.conversation || [];
+
+  // Send a new message (from "me")
+  const sendMessage = () => {
+    if (!inputText.trim() || !selectedId) return;
+
+    const newMessage = {
+      from: 'me',
+      text: inputText.trim(),
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+
+    const updatedConversation = [...currentConversation, newMessage];
+
+    setConversationsState((prev) => ({
+      ...prev,
+      [selectedId]: updatedConversation,
+    }));
+
+    setInputText('');
+  };
+
+  // Clear the selected conversation (optional, gives a way to go back to empty state)
+  const clearSelected = () => setSelectedId(null);
 
   return (
     <Box>
-      <Box sx={{ mb: 3.2 }}>
-        <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.5rem' }, mb: 0.8 }}>Messages</Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 720 }}>
-          Every chat started from a real shared moment. This view now uses wider layouts, a cleaner hierarchy, and roomier message cards on desktop.
+      {/* Page header */}
+      <Box sx={{ mb: 3.25 }}>
+        <Typography
+          variant="h3"
+          sx={{ fontSize: { xs: '2rem', md: '2.5rem' }, mb: 0.75 }}
+        >
+          Messages
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Every conversation here started from a real shared moment — a study session, a café, or an event you both attended.
         </Typography>
       </Box>
 
       <Grid container spacing={3}>
-        <Grid item xs={12} xl={4.2}>
+        {/* Inbox list – narrower on large screens */}
+        <Grid item sx={{ width: '40%' }}>
           <Card sx={{ height: '100%' }}>
-            <CardContent sx={{ p: 2.5 }}>
-              <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 1.6 }}>Inbox</Typography>
-              <TextField
-                fullWidth
-                size="small"
-                placeholder="Search by name, place, or context"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                InputProps={{ startAdornment: <SearchRoundedIcon fontSize="small" style={{ marginRight: 8, opacity: 0.65 }} /> }}
-                sx={{ mb: 2 }}
-              />
-              <List sx={{ p: 0, display: 'grid', gap: 1.2 }}>
-                {filteredMessages.map((msg) => (
-                  <ListItemButton
-                    key={msg.id}
-                    onClick={() => setSelected(msg.id)}
-                    sx={{ p: 0, borderRadius: 3, display: 'block' }}
-                  >
-                    <MessageCard msg={msg} onOpen={setSelected} />
-                  </ListItemButton>
-                ))}
+            <CardContent sx={{ py: 2, px: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Stack direction='column' spacing={1} sx={{ justifyContent: 'space-between', alignItems: 'start' }}>
+                <Typography variant="body1" sx={{ fontSize: '20px', fontWeight: 700 }}>
+                  Inbox
+                </Typography>
+
+                <TextField
+                  size="small"
+                  placeholder="Search by name, place, or context"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  sx={{ width: "100%" }}
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SearchIcon />
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
+                />
+              </Stack>
+
+              <List sx={{ p: 0, display: 'flex', flexDirection: 'column', gap: 1.25 }}>
+                {filteredMessages.length === 0 ? (
+                  <Box sx={{ textAlign: 'center', py: 5 }}>
+                    <ForumOutlinedIcon
+                      sx={{ fontSize: 48, color: 'text.secondary', opacity: 0.4, mb: 1.5 }}
+                    />
+                    <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 0.5 }}>
+                      {query ? 'No messages found' : 'No messages yet'}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ maxWidth: 260, mx: 'auto' }}
+                    >
+                      {query
+                        ? 'Try a different search term.'
+                        : 'Start a conversation by saying hi to someone at a nearby event.'}
+                    </Typography>
+                  </Box>
+                ) : (
+                  filteredMessages.map((msg) => (
+                    <ListItemButton
+                      disableRipple
+                      key={msg.id}
+                      onClick={() => setSelectedId(msg.id)}
+                      sx={{ p: 0, borderRadius: 1, display: 'block', '&:hover': { bgcolor: 'transparent' }, }}
+                    >
+                      <MessageCard msg={msg} onOpen={setSelectedId} isSelected={msg.id === selectedId} />
+                    </ListItemButton>
+                  ))
+                )}
               </List>
             </CardContent>
           </Card>
         </Grid>
 
-        <Grid item xs={12} xl={7.8}>
+        {/* Inline conversation panel – wider, fills the right side */}
+        <Grid item sx={{ flex: 1, minWidth: 0 }}>
           <Card sx={{ minHeight: 620, height: '100%' }}>
-            <CardContent sx={{ p: { xs: 2.5, md: 3.5 }, height: '100%' }}>
+            <CardContent sx={{ p: { xs: 2.5, md: 3.5 }, height: '100%', display: 'flex', flexDirection: 'column' }}>
               {selectedMsg ? (
-                <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <>
+                  {/* Header with close button */}
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2.5 }}>
-                    <Avatar sx={{ bgcolor: avatarColors[selectedMsg.avatar] || 'primary.main', width: 52, height: 52, fontWeight: 800 }}>
+                    <Avatar
+                      sx={{
+                        bgcolor: avatarColors[selectedMsg.avatar] || 'primary.main',
+                        width: 50,
+                        height: 50,
+                        fontWeight: 800,
+                        flexShrink: 0,
+                      }}
+                    >
                       {selectedMsg.avatar}
                     </Avatar>
-                    <Box>
-                      <Typography variant="h6" fontWeight={800}>{selectedMsg.name}</Typography>
-                      <Typography variant="body2" color="text.secondary">Connected through {selectedMsg.context}</Typography>
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography variant="h6" fontWeight={800} noWrap>
+                        {selectedMsg.name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        You connected through {selectedMsg.context}
+                      </Typography>
                     </Box>
+                    <IconButton size="small" onClick={clearSelected} sx={{ flexShrink: 0 }}>
+                      <CloseIcon fontSize="small" />
+                    </IconButton>
                   </Box>
 
-                  <Stack spacing={1.5} sx={{ flex: 1 }}>
-                    {mockConversation.map((c, i) => (
-                      <Box key={i} sx={{ display: 'flex', justifyContent: c.from === 'me' ? 'flex-end' : 'flex-start' }}>
+                  <Divider />
+
+                  {/* Messages bubble area */}
+                  <Stack spacing={1.5} sx={{ flex: 1, overflowY: 'auto', mb: 2, mt: 3 }}>
+                    {currentConversation.map((c, i) => (
+                      <Box
+                        key={i}
+                        sx={{
+                          display: 'flex',
+                          justifyContent: c.from === 'me' ? 'flex-end' : 'flex-start',
+                        }}
+                      >
                         <Box
                           sx={{
                             maxWidth: '75%',
+                            width: '600px',
                             bgcolor: c.from === 'me' ? 'primary.main' : 'action.hover',
                             color: c.from === 'me' ? 'primary.contrastText' : 'text.primary',
-                            borderRadius: c.from === 'me' ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
+                            borderRadius:
+                              c.from === 'me'
+                                ? '18px 18px 4px 18px'
+                                : '18px 18px 18px 4px',
                             px: 2,
-                            py: 1.35,
+                            py: 1.25,
                           }}
                         >
                           <Typography variant="body2">{c.text}</Typography>
+                          {c.time && (
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                display: 'block',
+                                mt: 0.4,
+                                textAlign: 'right',
+                                opacity: 0.7,
+                                fontSize: '0.68rem',
+                              }}
+                            >
+                              {c.time}
+                            </Typography>
+                          )}
                         </Box>
                       </Box>
                     ))}
                   </Stack>
 
-                  <Box sx={{ mt: 2.5, display: 'flex', gap: 1 }}>
-                    <TextField fullWidth size="small" placeholder="Type a message..." sx={{ '& .MuiOutlinedInput-root': { borderRadius: 999, bgcolor: subtleSurface } }} />
-                    <IconButton sx={{ bgcolor: 'primary.main', color: 'primary.contrastText', '&:hover': { bgcolor: 'primary.dark' } }}>
+                  {/* Input row – exactly matching the previous dialog style */}
+                  <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                    <TextField
+                      fullWidth
+                      size="small"
+                      placeholder="Type a message..."
+                      value={inputText}
+                      onChange={(e) => setInputText(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+                      sx={{ '& .MuiOutlinedInput-root': { borderRadius: 999, bgcolor: subtleSurface } }}
+                    />
+                    <IconButton
+                      color="primary"
+                      onClick={sendMessage}
+                      disabled={!inputText.trim()}
+                      sx={{
+                        bgcolor: 'primary.main',
+                        color: 'primary.contrastText',
+                        width: 40,
+                        height: 40,
+                        flexShrink: 0,
+                        '&:hover': { bgcolor: 'primary.dark' },
+                        '&.Mui-disabled': { bgcolor: 'action.disabledBackground', color: 'action.disabled' },
+                      }}
+                    >
                       <SendIcon fontSize="small" />
                     </IconButton>
                   </Box>
-                </Box>
+                </>
               ) : (
-                <Box sx={{ height: '100%', display: 'grid', placeItems: 'center', textAlign: 'center' }}>
+                /* Empty state – perfectly centred */
+                <Box
+                  sx={{
+                    flex: 1,
+                    display: 'grid',
+                    placeItems: 'center',
+                    textAlign: 'center',
+                    minWidth: '100%'
+                  }}
+                >
                   <Box>
-                    <Typography variant="h5" fontWeight={800} sx={{ mb: 1 }}>Select a conversation</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      The chat preview panel is now desktop-friendly. Click a message to open a wider conversation view.
+                    <ForumOutlinedIcon
+                      sx={{ fontSize: 48, color: 'text.secondary', opacity: 0.35, mb: 1.5 }}
+                    />
+                    <Typography variant="h5" fontWeight={800} sx={{ mb: 1 }}>
+                      Select a conversation
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 300, mx: 'auto' }}>
+                      Click a message on the left to open the conversation here.
                     </Typography>
                   </Box>
                 </Box>
@@ -266,8 +390,6 @@ export default function MessagesPage() {
           </Card>
         </Grid>
       </Grid>
-
-      <ChatDialog msg={selectedMsg} open={Boolean(selectedMsg)} onClose={() => setSelected(null)} />
     </Box>
   );
 }

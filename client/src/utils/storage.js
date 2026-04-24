@@ -1,3 +1,6 @@
+import { normalizeAvailabilityStatus } from '../data/preferencesUi';
+import { buildUserProfile } from '../data/userProfile';
+
 // LocalStorage utilities for persisting user preferences
 
 const STORAGE_KEYS = {
@@ -5,6 +8,7 @@ const STORAGE_KEYS = {
   USER_INTERESTS: 'proximity_user_interests',
   OPEN_TO_TALK: 'proximity_open_to_talk',
   ONBOARDED: 'proximity_onboarded',
+  USER_PROFILE: 'proximity_user_profile',
 };
 
 export const loadUserPreferences = () => {
@@ -12,16 +16,18 @@ export const loadUserPreferences = () => {
     return {
       socialBattery: localStorage.getItem(STORAGE_KEYS.SOCIAL_BATTERY) || 'medium',
       userInterests: JSON.parse(localStorage.getItem(STORAGE_KEYS.USER_INTERESTS)) || [],
-      openToTalk: localStorage.getItem(STORAGE_KEYS.OPEN_TO_TALK) === 'true',
+      openToTalk: normalizeAvailabilityStatus(localStorage.getItem(STORAGE_KEYS.OPEN_TO_TALK)),
       onboarded: localStorage.getItem(STORAGE_KEYS.ONBOARDED) === 'true',
+      userProfile: buildUserProfile(JSON.parse(localStorage.getItem(STORAGE_KEYS.USER_PROFILE)) || {}),
     };
   } catch (error) {
     console.error('Error loading preferences:', error);
     return {
       socialBattery: 'medium',
       userInterests: [],
-      openToTalk: true,
+      openToTalk: 'open_to_connect',
       onboarded: false,
+      userProfile: buildUserProfile(),
     };
   }
 };
@@ -40,6 +46,10 @@ export const saveOpenToTalk = (value) => {
 
 export const saveOnboarded = (value) => {
   localStorage.setItem(STORAGE_KEYS.ONBOARDED, value.toString());
+};
+
+export const saveUserProfile = (profile) => {
+  localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(buildUserProfile(profile)));
 };
 
 export const clearAllPreferences = () => {

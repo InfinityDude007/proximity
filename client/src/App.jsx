@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import {
   ThemeProvider,
   CssBaseline,
@@ -26,11 +26,6 @@ import ExploreIcon from '@mui/icons-material/Explore';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
-import Battery1BarIcon from '@mui/icons-material/Battery1Bar';
-import Battery4BarIcon from '@mui/icons-material/Battery4Bar';
-import BatteryFullIcon from '@mui/icons-material/BatteryFull';
-import DoneRoundedIcon from '@mui/icons-material/DoneRounded';
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 import { createAppTheme } from './theme';
 import proximityLogo from './assets/proximity-logo.png';
@@ -43,7 +38,18 @@ import {
   saveUserInterests,
   saveOpenToTalk,
   saveOnboarded,
+  saveUserProfile,
 } from './utils/storage';
+import {
+  getNextAvailabilityStatus,
+  getAvailabilityMeta,
+  getPreferenceChipSx,
+  getSocialBatteryMeta,
+  renderAvailabilityIcon,
+  renderSocialBatteryIcon,
+  SOCIAL_BATTERY_ORDER,
+} from './data/preferencesUi';
+import { buildUserProfile } from './data/userProfile';
 import FeedPage from './pages/Feed';
 import ConnectionsPage from './pages/Connections';
 import MessagesPage from './pages/Messages';
@@ -57,8 +63,8 @@ const THEME_MODE_KEY = 'proximity-theme-mode';
 
 const navItems = [
   { label: 'Discover', icon: <ExploreIcon />, tab: 0 },
-  { label: 'People', icon: <PeopleAltIcon />, tab: 1 },
-  { label: 'Messages', icon: <ChatBubbleOutlineOutlinedIcon />, tab: 2 },
+  { label: 'Messages', icon: <ChatBubbleOutlineOutlinedIcon />, tab: 1 },
+  { label: 'People', icon: <PeopleAltIcon />, tab: 2 },
   { label: 'Profile', icon: <AccountCircleOutlinedIcon />, tab: 3 },
 ];
 
@@ -75,13 +81,10 @@ function SidebarContent({
   setOpenToTalk,
 }) {
   const isDark = mode === 'dark';
-  const batteryLevels = ['low', 'medium', 'high'];
-  const batteryLabels = { low: 'Low', medium: 'Moderate', high: 'High' };
-  const batteryIcons = {
-    low: <Battery1BarIcon />,
-    medium: <Battery4BarIcon />,
-    high: <BatteryFullIcon />,
-  };
+  const batteryLevels = SOCIAL_BATTERY_ORDER;
+  const batteryMeta = getSocialBatteryMeta(socialBattery);
+  const availabilityMeta = getAvailabilityMeta(openToTalk);
+  const batteryIcon = renderSocialBatteryIcon(socialBattery);
 
   const handleBatteryToggle = () => {
     const currentIndex = batteryLevels.indexOf(socialBattery);
@@ -90,7 +93,7 @@ function SidebarContent({
   };
 
   const handleOpenToTalkToggle = () => {
-    setOpenToTalk(!openToTalk);
+    setOpenToTalk(getNextAvailabilityStatus(openToTalk));
   };
 
   return (
@@ -143,7 +146,7 @@ function SidebarContent({
         </Tooltip>
       </Box>
 
-      <List sx={{ p: 0, display: 'grid', gap: 1 }}>
+      <List sx={{ px: collapsed ? 1.5 : 0, display: 'grid', gap: 1 }}>
         {navItems.map((item) => {
           const selected = tab === item.tab;
           return (
@@ -154,7 +157,8 @@ function SidebarContent({
                 onClick={() => setTab(item.tab)}
                 sx={{
                   px: collapsed ? 0 : 'auto',
-                  borderRadius: collapsed ? 5 : 3.5,
+                  py: collapsed ? 1 : 'auto',
+                  borderRadius: collapsed ? 10 : 3,
                   justifyContent: collapsed ? 'center' : 'flex-start',
                   bgcolor: selected
                     ? alpha(isDark ? '#8B7CF6' : '#2D6A4F', isDark ? 0.16 : 0.1)
@@ -175,8 +179,8 @@ function SidebarContent({
                   sx={{
                     color: selected ? 'primary.main' : 'text.secondary',
                     justifyContent: 'center',
-                    display: 'flex',
-                    mr: collapsed ? 0 : 1
+                    mr: collapsed ? 0 : 1,
+                    ml: 0
                   }}
                 >
                   {item.icon}
@@ -184,7 +188,6 @@ function SidebarContent({
                 {!collapsed && (
                   <ListItemText
                     primary={item.label}
-                    primaryTypographyProps={{ fontWeight: 700, fontSize: '0.95rem' }}
                   />
                 )}
               </ListItemButton>
@@ -198,56 +201,69 @@ function SidebarContent({
 
       <Box
         sx={{
-          p: collapsed ? 1.2 : 1.5,
-          textAlign: 'center',
+          p: 1,
           display: 'flex',
           flexDirection: 'column',
           alignItems: collapsed ? 'center' : 'flex-start',
-          gap: collapsed ? 1 : 0.75,
+          gap: 1,
         }}
       >
         {!collapsed ? (
           <>
-            <Typography variant="caption" color="text.secondary" display="block">
-              Your Vibe
-            </Typography>
-            <Stack direction="column" gap={0.75} width="100%">
+            <Box sx={{ width: '100%' }}>
+              <Typography
+                variant="overline"
+                sx={{
+                  color: 'text.secondary',
+                  letterSpacing: '0.14em',
+                  fontWeight: 700,
+                  lineHeight: 1,
+                }}
+              >
+                Your Vibe
+              </Typography>
+              <Typography variant="caption" sx={{ mt: 0.4, color: 'text.secondary', display: 'block' }}>
+                {availabilityMeta.description}
+              </Typography>
+            </Box>
+
+            <Stack direction="column" spacing={1} sx={{ width: '100%' }}>
               <Chip
-                size="small"
-                label={openToTalk ? 'Open to connect' : 'Not available'}
-                color={openToTalk ? 'success' : 'default'}
+                size="medium"
+                icon={renderAvailabilityIcon(openToTalk)}
+                label={availabilityMeta.label}
                 onClick={handleOpenToTalkToggle}
-                sx={{ fontWeight: 700, cursor: 'pointer' }}
+                sx={getPreferenceChipSx(availabilityMeta, isDark, { interactive: true  })}
               />
               <Chip
-                size="small"
-                icon={batteryIcons[socialBattery]}
-                label={batteryLabels[socialBattery]}
+                size="medium"
+                icon={batteryIcon}
+                label={batteryMeta.label}
                 color="default"
                 onClick={handleBatteryToggle}
-                sx={{ fontWeight: 700, cursor: 'pointer' }}
+                sx={getPreferenceChipSx(batteryMeta, isDark, { interactive: true })}
               />
             </Stack>
           </>
         ) : (
-          <Stack direction="column" gap={0.5} alignItems="center">
-            <Tooltip title={openToTalk ? 'Open to connect' : 'Not available'} placement="right">
+          <Stack direction="column" spacing={1} sx={{ width: '100%', alignItems: 'center' }}>
+            <Tooltip title={availabilityMeta.label} placement="right">
               <Chip
                 size="small"
-                label={openToTalk ? <DoneRoundedIcon sx={{ fontSize: "18px" }} /> : <CloseRoundedIcon sx={{ fontSize: "18px" }} />}
-                color={openToTalk ? 'success' : 'default'}
+                icon={renderAvailabilityIcon(openToTalk, { sx: { fontSize: '18px' } })}
+                label=""
                 onClick={handleOpenToTalkToggle}
-                sx={{ fontWeight: 700, cursor: 'pointer' }}
+                sx={getPreferenceChipSx(availabilityMeta, isDark, { interactive: true, compact: true })}
               />
             </Tooltip>
-            <Tooltip title={batteryLabels[socialBattery]} placement="right">
+            <Tooltip title={batteryMeta.label} placement="right">
               <Chip
                 size="small"
-                icon={batteryIcons[socialBattery]}
+                icon={batteryIcon}
                 label=""
                 color="default"
                 onClick={handleBatteryToggle}
-                sx={{ fontWeight: 700, cursor: 'pointer' }}
+                sx={getPreferenceChipSx(batteryMeta, isDark, { interactive: true, compact: true })}
               />
             </Tooltip>
           </Stack>
@@ -393,24 +409,16 @@ function AppShell({
 
 function App() {
   const [tab, setTab] = useState(0);
-  const [onboarded, setOnboarded] = useState(false);
+  const [onboarded, setOnboarded] = useState(() => loadUserPreferences().onboarded);
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [socialBattery, setSocialBattery] = useState('medium');
-  const [userInterests, setUserInterests] = useState([]);
-  const [openToTalk, setOpenToTalk] = useState(true);
-  const [themeMode, setThemeMode] = useState('light');
-
-  useEffect(() => {
-    const preferences = loadUserPreferences();
-    setOnboarded(preferences.onboarded);
-    setSocialBattery(preferences.socialBattery);
-    setUserInterests(preferences.userInterests);
-    setOpenToTalk(preferences.openToTalk);
+  const [socialBattery, setSocialBattery] = useState(() => loadUserPreferences().socialBattery);
+  const [userInterests, setUserInterests] = useState(() => loadUserPreferences().userInterests);
+  const [openToTalk, setOpenToTalk] = useState(() => loadUserPreferences().openToTalk);
+  const [themeMode, setThemeMode] = useState(() => {
     const savedMode = window.localStorage.getItem(THEME_MODE_KEY);
-    if (savedMode === 'dark' || savedMode === 'light') {
-      setThemeMode(savedMode);
-    }
-  }, []);
+    return savedMode === 'dark' || savedMode === 'light' ? savedMode : 'light';
+  });
+  const [userProfile, setUserProfile] = useState(() => buildUserProfile(loadUserPreferences().userProfile));
 
   const muiTheme = useMemo(() => createAppTheme(themeMode), [themeMode]);
 
@@ -429,10 +437,13 @@ function App() {
     window.localStorage.setItem(THEME_MODE_KEY, value);
   };
 
-  const handleOnboardingComplete = (batteryValue, interestsArray) => {
+  const handleOnboardingComplete = (profileValue, batteryValue, interestsArray) => {
+    const nextProfile = buildUserProfile(profileValue);
+    setUserProfile(nextProfile);
     setSocialBattery(batteryValue);
     setUserInterests(interestsArray);
     setOnboarded(true);
+    saveUserProfile(nextProfile);
     saveSocialBattery(batteryValue);
     saveUserInterests(interestsArray);
     saveOnboarded(true);
@@ -440,9 +451,18 @@ function App() {
 
   const pages = useMemo(
     () => [
-      <FeedPage key="feed" socialBattery={socialBattery} userInterests={userInterests} onSelectEvent={setSelectedEvent} />,
-      <ConnectionsPage key="connections" userInterests={userInterests} />,
-      <MessagesPage key="messages" />,
+      <FeedPage
+        key="feed"
+        socialBattery={socialBattery}
+        setSocialBattery={handleSetSocialBattery}
+        openToTalk={openToTalk}
+        setOpenToTalk={handleSetOpenToTalk}
+        userInterests={userInterests}
+        onSelectEvent={setSelectedEvent}
+        userProfile={userProfile}
+      />,
+      <MessagesPage key="messages" userProfile={userProfile} />,
+      <ConnectionsPage key="connections" userProfile={userProfile} />,
       <ProfilePage
         key="profile"
         socialBattery={socialBattery}
@@ -454,18 +474,19 @@ function App() {
           setUserInterests(interests);
           saveUserInterests(interests);
         }}
+        userProfile={userProfile}
         themeMode={themeMode}
         setThemeMode={handleSetThemeMode}
       />,
     ],
-    [openToTalk, socialBattery, userInterests, themeMode],
+    [openToTalk, socialBattery, userInterests, userProfile, themeMode],
   );
 
   return (
     <ThemeProvider theme={muiTheme}>
       <CssBaseline />
       {!onboarded ? (
-        <OnboardingPage onComplete={handleOnboardingComplete} />
+        <OnboardingPage initialProfile={userProfile} onComplete={handleOnboardingComplete} />
       ) : selectedEvent ? (
         <EventDetailPage event={selectedEvent} onBack={() => setSelectedEvent(null)} openToTalk={openToTalk} />
       ) : (

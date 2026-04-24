@@ -10,65 +10,29 @@ import {
   Divider,
   Stack,
   Grid,
-  Button,
   IconButton,
   TextField,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
-import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
-import Battery1BarIcon from '@mui/icons-material/Battery1Bar';
-import Battery4BarIcon from '@mui/icons-material/Battery4Bar';
-import BoltIcon from '@mui/icons-material/Bolt';
-import BatteryFullIcon from '@mui/icons-material/BatteryFull';
 import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
 import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import PeopleIcon from '@mui/icons-material/People';
-import LocalCafeIcon from '@mui/icons-material/LocalCafe';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
-import MusicNoteIcon from '@mui/icons-material/MusicNote';
-import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
-import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
-import NaturePeopleIcon from '@mui/icons-material/NaturePeople';
-import PaletteIcon from '@mui/icons-material/Palette';
-import CameraAltIcon from '@mui/icons-material/CameraAlt';
-import RestaurantIcon from '@mui/icons-material/Restaurant';
-import FlightIcon from '@mui/icons-material/Flight';
-import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
-import MovieIcon from '@mui/icons-material/Movie';
-import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
-import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
-import { currentUser, batteryLevels } from '../data/mockData';
 import {
-  loadUserPreferences,
-  saveOnboarded,
-} from '../utils/storage';
-
-const batteryOptions = [
-  { value: 'low', icon: <Battery1BarIcon />, label: 'Low' },
-  { value: 'medium', icon: <Battery4BarIcon />, label: 'Moderate' },
-  { value: 'high', icon: <BatteryFullIcon />, label: 'High' },
-];
-
-const interestOptions = [
-  { label: 'Coffee', icon: <LocalCafeIcon fontSize="small" /> },
-  { label: 'Study Groups', icon: <MenuBookIcon fontSize="small" /> },
-  { label: 'Music', icon: <MusicNoteIcon fontSize="small" /> },
-  { label: 'Gaming', icon: <SportsEsportsIcon fontSize="small" /> },
-  { label: 'Fitness', icon: <FitnessCenterIcon fontSize="small" /> },
-  { label: 'Outdoors', icon: <NaturePeopleIcon fontSize="small" /> },
-  { label: 'Socials', icon: <PeopleIcon fontSize="small" /> },
-  { label: 'Startups', icon: <BoltIcon fontSize="small" /> },
-  { label: 'Art', icon: <PaletteIcon fontSize="small" /> },
-  { label: 'Photography', icon: <CameraAltIcon fontSize="small" /> },
-  { label: 'Cooking', icon: <RestaurantIcon fontSize="small" /> },
-  { label: 'Travel', icon: <FlightIcon fontSize="small" /> },
-  { label: 'Books', icon: <LibraryBooksIcon fontSize="small" /> },
-  { label: 'Movies', icon: <MovieIcon fontSize="small" /> },
-  { label: 'Sports', icon: <SportsSoccerIcon fontSize="small" /> },
-  { label: 'Volunteering', icon: <VolunteerActivismIcon fontSize="small" /> },
-];
+  AVAILABILITY_OPTIONS,
+  renderAvailabilityIcon,
+  renderSocialBatteryIcon,
+  SOCIAL_BATTERY_OPTIONS,
+} from '../data/preferencesUi';
+import { interestOptions } from '../data/interestOptions';
+import { saveOnboarded } from '../utils/storage';
 
 export default function ProfilePage({
   socialBattery,
@@ -77,12 +41,12 @@ export default function ProfilePage({
   setOpenToTalk,
   userInterests = [],
   setUserInterests,
+  userProfile,
   themeMode = 'light',
   setThemeMode,
 }) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [onboarded, setOnboarded] = useState(false);
-  const battery = batteryLevels[socialBattery];
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
   const isDark = themeMode === 'dark';
   const handleThemeToggle = (event) => {
     setThemeMode(event.target.checked ? 'dark' : 'light');
@@ -97,10 +61,16 @@ export default function ProfilePage({
   };
 
   const handleRedoOnboarding = () => {
-      setOnboarded(false);
-      saveOnboarded(false);
-      window.location.reload();
-    };
+    saveOnboarded(false);
+    window.location.reload();
+  };
+
+  const handleResetData = () => {
+    localStorage.clear();
+    window.location.reload();
+  };
+
+  const profileMetaLine = [userProfile.year, userProfile.university].filter(Boolean).join(' · ');
 
   return (
     <Box>
@@ -118,12 +88,12 @@ export default function ProfilePage({
           <CardContent sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', gap: 2.4, alignItems: 'center', mb: 2.4 }}>
               <Avatar sx={{ bgcolor: 'primary.main', width: 78, height: 78, fontSize: '1.8rem', fontWeight: 800 }}>
-                {currentUser.avatar}
+                {userProfile.avatar}
               </Avatar>
               <Box>
-                <Typography variant="h5" fontWeight={800}>{currentUser.name}</Typography>
-                <Typography variant="body2" color="text.secondary">{currentUser.degree}</Typography>
-                <Typography variant="caption" color="text.secondary">{currentUser.year} · University of Birmingham Dubai</Typography>
+                <Typography variant="h5" fontWeight={800}>{userProfile.name}</Typography>
+                <Typography variant="body2" color="text.secondary">{userProfile.degree}</Typography>
+                <Typography variant="caption" color="text.secondary">{profileMetaLine}</Typography>
               </Box>
             </Box>
 
@@ -131,7 +101,7 @@ export default function ProfilePage({
             
             {userInterests.length > 0 && (
               <Box sx={{ mb: 2 }}>
-                <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                <Stack direction="row" spacing={1.2} useFlexGap sx={{ flexWrap: 'wrap' }}>
                   {userInterests.map((interestLabel) => {
                     const interest = interestOptions.find(i => i.label === interestLabel);
                     return (
@@ -147,7 +117,10 @@ export default function ProfilePage({
                           fontWeight: 600,
                           cursor: 'pointer',
                           transition: 'all 0.2s ease',
-                          '& .MuiChip-icon': { color: 'white'},
+                          '& .MuiChip-icon': {
+                            color: 'white',
+                            mr: '0.05rem',
+                          },
                           py: 2,
                           px: 1,
                           borderRadius: 1.5,
@@ -159,14 +132,14 @@ export default function ProfilePage({
               </Box>
             )}
 
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>Add Interests</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontSize: 16, fontWeight: 700 }}>Add Interests</Typography>
             <TextField
               placeholder="Search interests..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               sx={{ mb: 2 }}
             />
-            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+            <Stack direction="row" spacing={1.2} useFlexGap sx={{ flexWrap: 'wrap' }}>
               {interestOptions
                 .filter((interest) => !userInterests.includes(interest.label) && interest.label.toLowerCase().includes(searchTerm.toLowerCase()))
                 .map((interest) => (
@@ -182,6 +155,9 @@ export default function ProfilePage({
                       fontWeight: 600,
                       cursor: 'pointer',
                       transition: 'all 0.2s ease',
+                      '& .MuiChip-icon': {
+                        mr: '0.05rem',
+                      },
                       py: 2,
                       px: 1,
                       borderRadius: 1.5,
@@ -231,42 +207,48 @@ export default function ProfilePage({
 
         <Card>
           <CardContent sx={{ p: 2.8 }}>
-            <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 2 }}>
-              <Box sx={{ flex: 1 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.6 }}>
-                  {openToTalk ?
-                    <FiberManualRecordIcon sx={{ fontSize: 10, color: '#52B788' }} />
-                    : <FiberManualRecordIcon sx={{ fontSize: 10, color: '#E76F51' }} />
-                  }
-                  <Typography variant="h6" fontWeight={800}>Open to chat</Typography>
-                </Box>
-                <Typography variant="body2" color="text.secondary">
-                  {openToTalk ? 'Others in the same location can send you a soft invite.' : 'You’re in private mode - no one can reach out.'}
-                </Typography>
-              </Box>
-              <Switch checked={openToTalk} onChange={(e) => setOpenToTalk(e.target.checked)} color="primary" />
-            </Box>
+            <Typography variant="h6" fontWeight={800} sx={{ mb: 0.5 }}>
+              Availability
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2.4 }}>
+              Control who can reach out when you share the same space.
+            </Typography>
 
-            {openToTalk && (
-              <Box
-                sx={{
-                  mt: 1.8,
-                  p: 1.8,
-                  bgcolor: isDark ? alpha('#52B788', 0.12) : '#F0FAF4',
-                  borderRadius: 3,
-                  border: '1px solid',
-                  borderColor: isDark ? alpha('#52B788', 0.26) : '#C8E6C9',
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: 1,
-                }}
-              >
-                <FiberManualRecordIcon sx={{ color: 'primary.main', mt: 0.3, fontSize: 18, flexShrink: 0 }} />
-                <Typography variant="body2" color={isDark ? 'text.primary' : 'primary.dark'}>
-                  You're visible to people at the same places as you. They can only send soft openers - no cold messages.
-                </Typography>
-              </Box>
-            )}
+            <Stack direction='row' spacing={1.5}>
+              {AVAILABILITY_OPTIONS.map((option) => (
+                <Grid item xs={12} md={4} key={option.value}>
+                  <Box
+                    onClick={() => setOpenToTalk(option.value)}
+                    sx={{
+                      height: '100%',
+                      border: '2px solid',
+                      borderColor: openToTalk === option.value ? option.color : 'divider',
+                      borderRadius: 1,
+                      p: 2,
+                      cursor: 'pointer',
+                      bgcolor: openToTalk === option.value ? alpha(option.color, isDark ? 0.18 : 0.1) : 'background.paper',
+                      transition: 'all 0.15s ease',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      textAlign: 'center',
+                      '&:hover': {
+                        bgcolor: openToTalk === option.value ? alpha(option.color, isDark ? 0.18 : 0.1) : alpha(option.color, isDark ? 0.08 : 0.04),
+                        borderColor: openToTalk === option.value ? option.color : alpha(option.color, 0.3),
+                      },
+                    }}
+                  >
+                    <Stack direction='row' useFlexGap spacing={1.5} sx={{ fontSize: '2rem', alignItems: 'center', justifyContent: 'center', mb: 0.8, color: option.color }}>
+                      {renderAvailabilityIcon(option.value)}
+                      <Typography variant="subtitle1" fontWeight={800} sx={{ color: 'text.primary' }}>{option.label}</Typography>
+                    </Stack>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.4 }}>
+                      {option.description}
+                    </Typography>
+                  </Box>
+                </Grid>
+              ))}
+            </Stack>
           </CardContent>
         </Card>
 
@@ -277,41 +259,46 @@ export default function ProfilePage({
               Adjust this to change what your feed prioritises.
             </Typography>
 
-            <Grid container spacing={1.5}>
-              {batteryOptions.map((option) => (
+            <Stack direction='row' spacing={1.5}>
+              {SOCIAL_BATTERY_OPTIONS.map((option) => (
                 <Grid item xs={12} md={4} key={option.value}>
                   <Box
                     onClick={() => setSocialBattery(option.value)}
                     sx={{
                       height: '100%',
                       border: '2px solid',
-                      borderColor: socialBattery === option.value ? 'primary.main' : 'divider',
-                      borderRadius: 3,
+                      borderColor: socialBattery === option.value ? option.color : 'divider',
+                      borderRadius: 1,
                       p: 2,
                       cursor: 'pointer',
-                      bgcolor: socialBattery === option.value ? 'action.hover' : 'background.paper',
+                      bgcolor: socialBattery === option.value ? alpha(option.color, isDark ? 0.18 : 0.1) : 'background.paper',
                       transition: 'all 0.15s ease',
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
+                      textAlign: 'center',
+                      '&:hover': {
+                        bgcolor: socialBattery === option.value ? alpha(option.color, isDark ? 0.18 : 0.1) : alpha(option.color, isDark ? 0.08 : 0.04),
+                        borderColor: socialBattery === option.value ? option.color : alpha(option.color, 0.3),
+                      },
                     }}
                   >
-                    <Box sx={{ fontSize: '2rem', mb: 0.8, color: 'primary.main' }}>{option.icon}</Box>
-                    <Typography variant="subtitle1" fontWeight={800}>{option.label}</Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.4, textAlign: 'center' }}>
-                      {batteryLevels[option.value].description}
+                    <Stack
+                      direction='row'
+                      useFlexGap
+                      spacing={1.5}
+                      sx={{ fontSize: '2rem', alignItems: 'center', justifyContent: 'center', mb: 0.8, color: option.color }}
+                    >
+                      {renderSocialBatteryIcon(option.value)}
+                      <Typography variant="subtitle1" fontWeight={800} sx={{ color: 'text.primary' }}>{option.label}</Typography>
+                    </Stack>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.4 }}>
+                      {option.description}
                     </Typography>
                   </Box>
                 </Grid>
               ))}
-            </Grid>
-
-            <Box sx={{ mt: 2, p: 1.8, bgcolor: 'action.hover', borderRadius: 3 }}>
-              <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.4 }}>
-                Current feed focus
-              </Typography>
-              <Typography variant="body2" fontWeight={700}>{battery.recommendations.join(', ')}</Typography>
-            </Box>
+            </Stack>
           </CardContent>
         </Card>
 
@@ -370,7 +357,44 @@ export default function ProfilePage({
             </Box>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardContent sx={{ p: 2.8 }}>
+            <Stack direction='row' sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+              <Box>
+                <Typography variant="h6" fontWeight={800} sx={{ mb: 0.5 }}>Reset Data</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>Delete all stored data and start fresh. This will clear your profile, preferences, and onboarding status.</Typography>
+                <Typography variant="overline" color="error" sx={{ fontWeight: 700, fontSize: '14px' }}>WARNING: THIS ACTION IS PERMANENT AND CAN NEVER BE UNDONE!</Typography>
+              </Box>
+              <Button variant="outlined" color="error" onClick={() => setResetDialogOpen(true)} sx={{ maxHeight: '60px' }} startIcon={<DeleteForeverIcon />}>Reset All Data</Button>
+            </Stack>
+          </CardContent>
+        </Card>
       </Stack>
+
+      <Dialog
+        open={resetDialogOpen}
+        onClose={() => setResetDialogOpen(false)}
+        aria-labelledby="reset-dialog-title"
+        aria-describedby="reset-dialog-description"
+      >
+        <DialogTitle id="reset-dialog-title">Reset All Data</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="reset-dialog-description">
+            Are really sure you sure you want to reset all data?
+            
+            <br /> <Typography variant="overline" color="error" sx={{ fontWeight: 700, fontSize: '16px' }}>WARNING: THIS ACTION IS PERMANENT AND CAN NEVER BE UNDONE!</Typography>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setResetDialogOpen(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleResetData} color="error" variant="contained">
+            Reset All Data
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
