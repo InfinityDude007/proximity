@@ -70,25 +70,6 @@ function MessageCard({ msg, onOpen, isSelected }) {
         transition: 'all 0.15s ease',
       }}
     >
-      {/* ✅ GREEN DOT (moved to card) */}
-      {msg.unread && (
-        <Box
-          sx={{
-            position: 'absolute',
-            top: 10,
-            right: 10,
-            width: 10,
-            height: 10,
-            borderRadius: '50%',
-            bgcolor: 'success.main',
-            animation: 'pulse 2s ease-in-out infinite',
-            '@keyframes pulse': {
-              '0%, 100%': { opacity: 1, transform: 'scale(1)' },
-              '50%': { opacity: 0.7, transform: 'scale(1.2)' },
-            },
-          }}
-        />
-      )}
 
       <CardContent sx={{ p: 2 }}>
         <Box sx={{ display: 'flex', gap: 1.75, alignItems: 'center' }}>
@@ -124,6 +105,21 @@ function MessageCard({ msg, onOpen, isSelected }) {
                 {msg.name}
               </Typography>
 
+              {msg.unread && (
+                <Box
+                  sx={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: '50%',
+                    bgcolor: 'success.main',
+                    animation: 'pulse 2s ease-in-out infinite',
+                    '@keyframes pulse': {
+                      '0%, 100%': { opacity: 0.5, transform: 'scale(1)' },
+                      '50%': { opacity: 1, transform: 'scale(1.2)' },
+                    },
+                  }}
+                />
+              )}
               <Typography
                 variant="caption"
                 color={msg.unread ? 'success.main' : 'text.secondary'}
@@ -196,6 +192,9 @@ export default function MessagesPage({ userProfile }) {
   );
 
   const selectedMsg = messages.find((m) => m.id === selectedId);
+  const unreadCount = filteredMessages.reduce(
+    (count, m) => count + (m.unread ? 1 : 0), 0
+  );
 
   // Get the conversation for the selected message – either from local state or original mock data
   const currentConversation =
@@ -253,9 +252,41 @@ export default function MessagesPage({ userProfile }) {
           <Card sx={{ height: '100%' }}>
             <CardContent sx={{ py: 2, px: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Stack direction='column' spacing={1} sx={{ justifyContent: 'space-between', alignItems: 'start' }}>
-                <Typography variant="body1" sx={{ fontSize: '20px', fontWeight: 700 }}>
-                  Inbox
-                </Typography>
+                
+                <Stack direction='row' sx={{ justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                  <Typography variant="body1" sx={{ fontSize: '20px', fontWeight: 700 }}>
+                    Inbox
+                  </Typography>
+                  {unreadCount !== 0 && (
+                    <Stack direction='row' spacing={1}
+                      sx={{
+                        border: '1.5px dashed',
+                        borderColor: alpha(theme.palette.success.main, 0.6),
+                        bgcolor: alpha(theme.palette.success.main, 0.1),
+                        px: 1,
+                        py: 0.5,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        borderRadius: 10,
+                      }}
+                    >
+                        <Box
+                          sx={{
+                            width: 10,
+                            height: 10,
+                            borderRadius: '50%',
+                            bgcolor: 'success.main',
+                            animation: 'pulse 2s ease-in-out infinite',
+                            '@keyframes pulse': {
+                              '0%, 100%': { opacity: 0.5, transform: 'scale(1)' },
+                              '50%': { opacity: 1, transform: 'scale(1.2)' },
+                            },
+                          }}
+                        />
+                        <Typography variant='caption'>{unreadCount} Unread Chat{unreadCount > 1 ? 's' : ''}</Typography>
+                    </Stack>
+                  )}
+                </Stack>
 
                 <TextField
                   size="small"
