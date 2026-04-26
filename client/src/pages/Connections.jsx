@@ -81,8 +81,6 @@ function ConnectionCard({ person, onViewProfile }) {
       sx={{
         height: '100%',
         cursor: 'pointer',
-        border: '1px solid',
-        borderColor: 'divider',
         transition: 'transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease',
         '&:hover': {
           transform: 'translateY(-4px)',
@@ -95,8 +93,9 @@ function ConnectionCard({ person, onViewProfile }) {
       <CardContent
         sx={{
           py: 2.5,
-          px: 2.5,
+          px: 3.5,
           height: '100%',
+          width: '100%',
           display: 'flex',
           flexDirection: 'column',
           gap: 2,
@@ -598,13 +597,26 @@ export default function ConnectionsPage({ userProfile }) {
           </CardContent>
         </Card>
       ) : (
-        <Grid container spacing={2.5} alignItems="stretch" sx={{ justifyContent: 'center' }}>
-          {connections.map((person) => (
-            <Grid item xs={12} md={6} xl={4} key={person.id}>
-              <ConnectionCard person={person} onViewProfile={setSelectedPerson} />
-            </Grid>
-          ))}
-        </Grid>
+        <Grid
+  container
+  spacing={2}
+  sx={{
+    justifyContent: 'center',
+  }}
+>
+  {connections.map((person) => (
+    <Grid
+      item
+      key={person.id}
+      sx={{
+        maxWidth: '380px',
+        minWidth: '380px',
+      }}
+    >
+      <ConnectionCard person={person} onViewProfile={setSelectedPerson} />
+    </Grid>
+  ))}
+</Grid>
       )}
 
       <ProfileDialog
