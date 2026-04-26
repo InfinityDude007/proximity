@@ -232,29 +232,22 @@ export default function EventDetailPage({ event, onBack, openToTalk }) {
   };
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        bgcolor: 'background.default',
-        px: { xs: 2, md: 4 },
-        py: { xs: 2, md: 4 },
-      }}
-    >
+    <>
       <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
-        {/* Back button */}
-        <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Button
-            onClick={onBack}
-            variant='outlined'
-            sx={{ bgcolor: 'background.paper' }}
-            size="small"
-          >
-            <Stack direction='row' spacing={1} sx={{ justifyContent: 'center', alignItems: 'center' }}>
-              <ArrowBackIcon fontSize="small" />
-              <Typography variant='caption' sx={{ fontSize: '14px', fontWeight: 600 }}>Back to your feed</Typography>
-            </Stack>
-          </Button>
-        </Box>
+      {/* Back button */}
+      <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Button
+          onClick={onBack}
+          variant='outlined'
+          sx={{ bgcolor: 'background.paper' }}
+          size="small"
+        >
+          <Stack direction='row' spacing={1} sx={{ justifyContent: 'center', alignItems: 'center' }}>
+            <ArrowBackIcon fontSize="small" />
+            <Typography variant='caption' sx={{ fontSize: '14px', fontWeight: 600 }}>Back to your feed</Typography>
+          </Stack>
+        </Button>
+      </Box>
 
         {/* Main content card */}
         <Card
@@ -467,6 +460,6 @@ export default function EventDetailPage({ event, onBack, openToTalk }) {
           Added to your nearby plans.
         </Alert>
       </Snackbar>
-    </Box>
+    </>
   );
 }

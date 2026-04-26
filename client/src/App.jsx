@@ -487,8 +487,6 @@ function App() {
       <CssBaseline />
       {!onboarded ? (
         <OnboardingPage initialProfile={userProfile} onComplete={handleOnboardingComplete} />
-      ) : selectedEvent ? (
-        <EventDetailPage event={selectedEvent} onBack={() => setSelectedEvent(null)} openToTalk={openToTalk} />
       ) : (
         <AppShell
           tab={tab}
@@ -500,7 +498,11 @@ function App() {
           openToTalk={openToTalk}
           setOpenToTalk={handleSetOpenToTalk}
         >
-          {pages[tab]}
+          {selectedEvent ? (
+            <EventDetailPage event={selectedEvent} onBack={() => setSelectedEvent(null)} openToTalk={openToTalk} />
+          ) : (
+            pages[tab]
+          )}
         </AppShell>
       )}
     </ThemeProvider>
