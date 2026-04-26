@@ -219,15 +219,30 @@ function ContextCard({ event, onSelect }) {
             useFlexGap
             sx={{ alignItems: 'center', mb: 2 }}
           >
-              <Chip label={event.vibe === 'quiet' ? 'Quiet' : 'Social'} size="small" sx={{ bgcolor: vibe.bg, color: vibe.text, fontWeight: 700 }} />
+            <Chip
+                label={event.vibe === 'quiet' ? 'Quiet' : 'Social'}
+                size="medium"
+                sx={{
+                  bgcolor: vibe.bg,
+                  color: vibe.text,
+                  fontWeight: 800,
+                  height: 34,
+                  fontSize: '0.9rem',
+                  px: 1.5,
+                }}
+              />
+
               {event.mutualCount > 0 && (
                 <Chip
                   label={`${event.mutualCount} mutual${event.mutualCount > 1 ? 's' : ''} going`}
-                  size="small"
+                  size="medium"
                   sx={{
                     bgcolor: successSurface,
                     color: isDark ? 'text.primary' : 'primary.dark',
-                    fontWeight: 700,
+                    fontWeight: 800,
+                    height: 32,
+                    fontSize: '0.85rem',
+                    px: 1.25,
                   }}
                 />
               )}
@@ -252,18 +267,21 @@ function ContextCard({ event, onSelect }) {
               <LocalOfferIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
             </Box>
             <Stack direction='row' spacing={1} sx={{ justifyContent: 'flex-end' }}>
-              {event.tags.map((tag) => (
-                <Chip
-                  key={tag}
-                  label={tag}
-                  size="small"
-                  sx={{
-                    color: 'text.secondary',
-                    bgcolor: subtleSurface,
-                  }}
-                />
-              ))}
-            </Stack>
+                {event.tags.map((tag) => (
+                  <Chip
+                    key={tag}
+                    label={tag}
+                    size="medium"
+                    sx={{
+                      color: 'text.secondary',
+                      bgcolor: subtleSurface,
+                      height: 30,
+                      fontSize: '0.8rem',
+                      px: 1.2,
+                    }}
+                  />
+                ))}
+              </Stack>
           </Box>
         </Stack>
 
