@@ -537,9 +537,9 @@ export default function FeedPage({
               </Button>
             </Box>
           ) : (
-            <Grid container spacing={2.5} sx={{ alignItems: 'center', justifyContent: 'center' }}>
+            <Grid container spacing={2} sx={{ alignItems: 'center', justifyContent: 'center' }}>
               {filtered.map((event) => (
-                <Grid key={event.id} item>
+                <Grid key={event.id} item xs={12} sm={6} md={4}>
                   <ContextCard event={event} onSelect={onSelectEvent} />
                 </Grid>
               ))}
