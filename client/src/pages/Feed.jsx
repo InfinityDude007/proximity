@@ -54,17 +54,10 @@ function MetaItem({ icon, text }) {
   );
 }
 
-function PageHero({ battery, socialBattery, setSocialBattery, openToTalk, setOpenToTalk, universityName, contextCount }) {
+function PageHero({ universityName, contextCount }) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
   const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
-  const availability = getAvailabilityMeta(openToTalk);
-
-  const handleBatteryToggle = () => {
-    const currentIndex = SOCIAL_BATTERY_ORDER.indexOf(socialBattery);
-    const nextIndex = (currentIndex + 1) % SOCIAL_BATTERY_ORDER.length;
-    setSocialBattery(SOCIAL_BATTERY_ORDER[nextIndex]);
-  };
 
   return (
     <Box
@@ -74,108 +67,53 @@ function PageHero({ battery, socialBattery, setSocialBattery, openToTalk, setOpe
         borderRadius: 2,
         bgcolor: 'background.paper',
         boxShadow: theme.shadows[1],
-        display: 'grid',
-        gridTemplateColumns: { xs: '1fr', xl: '1.3fr 0.7fr' },
-        gap: 2.5,
-        alignItems: 'stretch',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
         minWidth: '100%',
       }}
     >
-      <Box>
+      <Chip
+        label="Live campus discovery"
+        size="small"
+        sx={{
+          mb: 1.5,
+          fontWeight: 700,
+          bgcolor: subtleSurface,
+          color: isDark ? 'primary.light' : 'primary.dark',
+          width: 'fit-content',
+        }}
+      />
+
+      <Typography
+        variant="h3"
+        sx={{ fontSize: { xs: '2rem', md: '2.5rem' }, lineHeight: 1.05 }}
+      >
+        Discover What's Happening Around You
+      </Typography>
+
+      <Typography variant="body1" color="text.secondary">
+        Shared places, active people, and low-pressure ways to connect across {universityName}.
+      </Typography>
+
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.2}>
         <Chip
-          label="Live campus discovery"
-          size="small"
+          label={universityName}
+          variant="outlined"
           sx={{
-            mb: 1.5,
-            fontWeight: 700,
             bgcolor: subtleSurface,
-            color: isDark ? 'primary.light' : 'primary.dark',
+            borderColor: 'divider',
           }}
         />
-        <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.5rem' }, lineHeight: 1.05, mb: 1.2 }}>
-          Discover What's Happening Around You
-        </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ minWidth: '100%', mb: 2.2 }}>
-          Shared places, active people, and low-pressure ways to connect across {universityName}.
-        </Typography>
-
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.2}>
-          {[
-            { label: universityName },
-            { label: `${contextCount} nearby contexts` },
-          ].map((item) => (
-            <Chip
-              key={item.label}
-              label={item.label}
-              variant="outlined"
-              sx={{
-                bgcolor: subtleSurface,
-                borderColor: 'divider',
-                color: 'text.primary',
-              }}
-            />
-          ))}
-        </Stack>
-      </Box>
-
-      <Box
-        sx={{
-          bgcolor: 'background.paper',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 1.5,
-        }}
-      >
-        <Box>
-          <Typography
-            variant="overline"
-            sx={{
-              color: 'text.secondary',
-              letterSpacing: '0.14em',
-              fontWeight: 700,
-              lineHeight: 1,
-            }}
-          >
-            Your Vibe
-          </Typography>
-        </Box>
-
-        <Stack spacing={1.5}>
-          <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={2.5}
-            sx={{ alignItems: 'center' }}
-          >
-            <Chip
-              size="medium"
-              icon={renderAvailabilityIcon(openToTalk)}
-              label={availability.label}
-              onClick={() => setOpenToTalk(getNextAvailabilityStatus(openToTalk))}
-              sx={getPreferenceChipSx(availability, isDark, { interactive: true })}
-            />
-            <Typography variant="body2" color="text.secondary">
-              {availability.description}
-            </Typography>
-          </Stack>
-
-          <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={2.5}
-            sx={{ alignItems: 'center' }}
-          >
-            <Chip
-              size="medium"
-              icon={renderSocialBatteryIcon(battery.icon)}
-              label={battery.label}
-              onClick={handleBatteryToggle}
-              sx={getPreferenceChipSx(battery, isDark, { interactive: true })}
-            />
-            <Typography variant="body2" color="text.secondary">
-              {battery.description}
-            </Typography>
-          </Stack>
-        </Stack>
-      </Box>
+        <Chip
+          label={`${contextCount} nearby contexts`}
+          variant="outlined"
+          sx={{
+            bgcolor: subtleSurface,
+            borderColor: 'divider',
+          }}
+        />
+      </Stack>
     </Box>
   );
 }
@@ -466,11 +404,6 @@ export default function FeedPage({
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2, mb: 2.5 }}>
         <PageHero
-          battery={battery}
-          socialBattery={socialBattery}
-          setSocialBattery={setSocialBattery}
-          openToTalk={openToTalk}
-          setOpenToTalk={setOpenToTalk}
           universityName={universityName}
           contextCount={contextFeed.length}
         />
