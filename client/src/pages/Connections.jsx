@@ -41,6 +41,34 @@ const avatarColors = {
   S: '#B45309',
 };
 
+// Generate contextual invite templates based on shared context
+function generateInviteTemplates(sharedContext) {
+  const templates = [
+    {
+      id: 1,
+      text: `Hey! Saw we were both at ${sharedContext}. Would be great to catch up sometime!`,
+      tone: 'casual',
+    },
+    {
+      id: 2,
+      text: `Really enjoyed ${sharedContext}! Want to grab coffee and chat about it?`,
+      tone: 'warm',
+    },
+    {
+      id: 3,
+      text: `We crossed paths at ${sharedContext} — no pressure, but happy to connect if you're up for it!`,
+      tone: 'low-pressure',
+    },
+    {
+      id: 4,
+      text: `Hey! From ${sharedContext}. Let me know if you ever want to study together or just chat.`,
+      tone: 'flexible',
+    },
+  ];
+  
+  return templates;
+}
+
 function ConnectionCard({ person, onViewProfile }) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
@@ -220,6 +248,15 @@ function ProfileDialog({ person, open, onClose }) {
   const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
   const successSurface = alpha(theme.palette.success.main, isDark ? 0.18 : 0.1);
 
+  const toneColors = {
+    casual: { bg: alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07), color: 'primary.main' },
+    warm: { bg: alpha(theme.palette.warning.main, isDark ? 0.14 : 0.07), color: 'warning.main' },
+    'low-pressure': { bg: alpha(theme.palette.success.main, isDark ? 0.14 : 0.07), color: 'success.main' },
+    flexible: { bg: alpha(theme.palette.info.main, isDark ? 0.14 : 0.07), color: 'info.main' },
+  };
+
+  const contextualTemplates = generateInviteTemplates(person.sharedContext);
+
   return (
     <Dialog
       open={open}
@@ -312,14 +349,6 @@ function ProfileDialog({ person, open, onClose }) {
           </Stack>
         </Stack>
 
-        {/* TODO <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: 'wrap', mb: 1, alignItems: 'center', justifyContent: 'space-between' }}>
-          <Typography variant='body1'>Interests</Typography>
-          <Stack direction='row' spacing={1} sx={{ alignItems: 'center' }}>
-            <FiberManualRecordIcon sx={{ fontSize: '14px !important', color: `${theme.palette.primary.main} !important` }} />
-            <Typography variant='overline' sx={{ letterSpacing: '0.14em', fontSize: '10px' }}>your shared interests</Typography>
-          </Stack>
-        </Stack> */}
-
         <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: 'wrap', mb: 2.5, alignItems: 'center' }}>
           {person.sharedInterests.map((interest) => (
             <Chip
@@ -345,13 +374,13 @@ function ProfileDialog({ person, open, onClose }) {
             Send a soft invite
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Pick a low-pressure opener that matches the tone used elsewhere in the app.
+            Pick a low-pressure opener that references your shared moment.
           </Typography>
         </Box>
 
         {!sent ? (
           <Stack spacing={1.25} sx={{ mb: 2 }}>
-            {softInviteTemplates.slice(0, 3).map((template) => (
+            {contextualTemplates.map((template) => (
               <Box
                 key={template.id}
                 onClick={() => {
@@ -372,9 +401,20 @@ function ProfileDialog({ person, open, onClose }) {
                   },
                 }}
               >
-                <Typography variant="body2" fontWeight={500}>
-                  "{template.text}"
-                </Typography>
+                <Stack direction='row' sx={{ justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
+                  <Typography variant="body2" fontWeight={500}>
+                    "{template.text}"
+                  </Typography>
+                  <Chip
+                    label={template.tone}
+                    size="small"
+                    sx={{ 
+                      bgcolor: toneColors[template.tone]?.bg || subtleSurface, 
+                      color: toneColors[template.tone]?.color || 'text.secondary', 
+                      flexShrink: 0 
+                    }}
+                  />
+                </Stack>
               </Box>
             ))}
           </Stack>
