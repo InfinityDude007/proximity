@@ -17,6 +17,7 @@ import {
   Toolbar,
   Tooltip,
   Stack,
+  Button,
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -244,6 +245,21 @@ function SidebarContent({
                 sx={getPreferenceChipSx(batteryMeta, isDark, { interactive: true })}
               />
             </Stack>
+            <Button
+              size="small"
+              variant="outlined"
+              onClick={() => setTab(3)}
+              sx={{
+                alignSelf: 'flex-end',
+                  mt: 0.5,
+                  textTransform: 'none',
+                  fontSize: '0.75rem',
+                  px: 1.2,
+                  py: 0.4,
+                          }}
+                        >
+              More details
+            </Button>
           </>
         ) : (
           <Stack direction="column" spacing={1} sx={{ width: '100%', alignItems: 'center' }}>
@@ -267,6 +283,7 @@ function SidebarContent({
               />
             </Tooltip>
           </Stack>
+          
         )}
       </Box>
     </Box>
