@@ -490,7 +490,7 @@ function App() {
       ) : (
         <AppShell
           tab={tab}
-          setTab={setTab}
+          setTab={selectedEvent ? (value) => { setTab(value); setSelectedEvent(null); } : setTab}
           mode={themeMode}
           muiTheme={muiTheme}
           socialBattery={socialBattery}
