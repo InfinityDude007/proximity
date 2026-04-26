@@ -36,6 +36,7 @@ const avatarColors = {
 function MessageCard({ msg, onOpen, isSelected }) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
+
   const unreadSurface = alpha(theme.palette.success.main, isDark ? 0.16 : 0.08);
   const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
 
@@ -44,43 +45,65 @@ function MessageCard({ msg, onOpen, isSelected }) {
       onClick={() => onOpen(msg.id)}
       sx={{
         cursor: 'pointer',
-        border: isSelected ? '1.5px solid' : '1px solid',
-        borderColor: isSelected ? 'primary.light' : msg.unread ? alpha(theme.palette.success.main, 0.5) : 'divider',
-        bgcolor: msg.unread && !isSelected ? unreadSurface : isSelected ? unreadSurface : 'background.paper',
+        position: 'relative',
+
+        border: isSelected
+          ? '2px solid'
+          : msg.unread
+          ? '1.5px dashed'
+          : '1px solid',
+
+        borderColor: isSelected
+          ? 'primary.main'
+          : msg.unread
+          ? alpha(theme.palette.success.main, 0.6)
+          : 'divider',
+
+        bgcolor:
+          msg.unread && !isSelected
+            ? unreadSurface
+            : isSelected
+            ? unreadSurface
+            : 'background.paper',
+
         '&:hover': { boxShadow: 4, transform: 'translateY(-2px)' },
         transition: 'all 0.15s ease',
-        position: 'relative',
       }}
     >
+      {/* ✅ GREEN DOT (moved to card) */}
+      {msg.unread && (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 10,
+            right: 10,
+            width: 10,
+            height: 10,
+            borderRadius: '50%',
+            bgcolor: 'success.main',
+            animation: 'pulse 2s ease-in-out infinite',
+            '@keyframes pulse': {
+              '0%, 100%': { opacity: 1, transform: 'scale(1)' },
+              '50%': { opacity: 0.7, transform: 'scale(1.2)' },
+            },
+          }}
+        />
+      )}
+
       <CardContent sx={{ p: 2 }}>
         <Box sx={{ display: 'flex', gap: 1.75, alignItems: 'center' }}>
-          <Badge
-            overlap="circular"
-            variant={msg.unread ? 'dot' : 'standard'}
-            sx={{ 
-              '& .MuiBadge-badge': { 
-                bgcolor: 'success.main',
-                animation: msg.unread ? 'pulse 2s ease-in-out infinite' : 'none',
-                '@keyframes pulse': {
-                  '0%, 100%': { opacity: 1, transform: 'scale(1)' },
-                  '50%': { opacity: 0.7, transform: 'scale(1.1)' },
-                },
-              }, 
-              flexShrink: 0 
+
+          {/* ✅ CLEAN AVATAR */}
+          <Avatar
+            sx={{
+              bgcolor: avatarColors[msg.avatar] || 'primary.main',
+              width: 46,
+              height: 46,
+              fontWeight: 800,
             }}
           >
-            <Avatar
-              sx={{
-                bgcolor: avatarColors[msg.avatar] || 'primary.main',
-                width: 46,
-                height: 46,
-                fontWeight: 800,
-                border: msg.unread ? `2px solid ${theme.palette.success.main}` : 'none',
-              }}
-            >
-              {msg.avatar}
-            </Avatar>
-          </Badge>
+            {msg.avatar}
+          </Avatar>
 
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <Box
@@ -92,33 +115,19 @@ function MessageCard({ msg, onOpen, isSelected }) {
                 mb: 0.25,
               }}
             >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flex: 1, minWidth: 0 }}>
-                <Typography
-                  variant="subtitle2"
-                  fontWeight={msg.unread ? 900 : isSelected ? 800 : 700}
-                  noWrap
-                  sx={{ flex: 1 }}
-                >
-                  {msg.name}
-                </Typography>
-                {msg.unread && (
-                  <Box
-                    sx={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: '50%',
-                      bgcolor: 'success.main',
-                      flexShrink: 0,
-                      animation: 'pulse 2s ease-in-out infinite',
-                    }}
-                  />
-                )}
-              </Box>
-              <Typography 
-                variant="caption" 
+              <Typography
+                variant="subtitle2"
+                fontWeight={msg.unread ? 900 : isSelected ? 800 : 700}
+                noWrap
+                sx={{ flex: 1 }}
+              >
+                {msg.name}
+              </Typography>
+
+              <Typography
+                variant="caption"
                 color={msg.unread ? 'success.main' : 'text.secondary'}
                 fontWeight={msg.unread ? 700 : 400}
-                sx={{ flexShrink: 0 }}
               >
                 {msg.time}
               </Typography>
@@ -145,6 +154,8 @@ function MessageCard({ msg, onOpen, isSelected }) {
     </Card>
   );
 }
+
+
 
 // ─── MessagesPage (inline chat panel, no popup) ────────────────────────────
 export default function MessagesPage({ userProfile }) {
