@@ -214,7 +214,7 @@ export default function ProfilePage({
           </Card>
         </Box>
 
-        <Card>
+        <Card id="settings-section">
           <CardContent sx={{ p: 2.8 }}>
             <Typography variant="h6" fontWeight={800} sx={{ mb: 0.5 }}>
               Availability

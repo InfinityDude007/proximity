@@ -248,7 +248,14 @@ function SidebarContent({
             <Button
               size="small"
               variant="outlined"
-              onClick={() => setTab(3)}
+              onClick={() => {
+                setTab(3);
+                setTimeout(() => {
+                  document.getElementById('settings-section')?.scrollIntoView({
+                    behavior: 'smooth',
+                  });
+                }, 100);
+              }}
               sx={{
                 alignSelf: 'flex-end',
                   mt: 0.5,
