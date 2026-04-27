@@ -264,7 +264,7 @@ function ContextCard({ event, onSelect }) {
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.8 }}>
                   <FiberManualRecordIcon sx={{ fontSize: 14, color: '#2e6a4f' }} />
                   <Typography variant="caption" sx={{ color: "text.secondary", fontSize: '16px' }}>
-                    {openCount} open to chat
+                    {openCount} open to connect
                   </Typography>
                 </Box>
               </Box>

@@ -121,7 +121,7 @@ function AttendeeRow({ person, openToTalk }) {
                     fontWeight: 700,
                   }}
                 >
-                  open to chat
+                  open to connect
                 </Typography>
               </Box>
             )}
@@ -405,7 +405,7 @@ export default function EventDetailPage({ event, onBack, openToTalk }) {
                 Who's here
               </Typography>
               <Typography variant="body2" sx={{ fontSize: '14px', color: "text.secondary" }}>
-                Green dot = open to chat. Tap "Say hi" for a soft, no-pressure opener.
+                Green dot = open to connect. Tap "Say hi" for a soft, no-pressure opener.
               </Typography>
             </Box>
 

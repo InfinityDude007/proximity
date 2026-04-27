@@ -29,6 +29,7 @@ import HandshakeIcon from '@mui/icons-material/Handshake';
 import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
 import { getUniversityMockData, softInviteTemplates } from '../data/mockData';
 import { interestOptions } from '../data/interestOptions';
+import { renderSocialBatteryIcon, SOCIAL_BATTERY_OPTIONS } from '../data/preferencesUi';
 import { alpha, useTheme } from '@mui/material/styles';
 
 const statusColor = {
@@ -141,7 +142,7 @@ function ConnectionCard({ person, onViewProfile }) {
           </Box>
         </Box>
 
-        <Stack direction="row" spacing={0.75} useFlexGap sx={{ flexWrap: 'wrap', alignItems: 'center' }}>
+        <Stack direction='row' sx={{ minWidth: "100%" }}>
           <Chip
             label={status.label}
             size="small"
@@ -149,40 +150,46 @@ function ConnectionCard({ person, onViewProfile }) {
               bgcolor: alpha(status.text, isDark ? 0.22 : 0.12),
               color: isDark ? 'text.primary' : status.text,
               fontWeight: 700,
+              p: 1,
+              maxWidth: '150px'
             }}
           />
-          {person.openToTalk && (
-            <Chip
-              icon={<FiberManualRecordIcon sx={{ fontSize: '9px !important', color: `${theme.palette.success.main} !important` }} />}
-              label="Open to chat"
-              size="small"
-              sx={{
-                bgcolor: successSurface,
-                color: isDark ? 'text.primary' : 'success.dark',
-                fontWeight: 700,
-              }}
-            />
-          )}
         </Stack>
 
-        <Box
-          sx={{
-            py: 1,
-            px: 2.5,
-            bgcolor: 'action.hover',
-            borderRadius: 1,
-            width: '100%',
-          }}
-        >
-          <Typography variant="caption" color="text.secondary" display="block">
-            How you connected
+        <Box sx={{ display: 'grid', gap: 1 }}>
+          <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700 }}>
+            Their current vibe
           </Typography>
-          <Typography variant="body2" color="text.secondary" noWrap>
-            {person.sharedContext}
-          </Typography>
+          <Stack direction="row" spacing={1.5} useFlexGap sx={{ flexWrap: 'wrap', alignItems: 'center' }}>
+            {person.openToTalk && (
+              <Chip
+                icon={<FiberManualRecordIcon sx={{ fontSize: '12px !important', color: `${theme.palette.success.main} !important` }} />}
+                label="Open to connect"
+                size="small"
+                sx={{
+                  bgcolor: successSurface,
+                  color: isDark ? 'text.primary' : 'success.dark',
+                  fontWeight: 700,
+                }}
+              />
+            )}
+            <Chip
+              icon={renderSocialBatteryIcon(person.socialBattery)}
+              label={SOCIAL_BATTERY_OPTIONS.find(o => o.value === person.socialBattery)?.label}
+              size="small"
+              sx={{
+                bgcolor: alpha(SOCIAL_BATTERY_OPTIONS.find(o => o.value === person.socialBattery)?.color || 'primary.main', isDark ? 0.18 : 0.1),
+                color: isDark ? 'text.primary' : SOCIAL_BATTERY_OPTIONS.find(o => o.value === person.socialBattery)?.color || 'primary.main',
+                fontWeight: 700,
+                '& .MuiChip-icon': {
+                  color: 'currentColor',
+                },
+              }}
+            />
+          </Stack>
         </Box>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
           <LocationOnIcon sx={{ fontSize: 18, color: 'text.secondary', flexShrink: 0 }} />
           <Typography variant="body2" color="text.secondary">
             {person.lastSeen}
@@ -279,7 +286,7 @@ function ProfileDialog({ person, open, onClose }) {
       onClose={onClose}
       scroll='paper'
       fullWidth
-      maxWidth="lg"
+      maxWidth="md"
       PaperProps={{
         sx: {
           borderRadius: 5,
@@ -338,37 +345,72 @@ function ProfileDialog({ person, open, onClose }) {
               <Typography variant="body2" color="text.secondary">
                 {person.degree} - {person.year}
               </Typography>
+              <Chip
+                label={status.label}
+                size="small"
+                sx={{
+                  bgcolor: alpha(status.text, isDark ? 0.22 : 0.12),
+                  color: isDark ? 'text.primary' : status.text,
+                  fontWeight: 700,
+                  fontSize: '14px',
+                  py: 2,
+                  px: 1.5,
+                  borderRadius: '30px',
+                  mt: 0.5
+                }}
+              />
             </Box>
           </Box>
 
           <Stack direction="column" spacing={1} useFlexGap sx={{ flexWrap: 'wrap', mb: 2 }}>
-            <Chip
-              label={status.label}
-              size="small"
-              sx={{
-                bgcolor: alpha(status.text, isDark ? 0.22 : 0.12),
-                color: isDark ? 'text.primary' : status.text,
-                fontWeight: 700,
-              }}
-            />
-            {person.openToTalk && (
-              <Chip
-                icon={<FiberManualRecordIcon sx={{ fontSize: '9px !important', color: `${theme.palette.success.main} !important` }} />}
-                label="Open to chat"
-                size="small"
-                sx={{
-                  bgcolor: successSurface,
-                  color: isDark ? 'text.primary' : 'success.dark',
-                  fontWeight: 700,
-                }}
-              />
-            )}
+            <Box sx={{ display: 'grid', gap: 1 }}>
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, fontSize: '14px' }}>
+                Their current vibe
+              </Typography>
+              <Stack direction='row' spacing={2}>
+                {person.openToTalk && (
+                  <Chip
+                    icon={<FiberManualRecordIcon sx={{ fontSize: '14px !important', color: `${theme.palette.success.main} !important` }} />}
+                    label="Open to connect"
+                    size="small"
+                    sx={{
+                      bgcolor: successSurface,
+                      color: isDark ? 'text.primary' : 'success.dark',
+                      fontWeight: 700,
+                      fontSize: '14px',
+                      py: 2,
+                      px: 1.5,
+                      borderRadius: '30px',
+                    }}
+                  />
+                )}
+                <Chip
+                  icon={renderSocialBatteryIcon(person.socialBattery)}
+                  label={SOCIAL_BATTERY_OPTIONS.find(o => o.value === person.socialBattery)?.label}
+                  size="small"
+                  sx={{
+                    bgcolor: alpha(SOCIAL_BATTERY_OPTIONS.find(o => o.value === person.socialBattery)?.color || 'primary.main', isDark ? 0.18 : 0.1),
+                    color: isDark ? 'text.primary' : SOCIAL_BATTERY_OPTIONS.find(o => o.value === person.socialBattery)?.color || 'primary.main',
+                    fontWeight: 700,
+                    fontSize: '14px',
+                    py: 2,
+                    px: 1.5,
+                    borderRadius: '30px',
+                    '& .MuiChip-icon': {
+                      color: 'currentColor',
+                    },
+                  }}
+                />
+              </Stack>
+            </Box>
           </Stack>
         </Stack>
 
-        <Box sx={{ display: 'grid', gap: 1, mb: 2.5 }}>
+        <Divider sx={{ mb: 2.5, mt: 1}} />
+
+        <Box sx={{ display: 'flex', gap: 1, mb: 2.5, justifyContent: 'space-between', alignItems: 'center'}}>
           {person.userSharedInterests?.length > 0 && (
-            <Box sx={{ mb: 2 }}>
+            <Box>
               <Typography variant="body2" sx={{ mb: 0.8, fontWeight: 700, color: 'text.secondary' }}>
                 Your shared interests
               </Typography>
@@ -433,12 +475,27 @@ function ProfileDialog({ person, open, onClose }) {
           )}
         </Box>
 
+        <Divider sx={{ mb: 2.5 }} />
+
+        <Stack direction='row' sx={{ width: '100%', justifyContent: "space-between" }}>
+          <Box>
+            <Typography variant="body2" sx={{ mb: 0.5, fontWeight: 700, color: 'text.secondary' }}>
+              Last seen
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+              <LocationOnIcon sx={{ fontSize: 18, color: 'text.secondary', flexShrink: 0 }} />
+              <Typography variant="body2" color="text.secondary">
+                {person.lastSeen}
+              </Typography>
+            </Box>
+          </Box>
         <Box sx={{ bgcolor: 'action.hover', borderRadius: 1, px: 2, py: 1, mb: 2.5 }}>
-          <Typography variant="body1" display="block" sx={{ mb: 0.2, color: "text.secondary" }}>
-            Your shared context
-          </Typography>
-          <Typography variant="body2">{person.sharedContext}</Typography>
-        </Box>
+            <Typography variant="body1" display="block" sx={{ mb: 0.2, color: "text.secondary" }}>
+              How you connected
+            </Typography>
+            <Typography variant="body2">{person.sharedContext}</Typography>
+          </Box>
+        </Stack>
 
         <Divider sx={{ mb: 2.5 }} />
 
@@ -691,36 +748,36 @@ export default function ConnectionsPage({ userProfile, userInterests }) {
         <Card sx={{ border: '1px solid', borderColor: 'divider' }}>
           <CardContent sx={{ textAlign: 'center', py: 8, px: 3 }}>
             <PeopleOutlinedIcon sx={{ fontSize: 56, color: 'text.secondary', opacity: 0.4, mb: 2 }} />
-            <Typography variant="h6" fontWeight={800} sx={{ mb: 1 }}>
-              No connections yet
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 420, mx: 'auto' }}>
-              Head to Discover and join a nearby event or spot — you'll build connections naturally.
-            </Typography>
-          </CardContent>
-        </Card>
-      ) : (
-        <Grid
-  container
-  spacing={2}
-  sx={{
-    justifyContent: 'center',
-  }}
->
-  {connectionsWithInterests.map((person) => (
-    <Grid
-      item
-      key={person.id}
-      sx={{
-        maxWidth: '380px',
-        minWidth: '380px',
-      }}
-    >
-      <ConnectionCard person={person} onViewProfile={setSelectedPerson} />
-    </Grid>
-  ))}
-</Grid>
-      )}
+              <Typography variant="h6" fontWeight={800} sx={{ mb: 1 }}>
+                No connections yet
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 420, mx: 'auto' }}>
+                Head to Discover and join a nearby event or spot — you'll build connections naturally.
+              </Typography>
+            </CardContent>
+          </Card>
+        ) : (
+          <Grid
+            container
+            spacing={2}
+            sx={{
+              justifyContent: 'center',
+            }}
+          >
+            {connectionsWithInterests.map((person) => (
+              <Grid
+                item
+                key={person.id}
+                sx={{
+                  maxWidth: '380px',
+                  minWidth: '380px',
+                }}
+              >
+                <ConnectionCard person={person} onViewProfile={setSelectedPerson} />
+              </Grid>
+            ))}
+          </Grid>
+        )}
 
       <ProfileDialog
         person={selectedPerson}
