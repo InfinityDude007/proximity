@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState} from 'react';
 import {
   Box,
   Typography,
@@ -31,6 +31,8 @@ import { getUniversityMockData, softInviteTemplates } from '../data/mockData';
 import { interestOptions } from '../data/interestOptions';
 import { renderSocialBatteryIcon, SOCIAL_BATTERY_OPTIONS } from '../data/preferencesUi';
 import { alpha, useTheme } from '@mui/material/styles';
+
+
 
 const statusColor = {
   acquaintance: { bg: '#FFF7ED', text: '#C2410C', label: 'Acquaintance' },
@@ -262,8 +264,9 @@ function ConnectionCard({ person, onViewProfile }) {
 function ProfileDialog({ person, open, onClose }) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
-  const [sent, setSent] = useState(false);
+  const [sentMap, setSentMap] = useState({});
   const [toastOpen, setToastOpen] = useState(false);
+ 
 
   if (!person) return null;
 
@@ -508,13 +511,17 @@ function ProfileDialog({ person, open, onClose }) {
           </Typography>
         </Box>
 
-        {!sent ? (
+        {!sentMap[person.id] ? (
           <Stack spacing={1.25} sx={{ mb: 2 }}>
             {contextualTemplates.map((template) => (
               <Box
                 key={template.id}
                 onClick={() => {
-                  setSent(true);
+                  if (sentMap[person.id]) return;
+                  setSentMap((prev) => ({
+                    ...prev,
+                    [person.id]: true,
+                  }));
                   setToastOpen(true);
                 }}
                 sx={{
