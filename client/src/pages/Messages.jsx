@@ -36,6 +36,7 @@ const avatarColors = {
 function MessageCard({ msg, onOpen, isSelected }) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
+
   const unreadSurface = alpha(theme.palette.success.main, isDark ? 0.16 : 0.08);
   const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
 
@@ -44,31 +45,46 @@ function MessageCard({ msg, onOpen, isSelected }) {
       onClick={() => onOpen(msg.id)}
       sx={{
         cursor: 'pointer',
-        border: isSelected ? '1.5px solid' : '1px solid',
-        borderColor: isSelected ? 'primary.light' : 'divider',
-        bgcolor: isSelected ? unreadSurface : 'background.paper',
+        position: 'relative',
+
+        border: isSelected
+          ? '2px solid'
+          : msg.unread
+          ? '1.5px dashed'
+          : '1px solid',
+
+        borderColor: isSelected
+          ? 'primary.main'
+          : msg.unread
+          ? alpha(theme.palette.success.main, 0.6)
+          : 'divider',
+
+        bgcolor:
+          msg.unread && !isSelected
+            ? unreadSurface
+            : isSelected
+            ? unreadSurface
+            : 'background.paper',
+
         '&:hover': { boxShadow: 4, transform: 'translateY(-2px)' },
         transition: 'all 0.15s ease',
       }}
     >
+
       <CardContent sx={{ p: 2 }}>
         <Box sx={{ display: 'flex', gap: 1.75, alignItems: 'center' }}>
-          <Badge
-            overlap="circular"
-            variant={msg.unread ? 'dot' : 'standard'}
-            sx={{ '& .MuiBadge-badge': { bgcolor: 'success.main' }, flexShrink: 0 }}
+
+          {/* ✅ CLEAN AVATAR */}
+          <Avatar
+            sx={{
+              bgcolor: avatarColors[msg.avatar] || 'primary.main',
+              width: 46,
+              height: 46,
+              fontWeight: 800,
+            }}
           >
-            <Avatar
-              sx={{
-                bgcolor: avatarColors[msg.avatar] || 'primary.main',
-                width: 46,
-                height: 46,
-                fontWeight: 800,
-              }}
-            >
-              {msg.avatar}
-            </Avatar>
-          </Badge>
+            {msg.avatar}
+          </Avatar>
 
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <Box
@@ -82,21 +98,41 @@ function MessageCard({ msg, onOpen, isSelected }) {
             >
               <Typography
                 variant="subtitle2"
-                fontWeight={isSelected ? 800 : 700}
+                fontWeight={msg.unread ? 900 : isSelected ? 800 : 700}
                 noWrap
                 sx={{ flex: 1 }}
               >
                 {msg.name}
               </Typography>
-              <Typography variant="caption" color="text.secondary" sx={{ flexShrink: 0 }}>
+
+              {msg.unread && (
+                <Box
+                  sx={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: '50%',
+                    bgcolor: 'success.main',
+                    animation: 'pulse 2s ease-in-out infinite',
+                    '@keyframes pulse': {
+                      '0%, 100%': { opacity: 0.5, transform: 'scale(1)' },
+                      '50%': { opacity: 1, transform: 'scale(1.2)' },
+                    },
+                  }}
+                />
+              )}
+              <Typography
+                variant="caption"
+                color={msg.unread ? 'success.main' : 'text.secondary'}
+                fontWeight={msg.unread ? 700 : 400}
+              >
                 {msg.time}
               </Typography>
             </Box>
 
             <Typography
               variant="body2"
-              color={isSelected ? 'text.primary' : 'text.secondary'}
-              fontWeight={isSelected ? 500 : 400}
+              color={msg.unread ? 'text.primary' : isSelected ? 'text.primary' : 'text.secondary'}
+              fontWeight={msg.unread ? 600 : isSelected ? 500 : 400}
               noWrap
             >
               {msg.preview}
@@ -115,6 +151,8 @@ function MessageCard({ msg, onOpen, isSelected }) {
   );
 }
 
+
+
 // ─── MessagesPage (inline chat panel, no popup) ────────────────────────────
 export default function MessagesPage({ userProfile }) {
   const theme = useTheme();
@@ -126,6 +164,9 @@ export default function MessagesPage({ userProfile }) {
   // Store the current state of every conversation (keyed by message id)
   const [conversationsState, setConversationsState] = useState({});
 
+  // Track which messages have been read
+  const [readMessages, setReadMessages] = useState(new Set());
+
   // Input state for the inline chat panel
   const [inputText, setInputText] = useState('');
 
@@ -136,16 +177,24 @@ export default function MessagesPage({ userProfile }) {
 
   const filteredMessages = useMemo(
     () =>
-      messages.filter((m) =>
-        [m.name, m.preview, m.context]
-          .join(' ')
-          .toLowerCase()
-          .includes(query.toLowerCase())
-      ),
-    [messages, query]
+      messages
+        .filter((m) =>
+          [m.name, m.preview, m.context]
+            .join(' ')
+            .toLowerCase()
+            .includes(query.toLowerCase())
+        )
+        .map((m) => ({
+          ...m,
+          unread: m.unread && !readMessages.has(m.id),
+        })),
+    [messages, query, readMessages]
   );
 
   const selectedMsg = messages.find((m) => m.id === selectedId);
+  const unreadCount = filteredMessages.reduce(
+    (count, m) => count + (m.unread ? 1 : 0), 0
+  );
 
   // Get the conversation for the selected message – either from local state or original mock data
   const currentConversation =
@@ -176,6 +225,12 @@ export default function MessagesPage({ userProfile }) {
   // Clear the selected conversation (optional, gives a way to go back to empty state)
   const clearSelected = () => setSelectedId(null);
 
+  // Handle opening a message and mark it as read
+  const handleOpenMessage = (id) => {
+    setSelectedId(id);
+    setReadMessages((prev) => new Set(prev).add(id));
+  };
+
   return (
     <Box>
       {/* Page header */}
@@ -197,9 +252,41 @@ export default function MessagesPage({ userProfile }) {
           <Card sx={{ height: '100%' }}>
             <CardContent sx={{ py: 2, px: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Stack direction='column' spacing={1} sx={{ justifyContent: 'space-between', alignItems: 'start' }}>
-                <Typography variant="body1" sx={{ fontSize: '20px', fontWeight: 700 }}>
-                  Inbox
-                </Typography>
+                
+                <Stack direction='row' sx={{ justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                  <Typography variant="body1" sx={{ fontSize: '20px', fontWeight: 700 }}>
+                    Inbox
+                  </Typography>
+                  {unreadCount !== 0 && (
+                    <Stack direction='row' spacing={1}
+                      sx={{
+                        border: '1.5px dashed',
+                        borderColor: alpha(theme.palette.success.main, 0.6),
+                        bgcolor: alpha(theme.palette.success.main, 0.1),
+                        px: 1,
+                        py: 0.5,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        borderRadius: 10,
+                      }}
+                    >
+                        <Box
+                          sx={{
+                            width: 10,
+                            height: 10,
+                            borderRadius: '50%',
+                            bgcolor: 'success.main',
+                            animation: 'pulse 2s ease-in-out infinite',
+                            '@keyframes pulse': {
+                              '0%, 100%': { opacity: 0.5, transform: 'scale(1)' },
+                              '50%': { opacity: 1, transform: 'scale(1.2)' },
+                            },
+                          }}
+                        />
+                        <Typography variant='caption'>{unreadCount} Unread Chat{unreadCount > 1 ? 's' : ''}</Typography>
+                    </Stack>
+                  )}
+                </Stack>
 
                 <TextField
                   size="small"
@@ -243,10 +330,10 @@ export default function MessagesPage({ userProfile }) {
                     <ListItemButton
                       disableRipple
                       key={msg.id}
-                      onClick={() => setSelectedId(msg.id)}
+                      onClick={() => handleOpenMessage(msg.id)}
                       sx={{ p: 0, borderRadius: 1, display: 'block', '&:hover': { bgcolor: 'transparent' }, }}
                     >
-                      <MessageCard msg={msg} onOpen={setSelectedId} isSelected={msg.id === selectedId} />
+                      <MessageCard msg={msg} onOpen={handleOpenMessage} isSelected={msg.id === selectedId} />
                     </ListItemButton>
                   ))
                 )}

@@ -17,6 +17,7 @@ import {
   Toolbar,
   Tooltip,
   Stack,
+  Button,
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -244,6 +245,28 @@ function SidebarContent({
                 sx={getPreferenceChipSx(batteryMeta, isDark, { interactive: true })}
               />
             </Stack>
+            <Button
+              size="small"
+              variant="outlined"
+              onClick={() => {
+                setTab(3);
+                setTimeout(() => {
+                  document.getElementById('settings-section')?.scrollIntoView({
+                    behavior: 'smooth',
+                  });
+                }, 100);
+              }}
+              sx={{
+                alignSelf: 'flex-end',
+                  mt: 0.5,
+                  textTransform: 'none',
+                  fontSize: '0.75rem',
+                  px: 1.2,
+                  py: 0.4,
+                          }}
+                        >
+              More details
+            </Button>
           </>
         ) : (
           <Stack direction="column" spacing={1} sx={{ width: '100%', alignItems: 'center' }}>
@@ -267,6 +290,7 @@ function SidebarContent({
               />
             </Tooltip>
           </Stack>
+          
         )}
       </Box>
     </Box>
@@ -460,9 +484,10 @@ function App() {
         userInterests={userInterests}
         onSelectEvent={setSelectedEvent}
         userProfile={userProfile}
+        setTab={setTab}
       />,
       <MessagesPage key="messages" userProfile={userProfile} />,
-      <ConnectionsPage key="connections" userProfile={userProfile} />,
+      <ConnectionsPage key="connections" userProfile={userProfile} userInterests={userInterests} />,
       <ProfilePage
         key="profile"
         socialBattery={socialBattery}
@@ -487,12 +512,10 @@ function App() {
       <CssBaseline />
       {!onboarded ? (
         <OnboardingPage initialProfile={userProfile} onComplete={handleOnboardingComplete} />
-      ) : selectedEvent ? (
-        <EventDetailPage event={selectedEvent} onBack={() => setSelectedEvent(null)} openToTalk={openToTalk} />
       ) : (
         <AppShell
           tab={tab}
-          setTab={setTab}
+          setTab={selectedEvent ? (value) => { setTab(value); setSelectedEvent(null); } : setTab}
           mode={themeMode}
           muiTheme={muiTheme}
           socialBattery={socialBattery}
@@ -500,7 +523,11 @@ function App() {
           openToTalk={openToTalk}
           setOpenToTalk={handleSetOpenToTalk}
         >
-          {pages[tab]}
+          {selectedEvent ? (
+            <EventDetailPage event={selectedEvent} onBack={() => setSelectedEvent(null)} openToTalk={openToTalk} />
+          ) : (
+            pages[tab]
+          )}
         </AppShell>
       )}
     </ThemeProvider>

@@ -24,6 +24,7 @@ import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
 import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import ReportIcon from '@mui/icons-material/Report';
 
 import {
   AVAILABILITY_OPTIONS,
@@ -65,7 +66,15 @@ export default function ProfilePage({
     window.location.reload();
   };
 
+  const confirmReset = "delete my data";
+  const [resetUsrInput, setResetUserInput] = useState("");
+  const allowReset = resetUsrInput.trim().toLowerCase() === confirmReset.trim().toLowerCase();
+
   const handleResetData = () => {
+    if (!allowReset) {
+      return;
+    }
+
     localStorage.clear();
     window.location.reload();
   };
@@ -137,7 +146,8 @@ export default function ProfilePage({
               placeholder="Search interests..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              sx={{ mb: 2 }}
+              sx={{ mb: 3.5 }}
+              variant='standard'
             />
             <Stack direction="row" spacing={1.2} useFlexGap sx={{ flexWrap: 'wrap' }}>
               {interestOptions
@@ -205,7 +215,7 @@ export default function ProfilePage({
           </Card>
         </Box>
 
-        <Card>
+        <Card id="settings-section">
           <CardContent sx={{ p: 2.8 }}>
             <Typography variant="h6" fontWeight={800} sx={{ mb: 0.5 }}>
               Availability
@@ -363,8 +373,11 @@ export default function ProfilePage({
             <Stack direction='row' sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
               <Box>
                 <Typography variant="h6" fontWeight={800} sx={{ mb: 0.5 }}>Reset Data</Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>Delete all stored data and start fresh. This will clear your profile, preferences, and onboarding status.</Typography>
-                <Typography variant="overline" color="error" sx={{ fontWeight: 700, fontSize: '14px' }}>WARNING: THIS ACTION IS PERMANENT AND CAN NEVER BE UNDONE!</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>Delete all stored data and start fresh. This will clear your profile, preferences, settings, and connections.</Typography>
+                <Stack direction='row' spacing={0.8} sx={{ alignItems: 'center' }}>
+                  <ReportIcon color='error' sx={{ fontSize: '28px' }} />
+                  <Typography variant="overline" color="error" sx={{ fontWeight: 700, fontSize: '16px' }}>WARNING: THIS ACTION IS PERMANENT AND CAN NEVER BE UNDONE!</Typography>
+                </Stack>
               </Box>
               <Button variant="outlined" color="error" onClick={() => setResetDialogOpen(true)} sx={{ maxHeight: '60px' }} startIcon={<DeleteForeverIcon />}>Reset All Data</Button>
             </Stack>
@@ -381,18 +394,47 @@ export default function ProfilePage({
         <DialogTitle id="reset-dialog-title">Reset All Data</DialogTitle>
         <DialogContent>
           <DialogContentText id="reset-dialog-description">
-            Are really sure you sure you want to reset all data?
-            
-            <br /> <Typography variant="overline" color="error" sx={{ fontWeight: 700, fontSize: '16px' }}>WARNING: THIS ACTION IS PERMANENT AND CAN NEVER BE UNDONE!</Typography>
+            <Stack spacing={2} mt={1}>
+              <Typography>Are really sure you sure you want to reset all of your data?</Typography>
+              <Typography sx={{fontSize: "14px"}}>
+                This will remove:
+                <Box component="ul" sx={{ pl: 4, m: 0 }}>
+                  <li>Your personal data (name, university, course, year).</li>
+                  <li>All saved settings, interests and preferences.</li>
+                  <li>All message history, connections, and contexts.</li>
+                </Box>
+              </Typography>
+
+              <Stack spacing={1}>
+                <Typography>Please type "<strong>delete my data</strong>" below to confirm your decision</Typography>
+                <TextField
+                  size="small"
+                  value={resetUsrInput}
+                  onChange={(e) => setResetUserInput(e.target.value)}
+                  sx={{ width: "100%" }}
+                  color="error"
+                />
+              </Stack>
+              
+              <Stack>
+                <Stack direction='row' spacing={1} sx={{ alignItems: 'center' }}>
+                  <ReportIcon color='error' sx={{ fontSize: '28px' }} />
+                  <Typography variant="overline" color="error" sx={{ fontWeight: 700, fontSize: '18px' }}>WARNING:</Typography>
+                </Stack>
+                <Typography variant="overline" color="error" sx={{ fontWeight: 700, fontSize: '16px', lineHeight: '1' }}>THIS ACTION IS PERMANENT AND CAN NEVER BE UNDONE!</Typography>
+              </Stack>
+            </Stack>
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setResetDialogOpen(false)} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleResetData} color="error" variant="contained">
-            Reset All Data
-          </Button>
+          <Stack direction='row' sx={{ width: "100%", justifyContent: "space-between", px: 2, py: 2 }}>
+            <Button variant='outlined' onClick={() => setResetDialogOpen(false)} color="primary">
+              Cancel
+            </Button>
+            <Button disabled={!allowReset} onClick={handleResetData} color="error" variant="contained">
+              Reset All Data
+            </Button>
+          </Stack>
         </DialogActions>
       </Dialog>
     </Box>

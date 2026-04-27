@@ -12,6 +12,7 @@ import {
   Divider,
   Button,
   Grid,
+  Popover,
   useTheme,
 } from '@mui/material';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -25,6 +26,8 @@ import AnalyticsIcon from '@mui/icons-material/Analytics';
 import ShareLocationIcon from '@mui/icons-material/ShareLocation';
 import Groups2Icon from '@mui/icons-material/Groups2';
 import SpaIcon from '@mui/icons-material/Spa';
+import SchoolIcon from '@mui/icons-material/School';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { batteryLevels, getUniversityMockData, vibeFilters } from '../data/mockData';
 import { alpha } from '@mui/material/styles';
 import {
@@ -54,17 +57,10 @@ function MetaItem({ icon, text }) {
   );
 }
 
-function PageHero({ battery, socialBattery, setSocialBattery, openToTalk, setOpenToTalk, universityName, contextCount }) {
+function PageHero({ universityName, contextCount }) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
   const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
-  const availability = getAvailabilityMeta(openToTalk);
-
-  const handleBatteryToggle = () => {
-    const currentIndex = SOCIAL_BATTERY_ORDER.indexOf(socialBattery);
-    const nextIndex = (currentIndex + 1) % SOCIAL_BATTERY_ORDER.length;
-    setSocialBattery(SOCIAL_BATTERY_ORDER[nextIndex]);
-  };
 
   return (
     <Box
@@ -74,108 +70,61 @@ function PageHero({ battery, socialBattery, setSocialBattery, openToTalk, setOpe
         borderRadius: 2,
         bgcolor: 'background.paper',
         boxShadow: theme.shadows[1],
-        display: 'grid',
-        gridTemplateColumns: { xs: '1fr', xl: '1.3fr 0.7fr' },
-        gap: 2.5,
-        alignItems: 'stretch',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
         minWidth: '100%',
       }}
     >
-      <Box>
+      <Chip
+        label="Live campus discovery"
+        size="small"
+        sx={{
+          fontWeight: 700,
+          bgcolor: subtleSurface,
+          color: isDark ? 'primary.light' : 'primary.dark',
+          width: 'fit-content',
+          py: 2,
+          px: 1,
+          borderRadius: "20px"
+        }}
+      />
+
+      <Typography
+        variant="h3"
+        sx={{ fontSize: { xs: '2rem', md: '2.5rem' }, lineHeight: 1.05 }}
+      >
+        Discover What's Happening Around You
+      </Typography>
+
+      <Typography variant="body1" color="text.secondary">
+        Shared places, active people, and low-pressure ways to connect across {universityName}.
+      </Typography>
+
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.2}>
         <Chip
-          label="Live campus discovery"
-          size="small"
+          icon={<SchoolIcon />}
+          label={universityName}
+          variant="outlined"
           sx={{
-            mb: 1.5,
-            fontWeight: 700,
             bgcolor: subtleSurface,
-            color: isDark ? 'primary.light' : 'primary.dark',
+            borderColor: 'divider',
+            p: 1,
+            '& .MuiChip-icon': {
+              mr: 0.1,
+            },
           }}
         />
-        <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.5rem' }, lineHeight: 1.05, mb: 1.2 }}>
-          Discover What's Happening Around You
-        </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ minWidth: '100%', mb: 2.2 }}>
-          Shared places, active people, and low-pressure ways to connect across {universityName}.
-        </Typography>
-
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.2}>
-          {[
-            { label: universityName },
-            { label: `${contextCount} nearby contexts` },
-          ].map((item) => (
-            <Chip
-              key={item.label}
-              label={item.label}
-              variant="outlined"
-              sx={{
-                bgcolor: subtleSurface,
-                borderColor: 'divider',
-                color: 'text.primary',
-              }}
-            />
-          ))}
-        </Stack>
-      </Box>
-
-      <Box
-        sx={{
-          bgcolor: 'background.paper',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 1.5,
-        }}
-      >
-        <Box>
-          <Typography
-            variant="overline"
-            sx={{
-              color: 'text.secondary',
-              letterSpacing: '0.14em',
-              fontWeight: 700,
-              lineHeight: 1,
-            }}
-          >
-            Your Vibe
-          </Typography>
-        </Box>
-
-        <Stack spacing={1.5}>
-          <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={2.5}
-            sx={{ alignItems: 'center' }}
-          >
-            <Chip
-              size="medium"
-              icon={renderAvailabilityIcon(openToTalk)}
-              label={availability.label}
-              onClick={() => setOpenToTalk(getNextAvailabilityStatus(openToTalk))}
-              sx={getPreferenceChipSx(availability, isDark, { interactive: true })}
-            />
-            <Typography variant="body2" color="text.secondary">
-              {availability.description}
-            </Typography>
-          </Stack>
-
-          <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={2.5}
-            sx={{ alignItems: 'center' }}
-          >
-            <Chip
-              size="medium"
-              icon={renderSocialBatteryIcon(battery.icon)}
-              label={battery.label}
-              onClick={handleBatteryToggle}
-              sx={getPreferenceChipSx(battery, isDark, { interactive: true })}
-            />
-            <Typography variant="body2" color="text.secondary">
-              {battery.description}
-            </Typography>
-          </Stack>
-        </Stack>
-      </Box>
+        <Chip
+          label={`${contextCount} nearby contexts`}
+          variant="outlined"
+          sx={{
+            bgcolor: subtleSurface,
+            borderColor: 'divider',
+            p: 1,
+          }}
+        />
+      </Stack>
     </Box>
   );
 }
@@ -219,15 +168,30 @@ function ContextCard({ event, onSelect }) {
             useFlexGap
             sx={{ alignItems: 'center', mb: 2 }}
           >
-              <Chip label={event.vibe === 'quiet' ? 'Quiet' : 'Social'} size="small" sx={{ bgcolor: vibe.bg, color: vibe.text, fontWeight: 700 }} />
+            <Chip
+                label={event.vibe === 'quiet' ? 'Quiet' : 'Social'}
+                size="medium"
+                sx={{
+                  bgcolor: vibe.bg,
+                  color: vibe.text,
+                  fontWeight: 800,
+                  height: 34,
+                  fontSize: '0.9rem',
+                  px: 1.5,
+                }}
+              />
+
               {event.mutualCount > 0 && (
                 <Chip
                   label={`${event.mutualCount} mutual${event.mutualCount > 1 ? 's' : ''} going`}
-                  size="small"
+                  size="medium"
                   sx={{
                     bgcolor: successSurface,
                     color: isDark ? 'text.primary' : 'primary.dark',
-                    fontWeight: 700,
+                    fontWeight: 800,
+                    height: 32,
+                    fontSize: '0.85rem',
+                    px: 1.25,
                   }}
                 />
               )}
@@ -252,18 +216,21 @@ function ContextCard({ event, onSelect }) {
               <LocalOfferIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
             </Box>
             <Stack direction='row' spacing={1} sx={{ justifyContent: 'flex-end' }}>
-              {event.tags.map((tag) => (
-                <Chip
-                  key={tag}
-                  label={tag}
-                  size="small"
-                  sx={{
-                    color: 'text.secondary',
-                    bgcolor: subtleSurface,
-                  }}
-                />
-              ))}
-            </Stack>
+                {event.tags.map((tag) => (
+                  <Chip
+                    key={tag}
+                    label={tag}
+                    size="medium"
+                    sx={{
+                      color: 'text.secondary',
+                      bgcolor: subtleSurface,
+                      height: 30,
+                      fontSize: '0.8rem',
+                      px: 1.2,
+                    }}
+                  />
+                ))}
+              </Stack>
           </Box>
         </Stack>
 
@@ -308,7 +275,7 @@ function ContextCard({ event, onSelect }) {
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.8 }}>
                   <FiberManualRecordIcon sx={{ fontSize: 14, color: '#2e6a4f' }} />
                   <Typography variant="caption" sx={{ color: "text.secondary", fontSize: '16px' }}>
-                    {openCount} open to chat
+                    {openCount} open to connect
                   </Typography>
                 </Box>
               </Box>
@@ -415,6 +382,7 @@ export default function FeedPage({
   userInterests,
   onSelectEvent,
   userProfile,
+  setTab
 }) {
   const [activeFilter, setActiveFilter] = useState('All');
   const theme = useTheme();
@@ -435,6 +403,18 @@ export default function FeedPage({
         (e) => e.vibe === activeFilter.toLowerCase() || e.tags.some((t) => t.toLowerCase() === activeFilter.toLowerCase()),
       );
 
+  // Filter based on availability
+  if (openToTalk !== 'open_to_connect') {
+    filtered = filtered.filter(event => event.mutualCount > 0);
+  }
+
+  // Filter based on social battery
+  if (socialBattery === 'low') {
+    filtered = filtered.filter(event => event.vibe === 'quiet' && parseInt(event.distance.split(' ')[0]) < 5);
+  } else if (socialBattery === 'medium') {
+    filtered = filtered.filter(event => parseInt(event.distance.split(' ')[0]) < 5);
+  }
+
   // If user has interests, prioritize events with matching tags
   if (userInterests.length > 0) {
     filtered = filtered.sort((a, b) => {
@@ -444,15 +424,46 @@ export default function FeedPage({
     });
   }
 
+  const [detailsAnchorEl, setDetailsAnchorEl] = useState(null);
+  const detailsOpen = Boolean(detailsAnchorEl);
+
+  const activeFilterText =
+    activeFilter === 'All'
+      ? 'All event types'
+      : `${activeFilter} events`;
+
+  const availabilityMeta = getAvailabilityMeta(openToTalk);
+  const batteryLabel = battery?.label || socialBattery;
+
+  const feedReasonParts = [];
+
+  if (activeFilter !== 'All') {
+    feedReasonParts.push();
+  }
+
+  if (socialBattery === 'low') {
+    if (activeFilter === "Quiet") {
+      feedReasonParts.push('that are less than 5 minutes away, because your social battery is low');
+    } else {
+      feedReasonParts.push('that are quiet and less than 5 minutes away, because your social battery is low');
+    }
+  } else if (socialBattery === 'medium') {
+    feedReasonParts.push('that are less than 5 minutes away, because your social battery is medium');
+  }
+
+  if (openToTalk !== 'open_to_connect') {
+    feedReasonParts.push('with mutuals going, because you are not fully open to connect');
+  }
+
+  const feedExplanation =
+    feedReasonParts.length > 0
+      ? `Showing ${activeFilterText.toLowerCase()} ${feedReasonParts.join(', ')}.`
+      : 'Showing all nearby campus contexts based on your current vibe.';
+
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2, mb: 2.5 }}>
         <PageHero
-          battery={battery}
-          socialBattery={socialBattery}
-          setSocialBattery={setSocialBattery}
-          openToTalk={openToTalk}
-          setOpenToTalk={setOpenToTalk}
           universityName={universityName}
           contextCount={contextFeed.length}
         />
@@ -489,9 +500,106 @@ export default function FeedPage({
               ))}
             </Stack>
 
-            {/* TODO <Button startIcon={<TuneIcon />} variant="outlined" sx={{ px: 2.5, py: 1.1, flexShrink: 0 }}>
-              Refine feed
-            </Button> */}
+            <Box
+              sx={{
+                minWidth: 'fit-content',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <TuneIcon sx={{ fontSize: 24, color: 'primary.main' }} />
+
+                <Typography variant="body2" sx={{ fontWeight: 800, whiteSpace: 'nowrap', fontSize: '16px' }}>
+                  {filtered.length} shown
+                </Typography>
+              </Box>
+
+              <Button
+                size="small"
+                variant="outlined"
+                endIcon={<KeyboardArrowDownIcon />}
+                onClick={(e) => setDetailsAnchorEl(e.currentTarget)}
+                sx={{
+                  minWidth: 0,
+                  fontWeight: 800,
+                  textTransform: 'none',
+                  whiteSpace: 'nowrap',
+                  px: 2,
+                  py: 1
+                }}
+              >
+                Feed details
+              </Button>
+
+              <Popover
+                open={detailsOpen}
+                anchorEl={detailsAnchorEl}
+                onClose={() => setDetailsAnchorEl(null)}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                slotProps={{
+                  paper: {
+                    sx: {
+                      mt: 0.3,
+                      width: '450px',
+                      maxWidth: '30vw',
+                      border: "2px solid",
+                      borderColor: "primary.main",
+                      borderRadius: 2
+                    }
+                  }
+                }}
+              >
+                <Stack spacing={2} sx={{ py: 2, px: 3 }}>
+                  <Stack spacing={0.3}>
+                    <Typography variant="body1" sx={{ fontWeight: 800 }}>
+                      Why these events?
+                    </Typography>
+
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        color: "text.secondary",
+                        whiteSpace: 'normal',
+                        wordBreak: 'break-word',
+                      }}
+                    >
+                      {feedExplanation}
+                    </Typography>
+                  </Stack>
+
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={() => {
+                      setTab(3);
+                      setTimeout(() => {
+                        document.getElementById('settings-section')?.scrollIntoView({
+                          behavior: 'smooth',
+                        });
+                      }, 100);
+                    }}
+                    sx={{
+                      alignSelf: 'flex-end',
+                      textTransform: 'none',
+                      fontSize: '0.75rem',
+                      px: 1.2,
+                      py: 0.4,
+                    }}
+                  >
+                    More details
+                  </Button>
+                </Stack>
+              </Popover>
+            </Box>
             
           </Box>
 
@@ -519,9 +627,9 @@ export default function FeedPage({
               </Button>
             </Box>
           ) : (
-            <Grid container spacing={2.5} sx={{ alignItems: 'center', justifyContent: 'center' }}>
+            <Grid container spacing={2} sx={{ alignItems: 'center', justifyContent: 'center' }}>
               {filtered.map((event) => (
-                <Grid key={event.id} item>
+                <Grid key={event.id} item xs={12} sm={6} md={4}>
                   <ContextCard event={event} onSelect={onSelectEvent} />
                 </Grid>
               ))}

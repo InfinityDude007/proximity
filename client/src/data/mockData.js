@@ -46,7 +46,7 @@ const UNIVERSITY_MOCK_DATA = {
           buildAttendee('ubd-u4', 'James', 'J', 'Business Management', true, ['Coffee', 'Startups', 'Travel']),
           buildAttendee('ubd-u5', 'Maya', 'M', 'Psychology', true, ['Podcasts', 'Art']),
         ],
-        mutualCount: 1,
+        mutualCount: 0,
         description: 'A low-pressure coffee spot where people usually stay between lectures.',
         accessibility: 'Step-free seating area',
         credibility: 'Campus venue',
@@ -83,6 +83,7 @@ const UNIVERSITY_MOCK_DATA = {
         openToTalk: true,
         sharedInterests: ['Study Groups', 'Coffee'],
         lastSeen: 'Library, 30 min ago',
+        socialBattery: 'high',
       },
       {
         id: 'ubd-u4',
@@ -95,6 +96,7 @@ const UNIVERSITY_MOCK_DATA = {
         openToTalk: true,
         sharedInterests: ['Coffee', 'Travel'],
         lastSeen: 'Student Hub, today',
+        socialBattery: 'high',
       },
       {
         id: 'ubd-u6',
@@ -107,6 +109,7 @@ const UNIVERSITY_MOCK_DATA = {
         openToTalk: true,
         sharedInterests: ['Gaming', 'Coffee'],
         lastSeen: 'Guild Lounge, yesterday',
+        socialBattery: 'low',
       },
     ],
     messages: [
@@ -227,6 +230,7 @@ const UNIVERSITY_MOCK_DATA = {
         openToTalk: true,
         sharedInterests: ['Art', 'Photography'],
         lastSeen: 'Media Lab, 1 hour ago',
+        socialBattery: 'medium',
       },
       {
         id: 'mdx-u4',
@@ -239,6 +243,7 @@ const UNIVERSITY_MOCK_DATA = {
         openToTalk: true,
         sharedInterests: ['Coffee', 'Startups'],
         lastSeen: 'Outside Block 17, today',
+        socialBattery: 'medium',
       },
       {
         id: 'mdx-u7',
@@ -251,6 +256,7 @@ const UNIVERSITY_MOCK_DATA = {
         openToTalk: true,
         sharedInterests: ['Wellness'],
         lastSeen: 'Student Centre, today',
+        socialBattery: 'low',
       },
     ],
     messages: [
@@ -371,6 +377,7 @@ const UNIVERSITY_MOCK_DATA = {
         openToTalk: true,
         sharedInterests: ['Study Groups'],
         lastSeen: 'Lab 2, today',
+        socialBattery: 'low',
       },
       {
         id: 'hw-u4',
@@ -383,6 +390,7 @@ const UNIVERSITY_MOCK_DATA = {
         openToTalk: true,
         sharedInterests: ['Art', 'Food'],
         lastSeen: 'Atrium, 45 min ago',
+        socialBattery: 'high',
       },
       {
         id: 'hw-u6',
@@ -395,6 +403,7 @@ const UNIVERSITY_MOCK_DATA = {
         openToTalk: true,
         sharedInterests: ['Football', 'Fitness'],
         lastSeen: 'Sports Courts, yesterday',
+        socialBattery: 'low',
       },
     ],
     messages: [
@@ -515,6 +524,7 @@ const UNIVERSITY_MOCK_DATA = {
         openToTalk: true,
         sharedInterests: ['Coffee', 'Startups'],
         lastSeen: 'Library Pods, today',
+        socialBattery: 'medium',
       },
       {
         id: 'uwd-u4',
@@ -527,6 +537,7 @@ const UNIVERSITY_MOCK_DATA = {
         openToTalk: true,
         sharedInterests: ['Gaming', 'Coffee'],
         lastSeen: 'Atrium Cafe, 20 min ago',
+        socialBattery: 'medium',
       },
       {
         id: 'uwd-u6',
@@ -539,6 +550,7 @@ const UNIVERSITY_MOCK_DATA = {
         openToTalk: true,
         sharedInterests: ['Careers'],
         lastSeen: 'Innovation Hub, yesterday',
+        socialBattery: 'low',
       },
     ],
     messages: [
@@ -659,6 +671,7 @@ const UNIVERSITY_MOCK_DATA = {
         openToTalk: true,
         sharedInterests: ['Art', 'Sketching'],
         lastSeen: 'Design Studio, today',
+        socialBattery: 'medium',
       },
       {
         id: 'aus-u4',
@@ -671,6 +684,7 @@ const UNIVERSITY_MOCK_DATA = {
         openToTalk: true,
         sharedInterests: ['Travel'],
         lastSeen: 'Central Plaza, today',
+        socialBattery: 'high',
       },
       {
         id: 'aus-u6',
@@ -683,6 +697,7 @@ const UNIVERSITY_MOCK_DATA = {
         openToTalk: true,
         sharedInterests: ['Music'],
         lastSeen: 'Performing Arts Room, yesterday',
+        socialBattery: 'medium',
       },
     ],
     messages: [
@@ -803,6 +818,7 @@ const UNIVERSITY_MOCK_DATA = {
         openToTalk: true,
         sharedInterests: ['Robotics', 'AI'],
         lastSeen: 'Workshop Bay, today',
+        socialBattery: 'high',
       },
       {
         id: 'ku-u4',
@@ -815,6 +831,7 @@ const UNIVERSITY_MOCK_DATA = {
         openToTalk: true,
         sharedInterests: ['Coffee'],
         lastSeen: 'Campus Cafe, 25 min ago',
+        socialBattery: 'medium',
       },
       {
         id: 'ku-u6',
@@ -827,6 +844,7 @@ const UNIVERSITY_MOCK_DATA = {
         openToTalk: true,
         sharedInterests: ['Startups'],
         lastSeen: 'Entrepreneurship Hub, yesterday',
+        socialBattery: 'medium',
       },
     ],
     messages: [
