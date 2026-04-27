@@ -484,6 +484,7 @@ function App() {
         userInterests={userInterests}
         onSelectEvent={setSelectedEvent}
         userProfile={userProfile}
+        setTab={setTab}
       />,
       <MessagesPage key="messages" userProfile={userProfile} />,
       <ConnectionsPage key="connections" userProfile={userProfile} userInterests={userInterests} />,

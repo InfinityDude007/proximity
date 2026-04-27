@@ -46,7 +46,7 @@ const UNIVERSITY_MOCK_DATA = {
           buildAttendee('ubd-u4', 'James', 'J', 'Business Management', true, ['Coffee', 'Startups', 'Travel']),
           buildAttendee('ubd-u5', 'Maya', 'M', 'Psychology', true, ['Podcasts', 'Art']),
         ],
-        mutualCount: 1,
+        mutualCount: 0,
         description: 'A low-pressure coffee spot where people usually stay between lectures.',
         accessibility: 'Step-free seating area',
         credibility: 'Campus venue',

@@ -146,7 +146,8 @@ export default function ProfilePage({
               placeholder="Search interests..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              sx={{ mb: 2 }}
+              sx={{ mb: 3.5 }}
+              variant='standard'
             />
             <Stack direction="row" spacing={1.2} useFlexGap sx={{ flexWrap: 'wrap' }}>
               {interestOptions

@@ -12,6 +12,7 @@ import {
   Divider,
   Button,
   Grid,
+  Popover,
   useTheme,
 } from '@mui/material';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -25,6 +26,8 @@ import AnalyticsIcon from '@mui/icons-material/Analytics';
 import ShareLocationIcon from '@mui/icons-material/ShareLocation';
 import Groups2Icon from '@mui/icons-material/Groups2';
 import SpaIcon from '@mui/icons-material/Spa';
+import SchoolIcon from '@mui/icons-material/School';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { batteryLevels, getUniversityMockData, vibeFilters } from '../data/mockData';
 import { alpha } from '@mui/material/styles';
 import {
@@ -77,11 +80,13 @@ function PageHero({ universityName, contextCount }) {
         label="Live campus discovery"
         size="small"
         sx={{
-          mb: 1.5,
           fontWeight: 700,
           bgcolor: subtleSurface,
           color: isDark ? 'primary.light' : 'primary.dark',
           width: 'fit-content',
+          py: 2,
+          px: 1,
+          borderRadius: "20px"
         }}
       />
 
@@ -98,11 +103,16 @@ function PageHero({ universityName, contextCount }) {
 
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.2}>
         <Chip
+          icon={<SchoolIcon />}
           label={universityName}
           variant="outlined"
           sx={{
             bgcolor: subtleSurface,
             borderColor: 'divider',
+            p: 1,
+            '& .MuiChip-icon': {
+              mr: 0.1,
+            },
           }}
         />
         <Chip
@@ -111,6 +121,7 @@ function PageHero({ universityName, contextCount }) {
           sx={{
             bgcolor: subtleSurface,
             borderColor: 'divider',
+            p: 1,
           }}
         />
       </Stack>
@@ -371,6 +382,7 @@ export default function FeedPage({
   userInterests,
   onSelectEvent,
   userProfile,
+  setTab
 }) {
   const [activeFilter, setActiveFilter] = useState('All');
   const theme = useTheme();
@@ -391,6 +403,18 @@ export default function FeedPage({
         (e) => e.vibe === activeFilter.toLowerCase() || e.tags.some((t) => t.toLowerCase() === activeFilter.toLowerCase()),
       );
 
+  // Filter based on availability
+  if (openToTalk !== 'open_to_connect') {
+    filtered = filtered.filter(event => event.mutualCount > 0);
+  }
+
+  // Filter based on social battery
+  if (socialBattery === 'low') {
+    filtered = filtered.filter(event => event.vibe === 'quiet' && parseInt(event.distance.split(' ')[0]) < 5);
+  } else if (socialBattery === 'medium') {
+    filtered = filtered.filter(event => parseInt(event.distance.split(' ')[0]) < 5);
+  }
+
   // If user has interests, prioritize events with matching tags
   if (userInterests.length > 0) {
     filtered = filtered.sort((a, b) => {
@@ -399,6 +423,42 @@ export default function FeedPage({
       return aHasInterest === bHasInterest ? 0 : aHasInterest ? -1 : 1;
     });
   }
+
+  const [detailsAnchorEl, setDetailsAnchorEl] = useState(null);
+  const detailsOpen = Boolean(detailsAnchorEl);
+
+  const activeFilterText =
+    activeFilter === 'All'
+      ? 'All event types'
+      : `${activeFilter} events`;
+
+  const availabilityMeta = getAvailabilityMeta(openToTalk);
+  const batteryLabel = battery?.label || socialBattery;
+
+  const feedReasonParts = [];
+
+  if (activeFilter !== 'All') {
+    feedReasonParts.push();
+  }
+
+  if (socialBattery === 'low') {
+    if (activeFilter === "Quiet") {
+      feedReasonParts.push('that are less than 5 minutes away, because your social battery is low');
+    } else {
+      feedReasonParts.push('that are quiet and less than 5 minutes away, because your social battery is low');
+    }
+  } else if (socialBattery === 'medium') {
+    feedReasonParts.push('that are less than 5 minutes away, because your social battery is medium');
+  }
+
+  if (openToTalk !== 'open_to_connect') {
+    feedReasonParts.push('with mutuals going, because you are not fully open to connect');
+  }
+
+  const feedExplanation =
+    feedReasonParts.length > 0
+      ? `Showing ${activeFilterText.toLowerCase()} ${feedReasonParts.join(', ')}.`
+      : 'Showing all nearby campus contexts based on your current vibe.';
 
   return (
     <Box>
@@ -440,9 +500,106 @@ export default function FeedPage({
               ))}
             </Stack>
 
-            {/* TODO <Button startIcon={<TuneIcon />} variant="outlined" sx={{ px: 2.5, py: 1.1, flexShrink: 0 }}>
-              Refine feed
-            </Button> */}
+            <Box
+              sx={{
+                minWidth: 'fit-content',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <TuneIcon sx={{ fontSize: 24, color: 'primary.main' }} />
+
+                <Typography variant="body2" sx={{ fontWeight: 800, whiteSpace: 'nowrap', fontSize: '16px' }}>
+                  {filtered.length} shown
+                </Typography>
+              </Box>
+
+              <Button
+                size="small"
+                variant="outlined"
+                endIcon={<KeyboardArrowDownIcon />}
+                onClick={(e) => setDetailsAnchorEl(e.currentTarget)}
+                sx={{
+                  minWidth: 0,
+                  fontWeight: 800,
+                  textTransform: 'none',
+                  whiteSpace: 'nowrap',
+                  px: 2,
+                  py: 1
+                }}
+              >
+                Feed details
+              </Button>
+
+              <Popover
+                open={detailsOpen}
+                anchorEl={detailsAnchorEl}
+                onClose={() => setDetailsAnchorEl(null)}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                slotProps={{
+                  paper: {
+                    sx: {
+                      mt: 0.3,
+                      width: '450px',
+                      maxWidth: '30vw',
+                      border: "2px solid",
+                      borderColor: "primary.main",
+                      borderRadius: 2
+                    }
+                  }
+                }}
+              >
+                <Stack spacing={2} sx={{ py: 2, px: 3 }}>
+                  <Stack spacing={0.3}>
+                    <Typography variant="body1" sx={{ fontWeight: 800 }}>
+                      Why these events?
+                    </Typography>
+
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        color: "text.secondary",
+                        whiteSpace: 'normal',
+                        wordBreak: 'break-word',
+                      }}
+                    >
+                      {feedExplanation}
+                    </Typography>
+                  </Stack>
+
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={() => {
+                      setTab(3);
+                      setTimeout(() => {
+                        document.getElementById('settings-section')?.scrollIntoView({
+                          behavior: 'smooth',
+                        });
+                      }, 100);
+                    }}
+                    sx={{
+                      alignSelf: 'flex-end',
+                      textTransform: 'none',
+                      fontSize: '0.75rem',
+                      px: 1.2,
+                      py: 0.4,
+                    }}
+                  >
+                    More details
+                  </Button>
+                </Stack>
+              </Popover>
+            </Box>
             
           </Box>
 
