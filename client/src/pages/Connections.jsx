@@ -28,6 +28,7 @@ import MarkChatReadIcon from '@mui/icons-material/MarkChatRead';
 import HandshakeIcon from '@mui/icons-material/Handshake';
 import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
 import { getUniversityMockData, softInviteTemplates } from '../data/mockData';
+import { interestOptions } from '../data/interestOptions';
 import { alpha, useTheme } from '@mui/material/styles';
 
 const statusColor = {
@@ -176,7 +177,7 @@ function ConnectionCard({ person, onViewProfile }) {
           <Typography variant="caption" color="text.secondary" display="block">
             How you connected
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" noWrap>
             {person.sharedContext}
           </Typography>
         </Box>
@@ -188,21 +189,37 @@ function ConnectionCard({ person, onViewProfile }) {
           </Typography>
         </Box>
 
-        {person.sharedInterests.length > 0 && (
-          <Stack direction="row" spacing={0.75} flexWrap="wrap" useFlexGap>
-            {person.sharedInterests.map((interest) => (
-              <Chip
-                key={interest}
-                label={interest}
-                size="small"
-                sx={{
-                  bgcolor: subtleSurface,
-                  color: 'text.secondary',
-                  fontWeight: 600,
-                }}
-              />
-            ))}
-          </Stack>
+        {person.userSharedInterests?.length > 0 && (
+          <Box sx={{ display: 'grid', gap: 1 }}>
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700 }}>
+              Your shared interests
+            </Typography>
+            <Stack direction="row" spacing={0.75} flexWrap="wrap" useFlexGap>
+              {person.userSharedInterests.map((interest) => {
+                const interestObj = interestOptions.find(i => i.label === interest);
+                return (
+                  <Chip
+                    key={`shared-${interest}`}
+                    icon={interestObj?.icon}
+                    label={interest}
+                    size="small"
+                    sx={{
+                      bgcolor: 'primary.main',
+                      color: 'white',
+                      fontWeight: 600,
+                      '& .MuiChip-icon': {
+                        color: 'white',
+                        mr: '0.05rem',
+                      },
+                      py: 2,
+                      px: 1,
+                      borderRadius: 1.5,
+                    }}
+                  />
+                );
+              })}
+            </Stack>
+          </Box>
         )}
 
         <Box sx={{ mt: 'auto', width: '100%' }}>
@@ -260,8 +277,9 @@ function ProfileDialog({ person, open, onClose }) {
     <Dialog
       open={open}
       onClose={onClose}
+      scroll='paper'
       fullWidth
-      maxWidth="sm"
+      maxWidth="lg"
       PaperProps={{
         sx: {
           borderRadius: 5,
@@ -270,7 +288,7 @@ function ProfileDialog({ person, open, onClose }) {
         },
       }}
     >
-      <DialogTitle sx={{ pb: 1 }}>
+      <DialogTitle sx={{ pb: 0 }}>
         <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 2 }}>
           <Typography variant="overline" sx={{ mt: 0.5, color:"text.secondary", fontWeight: 700, letterSpacing: '0.14em', fontSize: '14px' }}>
             Profile
@@ -348,16 +366,72 @@ function ProfileDialog({ person, open, onClose }) {
           </Stack>
         </Stack>
 
-        <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: 'wrap', mb: 2.5, alignItems: 'center' }}>
-          {person.sharedInterests.map((interest) => (
-            <Chip
-              key={interest}
-              label={interest}
-              size="small"
-              sx={{ bgcolor: subtleSurface, color: 'text.secondary', fontWeight: 600 }}
-            />
-          ))}
-        </Stack>
+        <Box sx={{ display: 'grid', gap: 1, mb: 2.5 }}>
+          {person.userSharedInterests?.length > 0 && (
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="body2" sx={{ mb: 0.8, fontWeight: 700, color: 'text.secondary' }}>
+                Your shared interests
+              </Typography>
+              <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+                {person.userSharedInterests.map((interest) => {
+                  const interestObj = interestOptions.find(i => i.label === interest);
+                  return (
+                    <Chip
+                      key={`dialog-shared-${interest}`}
+                      icon={interestObj?.icon}
+                      label={interest}
+                      size="small"
+                      sx={{
+                        bgcolor: 'primary.main',
+                        color: 'common.white',
+                        fontWeight: 600,
+                        '& .MuiChip-icon': {
+                          color: 'white',
+                          mr: '0.05rem',
+                        },
+                        py: 2,
+                        px: 1,
+                        borderRadius: 1.5,
+                      }}
+                    />
+                  );
+                })}
+              </Stack>
+            </Box>
+          )}
+
+          {person.otherInterests?.length > 0 && (
+            <Box>
+              <Typography variant="body2" sx={{ mb: 0.5, fontWeight: 700, color: 'text.secondary' }}>
+                Their other interests
+              </Typography>
+              <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+                {person.otherInterests.map((interest) => {
+                  const interestObj = interestOptions.find(i => i.label === interest);
+                  return (
+                    <Chip
+                      key={`dialog-other-${interest}`}
+                      icon={interestObj?.icon}
+                      label={interest}
+                      size="small"
+                      sx={{
+                        bgcolor: 'action.hover',
+                        color: 'text.secondary',
+                        fontWeight: 600,
+                        '& .MuiChip-icon': {
+                          mr: '0.05rem',
+                        },
+                        py: 2,
+                        px: 1,
+                        borderRadius: 1.5,
+                      }}
+                    />
+                  );
+                })}
+              </Stack>
+            </Box>
+          )}
+        </Box>
 
         <Box sx={{ bgcolor: 'action.hover', borderRadius: 1, px: 2, py: 1, mb: 2.5 }}>
           <Typography variant="body1" display="block" sx={{ mb: 0.2, color: "text.secondary" }}>
@@ -460,7 +534,7 @@ function ProfileDialog({ person, open, onClose }) {
   );
 }
 
-export default function ConnectionsPage({ userProfile }) {
+export default function ConnectionsPage({ userProfile, userInterests }) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
   const [selectedPerson, setSelectedPerson] = useState(null);
@@ -470,6 +544,35 @@ export default function ConnectionsPage({ userProfile }) {
   );
 
   const subtleSurface = alpha(theme.palette.primary.main, isDark ? 0.14 : 0.07);
+
+  const getStringHash = (value) => {
+    return [...value].reduce((hash, char) => (hash * 31 + char.charCodeAt(0)) >>> 0, 0);
+  };
+
+  const getUserSharedInterests = (interests, personId) => {
+    if (!Array.isArray(interests) || interests.length === 0) {
+      return [];
+    }
+
+    const maxCount = Math.min(interests.length, 2);
+    const count = 1 + (getStringHash(personId) % maxCount);
+    const seeded = [...interests].sort((a, b) => {
+      const hashA = getStringHash(`${personId}-${a}`);
+      const hashB = getStringHash(`${personId}-${b}`);
+      return hashA - hashB;
+    });
+
+    return seeded.slice(0, count);
+  };
+
+  const connectionsWithInterests = useMemo(
+    () => connections.map((person) => ({
+      ...person,
+      userSharedInterests: getUserSharedInterests(userInterests, person.id),
+      otherInterests: person.sharedInterests || [],
+    })),
+    [connections, userInterests],
+  );
 
   const stats = useMemo(
     () => [
@@ -584,7 +687,7 @@ export default function ConnectionsPage({ userProfile }) {
         </CardContent>
       </Card>
 
-      {connections.length === 0 ? (
+      {connectionsWithInterests.length === 0 ? (
         <Card sx={{ border: '1px solid', borderColor: 'divider' }}>
           <CardContent sx={{ textAlign: 'center', py: 8, px: 3 }}>
             <PeopleOutlinedIcon sx={{ fontSize: 56, color: 'text.secondary', opacity: 0.4, mb: 2 }} />
@@ -604,7 +707,7 @@ export default function ConnectionsPage({ userProfile }) {
     justifyContent: 'center',
   }}
 >
-  {connections.map((person) => (
+  {connectionsWithInterests.map((person) => (
     <Grid
       item
       key={person.id}

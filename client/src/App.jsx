@@ -479,7 +479,7 @@ function App() {
         userProfile={userProfile}
       />,
       <MessagesPage key="messages" userProfile={userProfile} />,
-      <ConnectionsPage key="connections" userProfile={userProfile} />,
+      <ConnectionsPage key="connections" userProfile={userProfile} userInterests={userInterests} />,
       <ProfilePage
         key="profile"
         socialBattery={socialBattery}
